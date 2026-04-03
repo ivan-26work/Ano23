@@ -14,23 +14,53 @@ let messagesList = [];
 let selectMode = false;
 let currentTab = 'link';
 let currentMessage = null;
+let currentChatMessage = null;
 let realtimeChannel = null;
 let hasMessageShown = false;
 let swRegistration = null;
+let selectedCardType = 'message';
 
-const MESSAGES_ALEATOIRES = [
-  "!!! Envoie moi des messages ✉️❤️👇👇👇",
-  "Demande moi n'importe quoi ! 👋",
-  "Pose-moi ta question la plus folle ❓",
-  "Balance ton secret, je garde tout 🤫",
-  "Un petit message pour me faire plaisir ? 💬",
-  "Tu as quelque chose à me dire ? 🎤",
-  "Ose ! C'est anonyme 😏",
-  "N'aie pas peur, je ne mords pas 😊",
-  "Ton message sera lu avec attention 👀",
-  "Je veux savoir ce que tu penses vraiment 🔥",
-  "Dis-moi tout, je suis anonyme 🤫",
-];
+const BASE_URL = 'https://ivan-26work.github.io/Ano23';
+
+const MESSAGES_ALEATOIRES = {
+  message: [
+    "!!! Envoie moi des messages ✉️❤️👇👇👇",
+    "Demande moi n'importe quoi ! 👋",
+    "Pose-moi ta question la plus folle ❓",
+    "Balance ton secret, je garde tout 🤫",
+    "Un petit message pour me faire plaisir ? 💬",
+    "Tu as quelque chose à me dire ? 🎤",
+    "Ose ! C'est anonyme 😏",
+    "N'aie pas peur, je ne mords pas 😊",
+    "Ton message sera lu avec attention 👀",
+    "Je veux savoir ce que tu penses vraiment 🔥",
+    "Dis-moi tout, je suis anonyme 🤫",
+  ],
+  question: [
+    "C'est quoi ton rêve le plus fou ? 🌟",
+    "Si tu pouvais changer une chose dans ta vie, ce serait quoi ?",
+    "Quel est ton plus grand secret ? 🤫",
+    "Qu'est-ce qui te rend vraiment heureux(se) ? 😊",
+    "Si tu pouvais vivre n'importe où, où serais-tu ?",
+    "Quelle est la chose dont tu es le plus fier(e) ? 🏆",
+    "As-tu un modèle ? 🌟",
+    "Quel est ton plus grand regret ? 💭",
+    "Que ferais-tu avec 1 million d'euros ? 💰",
+    "Quel est ton plus beau souvenir ? 📸",
+  ],
+  discussion: [
+    "Salut ! On discute ? 👋",
+    "Quoi de neuf aujourd'hui ? 😊",
+    "Comment tu te sens en ce moment ? 💭",
+    "Raconte-moi ta journée ! 📅",
+    "Tu penses à quoi en ce moment ? 🤔",
+    "Un sujet qui te passionne ? 🔥",
+    "Si on parlait de tout et de rien ? 💬",
+    "Ton avis m'intéresse vraiment ! 🎯",
+    "Dis-moi ce qui te rend heureux(se) ✨",
+    "On a le temps de discuter ? ⏰",
+  ]
+};
 
 // ============================================================
 // INITIALISATION
@@ -53,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initEventListeners();
     setupAvatarUpload();
     setupScrollHandlers();
-    showEnvelopeOnly();
+    initCardSelection();
 
     await registerServiceWorker();
     await requestNotifPermission();
@@ -69,6 +99,47 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Init error:', err);
   }
 });
+
+// ============================================================
+// SÉLECTION DES CARTES
+// ============================================================
+function initCardSelection() {
+  const cards = document.querySelectorAll('.share-card');
+  
+  cards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const cardType = card.getAttribute('data-card');
+      selectCard(cardType);
+    });
+  });
+  
+  selectCard('message');
+}
+
+function selectCard(cardType) {
+  selectedCardType = cardType;
+  
+  document.querySelectorAll('.share-card').forEach(card => {
+    const isSelected = card.getAttribute('data-card') === cardType;
+    card.setAttribute('data-selected', isSelected);
+  });
+}
+
+function getSelectedCardType() {
+  return selectedCardType;
+}
+
+function getCardLink() {
+  const cardType = getSelectedCardType();
+  if (cardType === 'discussion') {
+    return `${BASE_URL}/live-chat.html?uid=${currentUserId}`;
+  }
+  if (cardType === 'question') {
+    return `${BASE_URL}/envoyer.html?uid=${currentUserId}&type=question`;
+  }
+  return `${BASE_URL}/envoyer.html?uid=${currentUserId}`;
+}
 
 // ============================================================
 // SERVICE WORKER
@@ -174,7 +245,7 @@ function showInAppNotif(title, body) {
 }
 
 // ============================================================
-// SWITCH TAB (avec nouveaux boutons dans header)
+// SWITCH TAB
 // ============================================================
 function switchTab(tabName) {
   if (tabName === currentTab) return;
@@ -188,30 +259,6 @@ function switchTab(tabName) {
   const delBtn = document.getElementById('btnDeleteHeader');
   if (delBtn) delBtn.classList.toggle('show', tabName === 'inbox');
   if (tabName === 'inbox') renderInbox();
-}
-
-// ============================================================
-// ENVELOPPE / MESSAGE
-// ============================================================
-function showEnvelopeOnly() {
-  const env = document.getElementById('animatedEnvelope');
-  const msg = document.getElementById('randomMessageContainer');
-  if (env) env.style.display = 'flex';
-  if (msg) msg.style.display = 'none';
-}
-
-function showBoth() {
-  const env = document.getElementById('animatedEnvelope');
-  const msg = document.getElementById('randomMessageContainer');
-  if (env) env.style.display = 'flex';
-  if (msg) msg.style.display = 'flex';
-}
-
-function randomizeMessage() {
-  const el = document.getElementById('randomMessage');
-  if (el) el.textContent = MESSAGES_ALEATOIRES[Math.floor(Math.random() * MESSAGES_ALEATOIRES.length)];
-  showBoth();
-  hasMessageShown = true;
 }
 
 // ============================================================
@@ -264,8 +311,8 @@ function subscribeToRealtime() {
         messagesList.unshift(msg);
         renderInbox(); updateStats();
         sendNotification(
-          `📩 Nouveau ${getTypeLabel(msg.type)} — Ano23`,
-          (msg.content || '').substring(0, 60) || 'Tu as reçu un message anonyme !'
+          `📩 Nouveau message — Ano23`,
+          `💬 Tu as reçu un nouveau message anonyme`
         );
       })
       .on('postgres_changes', {
@@ -312,7 +359,9 @@ function renderInbox() {
     const typeIcon = getTypeIcon(msg.type);
     const typeLabel = getTypeLabel(msg.type);
 
-    card.innerHTML = `
+    const showChatButton = msg.is_chat === true;
+    
+    let messageHtml = `
       <div class="msg-check ${msg.selected ? 'on' : ''}" data-id="${msg.id}"></div>
       <div class="msg-body">
         <div class="msg-label">${!msg.read ? '<span class="animated-emoji">🔔</span>' : typeIcon} ${typeLabel}</div>
@@ -320,23 +369,62 @@ function renderInbox() {
         <div class="msg-time">${timeAgo}</div>
       </div>
     `;
+    
+    if (showChatButton) {
+      messageHtml += `
+        <div class="msg-actions">
+          <button class="msg-chat-btn" data-id="${msg.id}" data-user="${msg.user_id}" data-content="${encodeURIComponent(msg.content)}" data-type="${msg.type}">
+            <i class="fas fa-comment-dots"></i> Chat
+          </button>
+        </div>
+      `;
+    }
+    
+    card.innerHTML = messageHtml;
 
     if (selectMode) {
       card.querySelector('.msg-check').addEventListener('click', e => {
         e.stopPropagation(); msg.selected = !msg.selected; renderInbox();
       });
     } else {
-      card.addEventListener('click', () => openSmallOverlay(msg));
+      card.addEventListener('click', (e) => {
+        if (!e.target.closest('.msg-chat-btn')) {
+          openSmallOverlay(msg);
+        }
+      });
     }
     feed.appendChild(card);
+  });
+
+  document.querySelectorAll('.msg-chat-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.getAttribute('data-id');
+      const userId = btn.getAttribute('data-user');
+      const content = decodeURIComponent(btn.getAttribute('data-content') || '');
+      const type = btn.getAttribute('data-type');
+      openChatOverlay({ id, user_id: userId, content, type, is_chat: true });
+    });
   });
 }
 
 // ============================================================
 // HELPERS
 // ============================================================
-function getTypeIcon(type) { return type === 'question' ? '❓' : type === 'secret' ? '🤫' : '💬'; }
-function getTypeLabel(type) { return type === 'question' ? 'Question anonyme' : type === 'secret' ? 'Secret' : 'Message anonyme'; }
+function getTypeIcon(type) { 
+  if (type === 'question') return '❓';
+  if (type === 'discussion') return '💬';
+  if (type === 'secret') return '🤫';
+  return '💬';
+}
+
+function getTypeLabel(type) {
+  if (type === 'question') return 'Question anonyme';
+  if (type === 'discussion') return 'Discussion anonyme';
+  if (type === 'secret') return 'Secret';
+  return 'Message anonyme';
+}
+
 function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
 
 function formatTimeAgo(ts) {
@@ -374,27 +462,37 @@ function updateStats() {
   if (dot) dot.style.display = unread > 0 ? 'flex' : 'none';
 }
 
-function getAnonymousLink() {
-  return `https://ivan-26work.github.io/Ano23/envoyer.html?uid=${currentUserId}`;
+function getAnonymousLink(cardType = null) {
+  const type = cardType || selectedCardType;
+  if (type === 'discussion') {
+    return `${BASE_URL}/live-chat.html?uid=${currentUserId}`;
+  }
+  if (type === 'question') {
+    return `${BASE_URL}/envoyer.html?uid=${currentUserId}&type=question`;
+  }
+  return `${BASE_URL}/envoyer.html?uid=${currentUserId}`;
 }
 
 // ============================================================
 // CARTE LINK
 // ============================================================
 async function shareLinkCard() {
-  const el = document.getElementById('shareCard');
+  const cardType = getSelectedCardType();
+  const cardId = `shareCard${cardType.charAt(0).toUpperCase() + cardType.slice(1)}`;
+  const el = document.getElementById(cardId);
   const btn = document.getElementById('shareLinkCardBtn');
+  
   if (!el || !btn) return;
   const orig = btn.innerHTML;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
   btn.disabled = true;
   try {
-    const link = getAnonymousLink();
+    const link = getAnonymousLink(cardType);
     await navigator.clipboard.writeText(link);
     const canvas = await html2canvas(el, { scale: 2, backgroundColor: null, useCORS: false });
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     const file = new File([blob], 'ano23-share.png', { type: 'image/png' });
-    const text = `📩 Message anonyme pour moi !\n\n👉 ${link}`;
+    const text = `📩 ${getCardTitle(cardType)}\n\n👉 ${link}`;
 
     if (navigator.share && navigator.canShare?.({ files: [file] })) {
       await navigator.share({ title: 'Ano23', text: text, files: [file] });
@@ -414,9 +512,21 @@ async function shareLinkCard() {
   btn.disabled = false;
 }
 
+function getCardTitle(cardType) {
+  const titles = {
+    message: 'Message anonyme pour moi',
+    question: 'Question anonyme pour moi',
+    discussion: 'Discussion anonyme'
+  };
+  return titles[cardType] || 'Message anonyme';
+}
+
 async function downloadLinkCard() {
-  const el = document.getElementById('shareCard');
+  const cardType = getSelectedCardType();
+  const cardId = `shareCard${cardType.charAt(0).toUpperCase() + cardType.slice(1)}`;
+  const el = document.getElementById(cardId);
   const btn = document.getElementById('downloadLinkCardBtn');
+  
   if (!el || !btn) return;
   const orig = btn.innerHTML;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -437,8 +547,9 @@ async function downloadLinkCard() {
 }
 
 async function copyLink() {
+  const cardType = getSelectedCardType();
   try {
-    await navigator.clipboard.writeText(getAnonymousLink());
+    await navigator.clipboard.writeText(getAnonymousLink(cardType));
     const btn = document.getElementById('copyLinkBtn');
     if (btn) {
       const orig = btn.innerHTML;
@@ -452,6 +563,25 @@ async function copyLink() {
   }
 }
 
+function randomizeMessage() {
+  const cardType = getSelectedCardType();
+  const messages = MESSAGES_ALEATOIRES[cardType] || MESSAGES_ALEATOIRES.message;
+  const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+  
+  const cardId = `shareCard${cardType.charAt(0).toUpperCase() + cardType.slice(1)}`;
+  const card = document.getElementById(cardId);
+  if (card) {
+    const msgContainer = card.querySelector('.share-message');
+    if (msgContainer) {
+      msgContainer.innerHTML = `
+        <div class="animated-message">
+          <p>✨ ${randomMsg} ✨</p>
+        </div>
+      `;
+    }
+  }
+}
+
 // ============================================================
 // OVERLAYS
 // ============================================================
@@ -459,11 +589,25 @@ function openSmallOverlay(msg) {
   if (!msg) return;
   currentMessage = msg;
   if (!msg.read) markAsRead(msg.id);
-  setText('smallIcon', getTypeIcon(msg.type));
-  setText('smallType', getTypeLabel(msg.type));
-  setText('smallTime', formatTimeAgo(msg.created_at));
-  setText('smallText', msg.content || 'Message vide');
+  
+  const icon = document.getElementById('smallIcon');
+  const typeLabel = document.getElementById('smallType');
+  const timeDisplay = document.getElementById('smallTime');
+  const textDisplay = document.getElementById('smallText');
+  
+  if (icon) icon.innerHTML = `<i class="fas ${getIconClass(msg.type)}"></i>`;
+  if (typeLabel) typeLabel.textContent = getTypeLabel(msg.type);
+  if (timeDisplay) timeDisplay.textContent = formatTimeAgo(msg.created_at);
+  if (textDisplay) textDisplay.textContent = msg.content || 'Message vide';
+  
   document.getElementById('overlaySmall')?.classList.add('open');
+}
+
+function getIconClass(type) {
+  if (type === 'question') return 'fa-question-circle';
+  if (type === 'discussion') return 'fa-comments';
+  if (type === 'secret') return 'fa-lock';
+  return 'fa-envelope';
 }
 
 function closeSmallOverlay() {
@@ -557,6 +701,87 @@ async function shareReplyImage() {
   btn.innerHTML = orig;
   const ri = document.getElementById('replyInput');
   if (ri?.value.trim()) btn.disabled = false;
+}
+
+// ============================================================
+// OVERLAY CHAT
+// ============================================================
+async function openChatOverlay(msg) {
+  const { data, error } = await sb
+    .from('messages')
+    .select('user_id')
+    .eq('user_id', msg.user_id)
+    .limit(1);
+  
+  const exists = data && data.length > 0;
+  
+  if (!exists) {
+    document.getElementById('overlayChatError')?.classList.add('open');
+    return;
+  }
+  
+  currentChatMessage = msg;
+  const overlay = document.getElementById('overlayChat');
+  const textarea = document.getElementById('chatReplyInput');
+  if (textarea) textarea.value = '';
+  if (overlay) overlay.classList.add('open');
+}
+
+function closeChatOverlay() {
+  const overlay = document.getElementById('overlayChat');
+  if (overlay) overlay.classList.remove('open');
+  currentChatMessage = null;
+}
+
+async function sendChatMessage() {
+  const textarea = document.getElementById('chatReplyInput');
+  const message = textarea?.value.trim();
+  
+  if (!message) {
+    showToast('✏️ Écris un message d\'abord !', 2000);
+    return;
+  }
+  
+  if (!currentChatMessage) {
+    showToast('❌ Erreur: message original introuvable', 2000);
+    return;
+  }
+  
+  const sendBtn = document.getElementById('sendChatBtn');
+  const origHtml = sendBtn?.innerHTML;
+  if (sendBtn) {
+    sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    sendBtn.disabled = true;
+  }
+  
+  try {
+    const { error } = await sb.from('messages').insert({
+      user_id: currentChatMessage.user_id,
+      content: message,
+      type: 'discussion',
+      is_chat: true,
+      read: false,
+      created_at: new Date().toISOString(),
+    });
+    
+    if (error) throw error;
+    
+    showToast('✅ Message envoyé anonymement !', 2000);
+    closeChatOverlay();
+    
+  } catch (err) {
+    console.error('sendChatMessage:', err);
+    showToast(`❌ Erreur: ${err.message}`, 3000);
+  }
+  
+  if (sendBtn) {
+    sendBtn.innerHTML = origHtml;
+    sendBtn.disabled = false;
+  }
+}
+
+function closeChatErrorOverlay() {
+  document.getElementById('overlayChatError')?.classList.remove('open');
 }
 
 // ============================================================
@@ -700,6 +925,13 @@ function initEventListeners() {
   });
 
   document.getElementById('btnReplySmall')?.addEventListener('click', openLargeOverlay);
+  document.getElementById('btnChatSmall')?.addEventListener('click', () => {
+    if (currentMessage && currentMessage.is_chat) {
+      closeSmallOverlay();
+      openChatOverlay(currentMessage);
+    }
+  });
+  
   document.getElementById('closeLargeBtn')?.addEventListener('click', closeLargeOverlay);
   document.getElementById('downloadBtn')?.addEventListener('click', downloadReplyImage);
   document.getElementById('shareBtn')?.addEventListener('click', shareReplyImage);
@@ -713,5 +945,17 @@ function initEventListeners() {
     const sh = document.getElementById('shareBtn');
     if (dl) dl.disabled = !has;
     if (sh) sh.disabled = !has;
+  });
+  
+  document.getElementById('closeChatBtn')?.addEventListener('click', closeChatOverlay);
+  document.getElementById('cancelChatBtn')?.addEventListener('click', closeChatOverlay);
+  document.getElementById('sendChatBtn')?.addEventListener('click', sendChatMessage);
+  document.getElementById('overlayChat')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('overlayChat')) closeChatOverlay();
+  });
+  
+  document.getElementById('closeChatErrorBtn')?.addEventListener('click', closeChatErrorOverlay);
+  document.getElementById('overlayChatError')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('overlayChatError')) closeChatErrorOverlay();
   });
 }
