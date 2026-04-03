@@ -1,22 +1,22 @@
 // ============================================================
 // SUPABASE CONFIG
 // ============================================================
-const SUPABASE_URL  = 'https://waogbrxqyysibttlpoxj.supabase.co';
+const SUPABASE_URL = 'https://waogbrxqyysibttlpoxj.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhb2dicnhxeXlzaWJ0dGxwb3hqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxNjE3NzUsImV4cCI6MjA5MDczNzc3NX0.Op1DUBfefbO2RkoitXws-7cFLW1T0DJGBDh1YPDcB1w';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 // ============================================================
 // ÉTAT GLOBAL
 // ============================================================
-let currentUser     = null;
-let currentUserId   = null;
-let messagesList    = [];
-let selectMode      = false;
-let currentTab      = 'link';
-let currentMessage  = null;
+let currentUser = null;
+let currentUserId = null;
+let messagesList = [];
+let selectMode = false;
+let currentTab = 'link';
+let currentMessage = null;
 let realtimeChannel = null;
 let hasMessageShown = false;
-let swRegistration  = null;
+let swRegistration = null;
 
 const MESSAGES_ALEATOIRES = [
   "!!! Envoie moi des messages ✉️❤️👇👇👇",
@@ -38,27 +38,26 @@ const MESSAGES_ALEATOIRES = [
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     const { data: { session } } = await sb.auth.getSession();
-    if (!session) { window.location.href = 'auth.html'; return; }
+    if (!session) {
+      window.location.href = 'auth.html';
+      return;
+    }
 
-    currentUser   = session.user;
+    currentUser = session.user;
     currentUserId = currentUser.email.split('@')[0];
 
     setText('sbUserName', currentUser.email);
-    setText('sbUserUid',  `@${currentUserId}`);
+    setText('sbUserUid', `@${currentUserId}`);
 
     initTheme();
     initEventListeners();
     setupAvatarUpload();
-    setupDimensionSelector();
-    setupOverlayDimensionSelector();
     setupScrollHandlers();
     showEnvelopeOnly();
 
-    // Service Worker + Notifications
     await registerServiceWorker();
     await requestNotifPermission();
 
-    // Écouter messages du SW (ouvrir inbox depuis notif)
     navigator.serviceWorker?.addEventListener('message', event => {
       if (event.data?.type === 'OPEN_INBOX') switchTab('inbox');
     });
@@ -92,7 +91,7 @@ async function registerServiceWorker() {
 }
 
 // ============================================================
-// NOTIFICATIONS — DEMANDE PERMISSION
+// NOTIFICATIONS
 // ============================================================
 async function requestNotifPermission() {
   if (!('Notification' in window)) return;
@@ -103,14 +102,9 @@ async function requestNotifPermission() {
   }, 3000);
 }
 
-// ============================================================
-// NOTIFICATIONS — ENVOYER
-// 3 méthodes en cascade : SW → Notification API → In-App
-// ============================================================
 async function sendNotification(title, body) {
   const url = './index.html';
 
-  // Méthode 1 : Via Service Worker (background aussi)
   if (swRegistration && Notification.permission === 'granted') {
     try {
       const sw = swRegistration.active || swRegistration.waiting || swRegistration.installing;
@@ -121,7 +115,6 @@ async function sendNotification(title, body) {
     } catch (e) { console.warn('SW msg error:', e); }
   }
 
-  // Méthode 2 : Notification API directe
   if (Notification.permission === 'granted') {
     try {
       const notif = new Notification(title, {
@@ -133,13 +126,9 @@ async function sendNotification(title, body) {
     } catch (e) { console.warn('Notif API error:', e); }
   }
 
-  // Méthode 3 : Notification in-app bleue
   showInAppNotif(title, body);
 }
 
-// ============================================================
-// NOTIFICATION IN-APP — Fond bleu, texte noir
-// ============================================================
 function showInAppNotif(title, body) {
   document.querySelector('.ano23-inapp-notif')?.remove();
 
@@ -151,26 +140,17 @@ function showInAppNotif(title, body) {
       <div style="font-size:14px;font-weight:800;color:#000;margin-bottom:2px">${title}</div>
       <div style="font-size:12px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${body}</div>
     </div>
-    <button class="inapp-close-btn" style="background:rgba(0,0,0,0.12);border:none;border-radius:8px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:#000;flex-shrink:0">✕</button>
+    <button class="inapp-close-btn">✕</button>
   `;
 
   Object.assign(notif.style, {
-    position:     'fixed',
-    top:          '12px',
-    left:         '12px',
-    right:        '12px',
-    zIndex:       '999',
-    background:   '#0ea5e9',
-    borderRadius: '16px',
-    padding:      '14px 16px',
-    display:      'flex',
-    alignItems:   'center',
-    gap:          '12px',
-    boxShadow:    '0 8px 24px rgba(14,165,233,0.45)',
-    cursor:       'pointer',
-    transform:    'translateY(-120px)',
-    transition:   'transform 0.35s cubic-bezier(.22,1,.36,1)',
-    fontFamily:   'DM Sans, sans-serif',
+    position: 'fixed', top: '12px', left: '12px', right: '12px',
+    zIndex: '999', background: '#0ea5e9', borderRadius: '16px',
+    padding: '14px 16px', display: 'flex', alignItems: 'center',
+    gap: '12px', boxShadow: '0 8px 24px rgba(14,165,233,0.45)',
+    cursor: 'pointer', transform: 'translateY(-120px)',
+    transition: 'transform 0.35s cubic-bezier(.22,1,.36,1)',
+    fontFamily: 'DM Sans, sans-serif',
   });
 
   document.body.appendChild(notif);
@@ -194,16 +174,16 @@ function showInAppNotif(title, body) {
 }
 
 // ============================================================
-// SWITCH TAB
+// SWITCH TAB (avec nouveaux boutons dans header)
 // ============================================================
 function switchTab(tabName) {
   if (tabName === currentTab) return;
   currentTab = tabName;
 
-  document.querySelectorAll('.tab-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.tab === tabName));
-  document.querySelectorAll('.tab-content').forEach(c =>
-    c.classList.toggle('active', c.id === `tab-${tabName}`));
+  document.querySelectorAll('.header-tab-btn').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.tab === tabName));
+  document.querySelectorAll('.tab-content').forEach(content =>
+    content.classList.toggle('active', content.id === `tab-${tabName}`));
 
   const delBtn = document.getElementById('btnDeleteHeader');
   if (delBtn) delBtn.classList.toggle('show', tabName === 'inbox');
@@ -238,56 +218,14 @@ function randomizeMessage() {
 // SCROLL HANDLERS
 // ============================================================
 function setupScrollHandlers() {
-  const scrollArea  = document.querySelector('.scroll-area');
-  const linkFooter  = document.querySelector('.link-footer');
-  const replyToolbar = document.querySelector('#overlayLarge .toolbar');
-
-  if (scrollArea && linkFooter) {
-    let lastY = 0;
-    scrollArea.addEventListener('scroll', () => {
-      const y = scrollArea.scrollTop;
-      linkFooter.classList.toggle('hide', y > lastY && y > 50);
-      lastY = y;
-    }, { passive: true });
-  }
   const overlayLarge = document.getElementById('overlayLarge');
+  const replyToolbar = document.querySelector('#overlayLarge .toolbar');
+  
   if (overlayLarge && replyToolbar) {
     overlayLarge.addEventListener('scroll', () => {
       replyToolbar.classList.toggle('hide', overlayLarge.scrollTop > 50);
     }, { passive: true });
   }
-}
-
-// ============================================================
-// DIMENSION SELECTORS
-// ============================================================
-function setupDimensionSelector() {
-  const select    = document.getElementById('dimensionSelect');
-  const shareCard = document.querySelector('.share-card');
-  if (select && shareCard) {
-    select.addEventListener('change', e => { shareCard.style.aspectRatio = e.target.value; });
-  }
-}
-
-function setupOverlayDimensionSelector() {
-  const tc = document.querySelector('#overlayLarge .toolbar-content');
-  if (!tc || document.getElementById('dimensionSelectOverlay')) return;
-  const select = document.createElement('select');
-  select.id = 'dimensionSelectOverlay';
-  select.className = 'dimension-select-overlay';
-  select.innerHTML = `
-    <option value="400">📱 Petit (400px)</option>
-    <option value="440">📱 (440px)</option>
-    <option value="480" selected>📱 Standard (480px)</option>
-    <option value="520">📱 Large (520px)</option>
-    <option value="560">📱 (560px)</option>
-    <option value="600">🖥️ Très large (600px)</option>
-  `;
-  select.addEventListener('change', e => {
-    const area = document.getElementById('captureArea');
-    if (area) { area.style.maxWidth = e.target.value + 'px'; area.style.margin = '0 auto'; }
-  });
-  tc.appendChild(select);
 }
 
 // ============================================================
@@ -325,7 +263,6 @@ function subscribeToRealtime() {
         if (!msg) return;
         messagesList.unshift(msg);
         renderInbox(); updateStats();
-        // 🔔 Notification
         sendNotification(
           `📩 Nouveau ${getTypeLabel(msg.type)} — Ano23`,
           (msg.content || '').substring(0, 60) || 'Tu as reçu un message anonyme !'
@@ -370,9 +307,9 @@ function renderInbox() {
     const card = document.createElement('div');
     card.className = `msg-card ${msg.read ? 'read' : 'unread'}`;
 
-    const preview   = (msg.content || '').length > 30 ? msg.content.substring(0, 30) + '…' : (msg.content || 'Message vide');
-    const timeAgo   = formatTimeAgo(msg.created_at);
-    const typeIcon  = getTypeIcon(msg.type);
+    const preview = (msg.content || '').length > 30 ? msg.content.substring(0, 30) + '…' : (msg.content || 'Message vide');
+    const timeAgo = formatTimeAgo(msg.created_at);
+    const typeIcon = getTypeIcon(msg.type);
     const typeLabel = getTypeLabel(msg.type);
 
     card.innerHTML = `
@@ -398,31 +335,40 @@ function renderInbox() {
 // ============================================================
 // HELPERS
 // ============================================================
-function getTypeIcon(type)  { return type === 'question' ? '❓' : type === 'secret' ? '🤫' : '💬'; }
+function getTypeIcon(type) { return type === 'question' ? '❓' : type === 'secret' ? '🤫' : '💬'; }
 function getTypeLabel(type) { return type === 'question' ? 'Question anonyme' : type === 'secret' ? 'Secret' : 'Message anonyme'; }
-function setText(id, val)   { const el = document.getElementById(id); if (el) el.textContent = val; }
+function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
 
 function formatTimeAgo(ts) {
   if (!ts) return 'Date inconnue';
   const diff = Date.now() - new Date(ts).getTime();
-  if (diff < 60000)     return 'À l\'instant';
-  if (diff < 3600000)   return `Il y a ${Math.floor(diff/60000)} min`;
-  if (diff < 86400000)  return `Il y a ${Math.floor(diff/3600000)}h`;
-  if (diff < 604800000) return `Il y a ${Math.floor(diff/86400000)}j`;
+  if (diff < 60000) return 'À l\'instant';
+  if (diff < 3600000) return `Il y a ${Math.floor(diff / 60000)} min`;
+  if (diff < 86400000) return `Il y a ${Math.floor(diff / 3600000)}h`;
+  if (diff < 604800000) return `Il y a ${Math.floor(diff / 86400000)}j`;
   return new Date(ts).toLocaleDateString('fr-FR');
 }
 
 function updateStats() {
-  const total   = messagesList.length;
-  const unread  = messagesList.filter(m => m && !m.read).length;
-  const month1  = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  const total = messagesList.length;
+  const unread = messagesList.filter(m => m && !m.read).length;
+  const month1 = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   const monthly = messagesList.filter(m => m?.created_at && new Date(m.created_at) >= month1).length;
 
-  setText('inboxCount',  `${total} message${total > 1 ? 's' : ''}`);
-  setText('unreadCount', unread > 0 ? `(${unread})` : '');
-  setText('statTotal',   total);
-  setText('statUnread',  unread);
-  setText('statMonth',   monthly);
+  setText('inboxCount', `${total} message${total > 1 ? 's' : ''}`);
+  setText('statTotal', total);
+  setText('statUnread', unread);
+  setText('statMonth', monthly);
+
+  const badge = document.getElementById('unreadBadge');
+  if (badge) {
+    if (unread > 0) {
+      badge.textContent = unread;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
 
   const dot = document.getElementById('notifDot');
   if (dot) dot.style.display = unread > 0 ? 'flex' : 'none';
@@ -440,22 +386,32 @@ async function shareLinkCard() {
   const btn = document.getElementById('shareLinkCardBtn');
   if (!el || !btn) return;
   const orig = btn.innerHTML;
-  btn.innerHTML = '⏳…'; btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  btn.disabled = true;
   try {
     const link = getAnonymousLink();
     await navigator.clipboard.writeText(link);
-    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:false });
-    const blob   = await new Promise(r => canvas.toBlob(r, 'image/png'));
-    const file   = new File([blob], 'ano23-share.png', { type:'image/png' });
+    const canvas = await html2canvas(el, { scale: 2, backgroundColor: null, useCORS: false });
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    const file = new File([blob], 'ano23-share.png', { type: 'image/png' });
     const text = `📩 Message anonyme pour moi !\n\n👉 ${link}`;
-    if (navigator.share && navigator.canShare?.({ files:[file] })) {
-      await navigator.share({ title:'Ano23', text: text, files:[file] });
+
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ title: 'Ano23', text: text, files: [file] });
     } else {
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-      const a = document.createElement('a'); a.download = 'ano23-share.png'; a.href = canvas.toDataURL('image/png'); a.click();
+      const a = document.createElement('a');
+      a.download = 'ano23-share.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
     }
-  } catch (e) { console.error('shareLinkCard:', e); }
-  btn.innerHTML = orig; btn.disabled = false;
+    showToast('✅ Lien copié et image prête !', 2000);
+  } catch (e) {
+    console.error('shareLinkCard:', e);
+    showToast(`❌ Erreur: ${e.message}`, 3000);
+  }
+  btn.innerHTML = orig;
+  btn.disabled = false;
 }
 
 async function downloadLinkCard() {
@@ -463,21 +419,37 @@ async function downloadLinkCard() {
   const btn = document.getElementById('downloadLinkCardBtn');
   if (!el || !btn) return;
   const orig = btn.innerHTML;
-  btn.innerHTML = '⏳…'; btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  btn.disabled = true;
   try {
-    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:false });
-    const a = document.createElement('a'); a.download = 'ano23-share.png'; a.href = canvas.toDataURL('image/png'); a.click();
-  } catch (e) { console.error('downloadLinkCard:', e); }
-  btn.innerHTML = orig; btn.disabled = false;
+    const canvas = await html2canvas(el, { scale: 2, backgroundColor: null, useCORS: false });
+    const a = document.createElement('a');
+    a.download = 'ano23-share.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    showToast('✅ Image téléchargée', 2000);
+  } catch (e) {
+    console.error('downloadLinkCard:', e);
+    showToast(`❌ Erreur: ${e.message}`, 3000);
+  }
+  btn.innerHTML = orig;
+  btn.disabled = false;
 }
 
 async function copyLink() {
   try {
     await navigator.clipboard.writeText(getAnonymousLink());
     const btn = document.getElementById('copyLinkBtn');
-    if (btn) { const orig = btn.innerHTML; btn.innerHTML = '✅ Copié !'; setTimeout(() => btn.innerHTML = orig, 2000); }
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-check"></i>';
+      setTimeout(() => btn.innerHTML = orig, 2000);
+    }
     showToast('✅ Lien copié !', 2000);
-  } catch (e) { console.error('copyLink:', e); }
+  } catch (e) {
+    console.error('copyLink:', e);
+    showToast('❌ Erreur copie', 2000);
+  }
 }
 
 // ============================================================
@@ -493,11 +465,14 @@ function openSmallOverlay(msg) {
   setText('smallText', msg.content || 'Message vide');
   document.getElementById('overlaySmall')?.classList.add('open');
 }
-function closeSmallOverlay() { document.getElementById('overlaySmall')?.classList.remove('open'); }
+
+function closeSmallOverlay() {
+  document.getElementById('overlaySmall')?.classList.remove('open');
+}
 
 async function markAsRead(id) {
   try {
-    await sb.from('messages').update({ read:true }).eq('id', id);
+    await sb.from('messages').update({ read: true }).eq('id', id);
     const msg = messagesList.find(m => m.id === id);
     if (msg) { msg.read = true; renderInbox(); updateStats(); }
   } catch (e) { console.error('markAsRead:', e); }
@@ -507,32 +482,50 @@ function openLargeOverlay() {
   if (!currentMessage) return;
   closeSmallOverlay();
   setText('originalMsgDisplay', currentMessage.content || '...');
-  const ri = document.getElementById('replyInput'); if (ri) ri.value = '';
-  const fr = document.getElementById('frameReply'); if (fr) fr.style.background = 'none';
-  const ca = document.getElementById('colorA'); if (ca) ca.value = '#0ea5e9';
-  const cb = document.getElementById('colorB'); if (cb) cb.value = '#0284c7';
-  const dl = document.getElementById('downloadBtn'); if (dl) dl.disabled = true;
-  const sh = document.getElementById('shareBtn');    if (sh) sh.disabled = true;
+  const ri = document.getElementById('replyInput');
+  if (ri) ri.value = '';
+  const fr = document.getElementById('frameReply');
+  if (fr) fr.style.background = 'none';
+  const ca = document.getElementById('colorA');
+  if (ca) ca.value = '#0ea5e9';
+  const cb = document.getElementById('colorB');
+  if (cb) cb.value = '#0284c7';
+  const dl = document.getElementById('downloadBtn');
+  if (dl) dl.disabled = true;
+  const sh = document.getElementById('shareBtn');
+  if (sh) sh.disabled = true;
   document.getElementById('overlayLarge')?.classList.add('open');
 }
-function closeLargeOverlay() { document.getElementById('overlayLarge')?.classList.remove('open'); }
+
+function closeLargeOverlay() {
+  document.getElementById('overlayLarge')?.classList.remove('open');
+}
 
 function applyGradient() {
   const a = document.getElementById('colorA')?.value;
   const b = document.getElementById('colorB')?.value;
   const fr = document.getElementById('frameReply');
-  if (a && b && fr) fr.style.background = `linear-gradient(135deg,${a},${b})`;
+  if (a && b && fr) fr.style.background = `linear-gradient(135deg, ${a}, ${b})`;
 }
 
 async function downloadReplyImage() {
   const el = document.getElementById('captureArea');
   const btn = document.getElementById('downloadBtn');
   if (!el || !btn) return;
-  const orig = btn.innerHTML; btn.innerHTML = '⏳…'; btn.disabled = true;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  btn.disabled = true;
   try {
-    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:false });
-    const a = document.createElement('a'); a.download = 'ano23-reponse.png'; a.href = canvas.toDataURL('image/png'); a.click();
-  } catch (e) { console.error('downloadReplyImage:', e); }
+    const canvas = await html2canvas(el, { scale: 2, backgroundColor: null, useCORS: false });
+    const a = document.createElement('a');
+    a.download = 'ano23-reponse.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    showToast('✅ Image téléchargée', 2000);
+  } catch (e) {
+    console.error('downloadReplyImage:', e);
+    showToast(`❌ Erreur: ${e.message}`, 3000);
+  }
   btn.innerHTML = orig;
   const ri = document.getElementById('replyInput');
   if (ri?.value.trim()) btn.disabled = false;
@@ -542,19 +535,25 @@ async function shareReplyImage() {
   const el = document.getElementById('captureArea');
   const btn = document.getElementById('shareBtn');
   if (!el || !btn) return;
-  const orig = btn.innerHTML; btn.innerHTML = '⏳…'; btn.disabled = true;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  btn.disabled = true;
   try {
-    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:false });
+    const canvas = await html2canvas(el, { scale: 2, backgroundColor: null, useCORS: false });
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-    const file = new File([blob], 'ano23-reponse.png', { type:'image/png' });
+    const file = new File([blob], 'ano23-reponse.png', { type: 'image/png' });
     const text = `🤔 Réponse anonyme sur Ano23\n\n👉 ${getAnonymousLink()}`;
-    if (navigator.share && navigator.canShare?.({ files:[file] })) {
-      await navigator.share({ title:'Ano23', text, files:[file] });
+
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ title: 'Ano23', text: text, files: [file] });
     } else {
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
       await downloadReplyImage();
     }
-  } catch (e) { console.error('shareReplyImage:', e); }
+  } catch (e) {
+    console.error('shareReplyImage:', e);
+    showToast(`❌ Erreur: ${e.message}`, 3000);
+  }
   btn.innerHTML = orig;
   const ri = document.getElementById('replyInput');
   if (ri?.value.trim()) btn.disabled = false;
@@ -591,21 +590,36 @@ async function confirmDelete() {
     if (error) throw error;
     messagesList = messagesList.filter(m => !ids.includes(m.id));
     showToast(`✅ ${ids.length} message${ids.length > 1 ? 's supprimés' : ' supprimé'}`, 2000);
-  } catch (e) { console.error('confirmDelete:', e); }
-  exitSelectMode(); updateStats();
+  } catch (e) {
+    console.error('confirmDelete:', e);
+    showToast('❌ Erreur lors de la suppression', 2000);
+  }
+  exitSelectMode();
+  updateStats();
 }
 
 // ============================================================
 // SIDEBAR / THÈME / AVATAR / LOGOUT
 // ============================================================
-function openSidebar()  { document.getElementById('sidebar')?.classList.add('open'); document.getElementById('sbBackdrop')?.classList.add('open'); }
-function closeSidebar() { document.getElementById('sidebar')?.classList.remove('open'); document.getElementById('sbBackdrop')?.classList.remove('open'); }
+function openSidebar() {
+  document.getElementById('sidebar')?.classList.add('open');
+  document.getElementById('sbBackdrop')?.classList.add('open');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar')?.classList.remove('open');
+  document.getElementById('sbBackdrop')?.classList.remove('open');
+}
 
 function initTheme() {
   const saved = localStorage.getItem('ano23-theme');
   const toggle = document.getElementById('themeToggle');
-  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); if (toggle) toggle.checked = true; }
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    if (toggle) toggle.checked = true;
+  }
 }
+
 function toggleTheme() {
   const isDark = document.getElementById('themeToggle')?.checked;
   const theme = isDark ? 'dark' : 'light';
@@ -614,24 +628,33 @@ function toggleTheme() {
 }
 
 function setupAvatarUpload() {
-  const input   = document.getElementById('avatarInput');
-  const avatar  = document.getElementById('sbAvatar');
+  const input = document.getElementById('avatarInput');
+  const avatar = document.getElementById('sbAvatar');
   const editBtn = document.getElementById('avatarEditBtn');
   if (!input || !avatar) return;
   const saved = localStorage.getItem(`ano23-avatar-${currentUserId}`);
   if (saved) avatar.innerHTML = `<img src="${saved}" alt="avatar"/>`;
   input.addEventListener('change', e => {
-    const file = e.target.files[0]; if (!file) return;
+    const file = e.target.files[0];
+    if (!file) return;
     const r = new FileReader();
-    r.onload = ev => { const src = ev.target.result; avatar.innerHTML = `<img src="${src}" alt="avatar"/>`; localStorage.setItem(`ano23-avatar-${currentUserId}`, src); };
+    r.onload = ev => {
+      const src = ev.target.result;
+      avatar.innerHTML = `<img src="${src}" alt="avatar"/>`;
+      localStorage.setItem(`ano23-avatar-${currentUserId}`, src);
+    };
     r.readAsDataURL(file);
   });
   editBtn?.addEventListener('click', () => input.click());
 }
 
 async function logout() {
-  try { await sb.auth.signOut(); window.location.href = 'auth.html'; }
-  catch (e) { console.error('logout:', e); }
+  try {
+    await sb.auth.signOut();
+    window.location.href = 'auth.html';
+  } catch (e) {
+    console.error('logout:', e);
+  }
 }
 
 // ============================================================
@@ -641,20 +664,10 @@ function showToast(message, duration = 3000) {
   document.querySelector('.ano23-toast')?.remove();
   const toast = document.createElement('div');
   toast.className = 'ano23-toast';
-  Object.assign(toast.style, {
-    position:'fixed', bottom:'24px', left:'50%',
-    transform:'translateX(-50%) translateY(20px)',
-    background:'#22c55e', color:'white', padding:'11px 20px',
-    borderRadius:'40px', fontWeight:'700', fontSize:'13px',
-    zIndex:'150', boxShadow:'0 4px 16px rgba(0,0,0,.2)',
-    whiteSpace:'nowrap', transition:'opacity .3s,transform .3s',
-    opacity:'0', fontFamily:'DM Sans,sans-serif',
-  });
   toast.textContent = message;
   document.body.appendChild(toast);
-  requestAnimationFrame(() => { toast.style.opacity = '1'; toast.style.transform = 'translateX(-50%) translateY(0)'; });
   setTimeout(() => {
-    toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(10px)';
+    toast.style.opacity = '0';
     setTimeout(() => toast.remove(), 300);
   }, duration);
 }
@@ -663,33 +676,42 @@ function showToast(message, duration = 3000) {
 // EVENT LISTENERS
 // ============================================================
 function initEventListeners() {
-  document.querySelectorAll('.tab-btn').forEach(btn => {
+  document.querySelectorAll('.header-tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
+
   document.getElementById('menuBtn')?.addEventListener('click', openSidebar);
   document.getElementById('sbBackdrop')?.addEventListener('click', closeSidebar);
   document.getElementById('themeToggle')?.addEventListener('change', toggleTheme);
   document.getElementById('btnLogout')?.addEventListener('click', logout);
+
   document.getElementById('shareLinkCardBtn')?.addEventListener('click', shareLinkCard);
   document.getElementById('downloadLinkCardBtn')?.addEventListener('click', downloadLinkCard);
   document.getElementById('copyLinkBtn')?.addEventListener('click', copyLink);
   document.getElementById('diceBtn')?.addEventListener('click', randomizeMessage);
+
   document.getElementById('btnDeleteHeader')?.addEventListener('click', enterSelectMode);
   document.getElementById('btnSelect')?.addEventListener('click', enterSelectMode);
   document.getElementById('btnConfirmDel')?.addEventListener('click', confirmDelete);
+
   document.getElementById('closeSmall')?.addEventListener('click', closeSmallOverlay);
   document.getElementById('overlaySmall')?.addEventListener('click', e => {
     if (e.target === document.getElementById('overlaySmall')) closeSmallOverlay();
   });
+
   document.getElementById('btnReplySmall')?.addEventListener('click', openLargeOverlay);
   document.getElementById('closeLargeBtn')?.addEventListener('click', closeLargeOverlay);
   document.getElementById('downloadBtn')?.addEventListener('click', downloadReplyImage);
   document.getElementById('shareBtn')?.addEventListener('click', shareReplyImage);
+
   document.getElementById('colorA')?.addEventListener('input', applyGradient);
   document.getElementById('colorB')?.addEventListener('input', applyGradient);
+
   document.getElementById('replyInput')?.addEventListener('input', e => {
     const has = e.target.value.trim().length > 0;
-    const dl = document.getElementById('downloadBtn'); if (dl) dl.disabled = !has;
-    const sh = document.getElementById('shareBtn');    if (sh) sh.disabled = !has;
+    const dl = document.getElementById('downloadBtn');
+    const sh = document.getElementById('shareBtn');
+    if (dl) dl.disabled = !has;
+    if (sh) sh.disabled = !has;
   });
 }
