@@ -1094,14 +1094,14 @@ body {
   width: 100%;
   padding: 22px;
   font-family: 'DM Mono', 'Courier New', monospace;
-  font-size: 17px;
+  font-size: 30px;
   font-weight: 700;
   border: none;
   resize: none;
   min-height: 130px;
   text-align: center;
   background: transparent;
-  color: white;
+  color: black;
   outline: none;
   line-height: 1.55;
 }
