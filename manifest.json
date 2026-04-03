@@ -2,7 +2,7 @@
   "name": "Ano23 - Messages anonymes",
   "short_name": "Ano23",
   "description": "Recevez des messages anonymes simplement",
-  "start_url": "/index.html",
+  "start_url": "https://ivan-26work.github.io/Ano23/index.html",
   "scope": "/",
   "display": "standalone",
   "background_color": "#f0f9ff",
