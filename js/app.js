@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
   try {
-    swRegistration = await navigator.serviceWorker.register('/sw.js');
+    swRegistration = await navigator.serviceWorker.register('./sw.js');
     swRegistration.addEventListener('updatefound', () => {
       const nw = swRegistration.installing;
       nw?.addEventListener('statechange', () => {
@@ -108,7 +108,7 @@ async function requestNotifPermission() {
 // 3 méthodes en cascade : SW → Notification API → In-App
 // ============================================================
 async function sendNotification(title, body) {
-  const url = '/index.html';
+  const url = './index.html';
 
   // Méthode 1 : Via Service Worker (background aussi)
   if (swRegistration && Notification.permission === 'granted') {
@@ -125,7 +125,7 @@ async function sendNotification(title, body) {
   if (Notification.permission === 'granted') {
     try {
       const notif = new Notification(title, {
-        body, icon: '/images/logo.png', badge: '/images/logo.png',
+        body, icon: './images/logo.png', badge: './images/logo.png',
         tag: 'ano23-new-message', renotify: true,
       });
       notif.onclick = () => { window.focus(); notif.close(); switchTab('inbox'); };
@@ -444,14 +444,14 @@ async function shareLinkCard() {
   try {
     const link = getAnonymousLink();
     await navigator.clipboard.writeText(link);
-    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:true });
+    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:false });
     const blob   = await new Promise(r => canvas.toBlob(r, 'image/png'));
     const file   = new File([blob], 'ano23-share.png', { type:'image/png' });
-    const message = `📩 Message anonyme pour moi !\n\n📎 Ajoute cette image à ton statut\n🔗 Lien copié ! Colle-le dans la légende\n\nMerci ! 🙏`;
+    const text = `📩 Message anonyme pour moi !\n\n👉 ${link}`;
     if (navigator.share && navigator.canShare?.({ files:[file] })) {
-      await navigator.share({ title:'Ano23', text:message, files:[file] });
+      await navigator.share({ title:'Ano23', text: text, files:[file] });
     } else {
-      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
       const a = document.createElement('a'); a.download = 'ano23-share.png'; a.href = canvas.toDataURL('image/png'); a.click();
     }
   } catch (e) { console.error('shareLinkCard:', e); }
@@ -465,7 +465,7 @@ async function downloadLinkCard() {
   const orig = btn.innerHTML;
   btn.innerHTML = '⏳…'; btn.disabled = true;
   try {
-    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:true });
+    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:false });
     const a = document.createElement('a'); a.download = 'ano23-share.png'; a.href = canvas.toDataURL('image/png'); a.click();
   } catch (e) { console.error('downloadLinkCard:', e); }
   btn.innerHTML = orig; btn.disabled = false;
@@ -530,7 +530,7 @@ async function downloadReplyImage() {
   if (!el || !btn) return;
   const orig = btn.innerHTML; btn.innerHTML = '⏳…'; btn.disabled = true;
   try {
-    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:true });
+    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:false });
     const a = document.createElement('a'); a.download = 'ano23-reponse.png'; a.href = canvas.toDataURL('image/png'); a.click();
   } catch (e) { console.error('downloadReplyImage:', e); }
   btn.innerHTML = orig;
@@ -544,7 +544,7 @@ async function shareReplyImage() {
   if (!el || !btn) return;
   const orig = btn.innerHTML; btn.innerHTML = '⏳…'; btn.disabled = true;
   try {
-    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:true });
+    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:false });
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     const file = new File([blob], 'ano23-reponse.png', { type:'image/png' });
     const text = `🤔 Réponse anonyme sur Ano23\n\n👉 ${getAnonymousLink()}`;
