@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
+  <title>Ano23 — Index Final</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+
+  /* ============================================================
+     THEMES
+  ============================================================ */
+  [data-theme="light"] {
+    --bg:        #f0f9ff;
+    --surface:   #ffffff;
+    --surface2:  #f1f5f9;
+    --border:    #e2e8f0;
+    --text:      #1e293b;
+    --text2:     #64748b;
+    --text3:     #94a3b8;
+    --shadow:    rgba(14,165,233,0.08);
+  }
+  [data-theme="dark"] {
+    --bg:        #0c1929;
+    --surface:   #162840;
+    --surface2:  #1e3652;
+    --border:    #1e3a5f;
+    --text:      #e2f0ff;
+    --text2:     #7fb3d3;
+    --text3:     #4a7fa0;
+    --shadow:    rgba(0,0,0,0.3);
+  }
+
+  /* ============================================================
+     RESET & BASE
+  ============================================================ */
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    transition: background .3s, color .3s;
+  }
+
+  /* ============================================================
+     APP LAYOUT
+  ============================================================ */
+  .app { display:flex; flex-direction:column; height:100vh; }
+
+  /* ============================================================
+     HEADER
+  ============================================================ */
+  .header {
+    margin: 12px 16px 0;
+    height: 60px;
+    background: var(--surface);
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px 0 20px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px var(--shadow);
+    border: 1px solid var(--border);
+    transition: background .3s, border-color .3s;
+  }
+
+  .logo-area { display:flex; align-items:center; gap:10px; }
+
+  .logo-icon {
+    width:36px; height:36px;
+    background:#0ea5e9;
+    border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .logo-icon svg { width:20px; height:20px; }
+
+  .logo-text { font-size:18px; font-weight:700; color:#0ea5e9; }
+
+  .header-right { display:flex; align-items:center; gap:8px; }
+
+  .menu-btn {
+    width:40px; height:40px;
+    border:none; background:var(--surface2);
+    border-radius:10px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    position:relative; transition:background .2s;
+    border:1px solid var(--border);
+  }
+  .menu-btn svg { width:20px; height:20px; color:var(--text2); }
+
+  .notif-dot {
+    position:absolute; top:8px; right:8px;
+    width:8px; height:8px;
+    background:#22c55e; border-radius:50%;
+    border:2px solid var(--surface);
+    animation:blink 1.8s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.6;transform:scale(1.3);} }
+
+  .btn-delete-header {
+    width:40px; height:40px;
+    border:1px solid var(--border);
+    background:var(--surface2);
+    border-radius:10px; cursor:pointer;
+    display:none; align-items:center; justify-content:center;
+    transition:all .2s;
+  }
+  .btn-delete-header.show { display:flex; }
+  .btn-delete-header:hover { background:#fee2e2; border-color:#fca5a5; }
+  .btn-delete-header svg { width:18px; height:18px; color:var(--text2); }
+  .btn-delete-header:hover svg { color:#ef4444; }
+
+  /* ============================================================
+     TABS
+  ============================================================ */
+  .tabs {
+    display:flex; gap:8px;
+    padding:14px 16px 8px;
+  }
+
+  .tab-btn {
+    flex:1; padding:12px;
+    border:none; background:var(--surface);
+    border-radius:30px;
+    font-family:inherit; font-weight:700; font-size:15px;
+    cursor:pointer; transition:all .2s;
+    color:var(--text2);
+    box-shadow:0 1px 3px rgba(0,0,0,0.05);
+    border:1px solid var(--border);
+  }
+  .tab-btn.active {
+    background:#0ea5e9; color:white; border-color:#0ea5e9;
+    box-shadow:0 4px 12px rgba(14,165,233,0.3);
+  }
+
+  /* ============================================================
+     TAB CONTENT
+  ============================================================ */
+  .tab-content { flex:1; overflow-y:auto; display:none; }
+  .tab-content.active { display:flex; flex-direction:column; }
+
+  /* ============================================================
+     ONGLET LINK
+  ============================================================ */
+  .tab-link-wrapper { display:flex; flex-direction:column; height:100%; }
+  .tab-link-scroll  { flex:1; overflow-y:auto; padding:8px 16px 0; }
+
+  /* Carte principale */
+  .share-card {
+    background-image: url('images/image.png');
+    background-size: cover;
+    background-position: center;
+    background-color: #0369a1;
+    border-radius: 32px;
+    overflow: hidden;
+    position: relative;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .share-card::before {
+    content:'';
+    position:absolute; inset:0;
+    background-image:inherit;
+    background-size:cover;
+    background-position:center;
+    filter:blur(10px);
+    z-index:0;
+  }
+
+  .share-card-content {
+    position:relative; z-index:1;
+    display:flex; flex-direction:column; justify-content:center;
+    min-height:420px;
+  }
+
+  .share-header {
+    text-align:center;
+    padding:40px 20px 20px;
+  }
+  .share-header h2 {
+    font-size:22px; font-weight:800; color:white;
+    text-shadow:0 2px 10px rgba(0,0,0,0.3);
+  }
+
+  .share-message {
+    text-align:center;
+    padding:30px 24px 50px;
+  }
+  .share-message p {
+    font-family:'DM Mono','Courier New',monospace;
+    font-size:20px; font-weight:800;
+    color:#0284c7;
+    background:rgba(255,255,255,0.9);
+    display:inline-block;
+    padding:18px 26px;
+    border-radius:28px;
+    line-height:1.4;
+  }
+
+  /* Footer fixe Link */
+  .link-footer {
+    background:var(--surface);
+    border-radius:32px 32px 0 0;
+    padding:16px 20px 20px;
+    box-shadow:0 -4px 12px rgba(0,0,0,0.08);
+    overflow-x:auto;
+    white-space:nowrap;
+    -webkit-overflow-scrolling:touch;
+    flex-shrink:0;
+    border-top:1px solid var(--border);
+    transition:background .3s;
+  }
+  .link-toolbar { display:inline-flex; gap:10px; }
+
+  .link-btn {
+    padding:12px 20px;
+    border:none; border-radius:40px;
+    font-family:inherit; font-weight:700; font-size:14px;
+    cursor:pointer;
+    display:inline-flex; align-items:center; gap:8px;
+    transition:all .2s;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  }
+  .link-btn:active { transform:scale(0.97); }
+  .link-btn.share    { background:#25D366; color:white; }
+  .link-btn.copy     { background:#0ea5e9; color:white; }
+  .link-btn.download { background:#8b5cf6; color:white; }
+  .link-btn.dice     { background:#f59e0b; color:white; }
+
+  /* ============================================================
+     ONGLET INBOX
+  ============================================================ */
+  .inbox-toolbar {
+    padding:8px 16px 4px;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-shrink:0;
+  }
+  .inbox-count { font-size:13px; color:var(--text3); font-weight:600; }
+
+  .inbox-actions { display:flex; gap:8px; align-items:center; }
+
+  .btn-select {
+    padding:7px 14px;
+    border:1.5px solid var(--border);
+    background:var(--surface2);
+    border-radius:20px;
+    font-family:inherit; font-size:13px; font-weight:700;
+    color:var(--text2); cursor:pointer;
+    display:flex; align-items:center; gap:6px;
+    transition:all .2s;
+  }
+  .btn-select:hover { border-color:#ef4444; color:#ef4444; background:#fef2f2; }
+  .btn-select svg { width:14px; height:14px; }
+
+  .btn-confirm-del {
+    padding:7px 14px;
+    background:#ef4444; border:none;
+    border-radius:20px;
+    font-family:inherit; font-size:13px; font-weight:700;
+    color:white; cursor:pointer;
+    display:none; align-items:center; gap:6px;
+  }
+  .btn-confirm-del.show { display:flex; }
+  .btn-confirm-del:hover { opacity:.88; }
+
+  .inbox-feed { padding:4px 16px 24px; overflow-y:auto; flex:1; }
+
+  /* Cartes messages */
+  .msg-card {
+    border-radius:20px;
+    padding:16px;
+    margin-bottom:12px;
+    cursor:pointer;
+    transition:all .2s;
+    background:var(--surface);
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .msg-card:active { transform:scale(0.98); }
+
+  .msg-card.unread {
+    border:2px solid #22c55e;
+    box-shadow:0 2px 8px rgba(34,197,94,0.15);
+  }
+  .msg-card.read { border:1.5px solid var(--border); }
+
+  /* Checkbox sélection */
+  .msg-check {
+    width:22px; height:22px;
+    border-radius:6px; border:2px solid var(--border);
+    background:transparent; flex-shrink:0;
+    display:none; align-items:center; justify-content:center;
+    transition:all .2s; cursor:pointer;
+  }
+  .select-mode .msg-check { display:flex; }
+  .msg-check.on { background:#ef4444; border-color:#ef4444; }
+  .msg-check.on::after { content:'✓'; color:white; font-size:13px; font-weight:800; }
+
+  .msg-body { flex:1; min-width:0; }
+
+  .msg-label {
+    font-size:13px; font-weight:800; margin-bottom:6px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .msg-card.unread .msg-label { color:#22c55e; }
+  .msg-card.read   .msg-label { color:var(--text3); }
+
+  .msg-preview { font-size:15px; font-weight:700; color:var(--text); margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .msg-time    { font-size:11px; color:var(--text3); font-weight:500; }
+
+  .animated-emoji { display:inline-block; animation:pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:.7;} 50%{transform:scale(1.2);opacity:1;} }
+  .arrow-hint { display:inline-block; animation:slidex .8s ease-in-out infinite; }
+  @keyframes slidex { 0%,100%{transform:translateX(0);} 50%{transform:translateX(4px);} }
+
+  /* ============================================================
+     SIDEBAR BACKDROP
+  ============================================================ */
+  .sb-backdrop {
+    position:fixed; inset:0;
+    background:rgba(15,23,42,.4);
+    backdrop-filter:blur(3px);
+    z-index:49; opacity:0; pointer-events:none;
+    transition:opacity .3s;
+  }
+  .sb-backdrop.open { opacity:1; pointer-events:all; }
+
+  /* ============================================================
+     SIDEBAR
+  ============================================================ */
+  .sidebar {
+    position:fixed; top:0; right:0; bottom:0;
+    width:300px;
+    background:var(--surface);
+    border-left:1px solid var(--border);
+    display:flex; flex-direction:column;
+    z-index:50;
+    transform:translateX(100%);
+    transition:transform .38s cubic-bezier(.22,1,.36,1);
+    box-shadow:-8px 0 32px rgba(14,165,233,.1);
+  }
+  .sidebar.open { transform:translateX(0); }
+
+  /* Header sidebar */
+  .sb-header {
+    padding:28px 18px 18px;
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:14px;
+    background:linear-gradient(135deg,#0284c7,#0ea5e9);
+  }
+  .sb-avatar-wrap { position:relative; width:56px; height:56px; flex-shrink:0; }
+  .sb-avatar {
+    width:56px; height:56px; border-radius:50%;
+    border:3px solid rgba(255,255,255,0.6);
+    background:rgba(255,255,255,0.2);
+    display:flex; align-items:center; justify-content:center;
+    font-size:24px; overflow:hidden; cursor:pointer;
+  }
+  .sb-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .sb-avatar-edit {
+    position:absolute; bottom:-2px; right:-2px;
+    width:20px; height:20px;
+    background:white; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; border:2px solid #0ea5e9;
+  }
+  .sb-avatar-edit svg { width:10px; height:10px; color:#0ea5e9; }
+  .sb-user { flex:1; min-width:0; }
+  .sb-name { font-size:16px; font-weight:800; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sb-uid  { font-family:'DM Mono',monospace; font-size:11px; color:rgba(255,255,255,.7); margin-top:2px; }
+
+  /* Stats */
+  .sb-stats {
+    display:flex; gap:0;
+    border-bottom:1px solid var(--border);
+  }
+  .sb-stat {
+    flex:1; padding:14px 12px; text-align:center;
+    border-right:1px solid var(--border);
+  }
+  .sb-stat:last-child { border-right:none; }
+  .sb-stat-n { font-size:22px; font-weight:800; color:#0ea5e9; }
+  .sb-stat-l { font-size:11px; color:var(--text3); font-weight:600; margin-top:2px; }
+
+  /* Body sidebar */
+  .sb-body { flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:8px; }
+
+  .sb-section { font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.08em; padding:6px 4px 2px; }
+
+  .sb-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 14px;
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:12px;
+  }
+  .sb-row-label { display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color:var(--text); }
+  .sb-row-label svg { width:18px; height:18px; color:#0ea5e9; }
+
+  /* Toggle */
+  .toggle-sw { position:relative; width:44px; height:24px; }
+  .toggle-sw input { opacity:0; width:0; height:0; }
+  .toggle-track { position:absolute; inset:0; background:var(--border); border-radius:99px; cursor:pointer; transition:background .25s; }
+  .toggle-sw input:checked + .toggle-track { background:#0ea5e9; }
+  .toggle-track::after { content:''; position:absolute; top:3px; left:3px; width:18px; height:18px; background:white; border-radius:50%; transition:transform .25s; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+  .toggle-sw input:checked + .toggle-track::after { transform:translateX(20px); }
+
+  .sb-btn {
+    display:flex; align-items:center; gap:10px;
+    padding:12px 14px; border-radius:12px;
+    border:1px solid var(--border);
+    background:var(--surface2);
+    font-family:inherit; font-size:14px; font-weight:600;
+    color:var(--text); cursor:pointer; text-align:left;
+    transition:background .2s, border-color .2s;
+    text-decoration:none; width:100%;
+  }
+  .sb-btn:hover { background:#e0f2fe; border-color:#0ea5e9; color:#0284c7; }
+  .sb-btn svg { width:18px; height:18px; color:#0ea5e9; flex-shrink:0; }
+
+  /* Footer sidebar */
+  .sb-footer { padding:14px; border-top:1px solid var(--border); }
+  .btn-install {
+    width:100%; padding:13px;
+    background:var(--surface2); border:1.5px dashed #0ea5e9;
+    border-radius:12px;
+    font-family:inherit; font-size:14px; font-weight:700;
+    color:#0284c7; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:background .2s;
+  }
+  .btn-install:hover { background:#e0f2fe; }
+  .btn-install svg { width:18px; height:18px; }
+
+  /* ============================================================
+     PETIT OVERLAY (lecture message)
+  ============================================================ */
+  .overlay-small {
+    position:fixed; inset:0;
+    background:rgba(15,23,42,0.5);
+    backdrop-filter:blur(6px);
+    z-index:80;
+    display:flex; align-items:flex-end; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .25s;
+  }
+  .overlay-small.open { opacity:1; pointer-events:all; }
+
+  .sheet-small {
+    background:var(--surface);
+    border-radius:24px 24px 0 0;
+    width:100%; max-width:480px; max-height:85vh;
+    overflow-y:auto;
+    transform:translateY(100%);
+    transition:transform .38s cubic-bezier(.22,1,.36,1);
+  }
+  .overlay-small.open .sheet-small { transform:translateY(0); }
+
+  .sheet-handle { width:40px; height:4px; background:var(--border); border-radius:99px; margin:12px auto 0; }
+
+  .msg-header {
+    padding:20px;
+    background:linear-gradient(135deg,#0284c7,#0ea5e9,#7dd3fc);
+    margin:12px 16px 0; border-radius:18px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .msg-icon { width:44px; height:44px; background:rgba(255,255,255,.2); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; animation:iconbounce 1.2s ease-in-out infinite alternate; }
+  @keyframes iconbounce { from{transform:scale(1) rotate(-3deg);} to{transform:scale(1.1) rotate(3deg);} }
+  .msg-meta { flex:1; }
+  .msg-type { font-size:11px; font-weight:800; color:rgba(255,255,255,.75); text-transform:uppercase; }
+  .msg-time-display { font-size:13px; font-weight:700; color:white; margin-top:2px; }
+  .close-small { width:32px; height:32px; background:rgba(255,255,255,.2); border:none; border-radius:10px; cursor:pointer; color:white; font-size:18px; display:flex; align-items:center; justify-content:center; }
+
+  .msg-content { padding:24px 20px; }
+  .msg-bubble {
+    background:#f0f9ff; border-radius:4px 18px 18px 18px;
+    padding:18px 20px; font-size:16px; font-weight:800;
+    color:#0284c7; line-height:1.6;
+  }
+  [data-theme="dark"] .msg-bubble { background:var(--surface2); color:#7dd3fc; }
+
+  .btn-reply-small {
+    width:100%; margin-top:16px; padding:14px;
+    background:linear-gradient(135deg,#0ea5e9,#0284c7);
+    color:white; border:none; border-radius:12px;
+    font-family:inherit; font-weight:800; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    font-size:15px;
+  }
+
+  /* ============================================================
+     GRAND OVERLAY RÉPONSE (agrandi)
+  ============================================================ */
+  .overlay-large {
+    position:fixed; inset:0;
+    background:rgba(15,23,42,0.88);
+    backdrop-filter:blur(14px);
+    z-index:100;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    padding:16px;
+    gap:14px;
+    opacity:0; pointer-events:none; transition:opacity .3s;
+    overflow-y:auto;
+  }
+  .overlay-large.open { opacity:1; pointer-events:all; }
+
+  /* LA CARTE */
+  .capture-area {
+    background-image:url('images/image1.png');
+    background-size:cover;
+    background-position:center;
+    background-color:#0369a1;
+    border-radius:32px;
+    overflow:hidden;
+    position:relative;
+    width:100%; max-width:520px;
+  }
+  .capture-area::before {
+    content:''; position:absolute; inset:0;
+    background-image:inherit;
+    background-size:cover; background-position:center;
+    filter:blur(10px); z-index:0;
+  }
+
+  .capture-content {
+    position:relative; z-index:1;
+    display:flex; flex-direction:column;
+  }
+
+  /* Cadre header */
+  .frame-header {
+    text-align:center;
+    padding:32px 24px 18px;
+  }
+  .frame-header-box {
+    display:inline-block;
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,.3);
+    border-radius:18px;
+    padding:12px 24px;
+  }
+  .frame-header h1 {
+    font-size:20px; font-weight:800; color:white;
+    text-shadow:0 2px 10px rgba(0,0,0,0.3);
+    letter-spacing:.01em;
+  }
+
+  /* Cadre message reçu */
+  .frame-message {
+    text-align:center;
+    padding:16px 24px 20px;
+  }
+  .frame-message p {
+    font-family:'DM Mono','Courier New',monospace;
+    font-size:20px; font-weight:800;
+    color:#0284c7;
+    line-height:1.5;
+    background:rgba(255,255,255,0.92);
+    display:inline-block;
+    padding:18px 26px;
+    border-radius:24px;
+  }
+
+  /* Cadre réponse fond noir */
+  .frame-reply {
+    margin:0 20px 28px;
+    border-radius:24px;
+    overflow:hidden;
+    background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,.1);
+  }
+  .reply-textarea {
+    width:100%; padding:22px;
+    font-family:'DM Mono','Courier New',monospace;
+    font-size:17px; font-weight:700;
+    border:none; resize:none; min-height:130px;
+    text-align:center;
+    background:transparent;
+    color:white;
+    outline:none; line-height:1.55;
+  }
+  .reply-textarea::placeholder { color:rgba(255,255,255,.4); font-style:italic; }
+
+  /* Barre d'outils */
+  .toolbar {
+    background:var(--surface);
+    border-radius:32px;
+    padding:16px 20px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.12);
+    overflow-x:auto; white-space:nowrap;
+    width:100%; max-width:520px;
+    border:1px solid var(--border);
+    transition:background .3s;
+  }
+  .toolbar-content { display:inline-flex; gap:12px; align-items:center; }
+
+  .color-picker-wrap {
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--surface2); padding:8px 12px; border-radius:40px;
+    border:1px solid var(--border);
+  }
+  .color-picker-wrap label { font-size:13px; font-weight:700; color:var(--text2); }
+  .color-picker { width:36px; height:36px; border:2px solid white; border-radius:10px; cursor:pointer; padding:0; background:none; }
+
+  .toolbar-btn {
+    padding:10px 18px; border:none; border-radius:40px;
+    font-family:inherit; font-weight:700; font-size:13px;
+    cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px;
+    transition:opacity .2s, transform .15s;
+  }
+  .toolbar-btn:active { transform:scale(.97); }
+  .toolbar-btn.download { background:#0ea5e9; color:white; }
+  .toolbar-btn.share    { background:#25D366; color:white; }
+  .toolbar-btn.close    { background:var(--surface2); color:var(--text2); border:1px solid var(--border); }
+  .toolbar-btn:disabled { opacity:.45; cursor:not-allowed; }
+
+  /* ============================================================
+     SCROLLBAR
+  ============================================================ */
+  ::-webkit-scrollbar { width:4px; height:4px; }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:99px; }
+
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ======== HEADER ======== -->
+  <div class="header">
+    <div class="logo-area">
+      <div class="logo-icon">
+        <svg viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="11" fill="white"/>
+          <ellipse cx="10" cy="13" rx="2.5" ry="3" fill="#0ea5e9"/>
+          <ellipse cx="18" cy="13" rx="2.5" ry="3" fill="#0ea5e9"/>
+          <path d="M10 18.5 Q14 21 18 18.5" stroke="#0ea5e9" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <span class="logo-text">Ano23</span>
+    </div>
+    <div class="header-right">
+      <button class="btn-delete-header" id="btnDeleteHeader" title="Sélectionner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+        </svg>
+      </button>
+      <button class="menu-btn" id="menuBtn">
+        <div class="notif-dot" id="notifDot"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="3" y1="6"  x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ======== TABS ======== -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="link">🔗 Link</button>
+    <button class="tab-btn" data-tab="inbox" id="inboxTabBtn">
+      📥 Inbox <span id="unreadCount"></span>
+    </button>
+  </div>
+
+  <!-- ======== ONGLET LINK ======== -->
+  <div class="tab-content active" id="tab-link">
+    <div class="tab-link-wrapper">
+      <div class="tab-link-scroll">
+        <div class="share-card" id="shareCard">
+          <div class="share-card-content">
+            <div class="share-header">
+              <h2>Envoi moi des messages anonymes ! ✉️❤️</h2>
+            </div>
+            <div class="share-message">
+              <p id="randomMessage">Salut, envoie-moi un message ! 👋</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="link-footer">
+        <div class="link-toolbar">
+          <button class="link-btn share"    id="shareLinkCardBtn">📤 Share</button>
+          <button class="link-btn copy"     id="copyLinkBtn">🔗 Copier</button>
+          <button class="link-btn download" id="downloadLinkCardBtn">📸 Télécharger</button>
+          <button class="link-btn dice"     id="diceBtn">🎲 Dé</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== ONGLET INBOX ======== -->
+  <div class="tab-content" id="tab-inbox">
+    <div class="inbox-toolbar">
+      <span class="inbox-count" id="inboxCount">0 message</span>
+      <div class="inbox-actions">
+        <button class="btn-confirm-del" id="btnConfirmDel">🗑 Supprimer</button>
+        <button class="btn-select" id="btnSelect">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          Sélectionner
+        </button>
+      </div>
+    </div>
+    <div class="inbox-feed" id="inboxFeed"></div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ======== SIDEBAR BACKDROP ======== -->
+<div class="sb-backdrop" id="sbBackdrop"></div>
+
+<!-- ======== SIDEBAR ======== -->
+<div class="sidebar" id="sidebar">
+
+  <div class="sb-header">
+    <div class="sb-avatar-wrap">
+      <div class="sb-avatar" id="sbAvatar">😎
+        <input type="file" accept="image/*" id="avatarInput" style="display:none"/>
+      </div>
+      <div class="sb-avatar-edit" onclick="document.getElementById('avatarInput').click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-name">Ivan Megane</div>
+      <div class="sb-uid">@ipoteivan5</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="sb-stats">
+    <div class="sb-stat">
+      <div class="sb-stat-n" id="statTotal">3</div>
+      <div class="sb-stat-l">Messages</div>
+    </div>
+    <div class="sb-stat">
+      <div class="sb-stat-n" id="statUnread" style="color:#22c55e">1</div>
+      <div class="sb-stat-l">Non lus</div>
+    </div>
+    <div class="sb-stat">
+      <div class="sb-stat-n">2</div>
+      <div class="sb-stat-l">Ce mois</div>
+    </div>
+  </div>
+
+  <div class="sb-body">
+
+    <div class="sb-section">Apparence</div>
+    <div class="sb-row">
+      <div class="sb-row-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        Mode nuit
+      </div>
+      <label class="toggle-sw">
+        <input type="checkbox" id="themeToggle"/>
+        <div class="toggle-track"></div>
+      </label>
+    </div>
+
+    <div class="sb-section">Légal</div>
+    <a href="mentions-legales.html" class="sb-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Mentions légales
+    </a>
+    <a href="confidentialite.html" class="sb-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Confidentialité
+    </a>
+    <a href="cgu.html" class="sb-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Conditions d'utilisation
+    </a>
+
+  </div>
+
+  <div class="sb-footer">
+    <button class="btn-install" id="btnInstall">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Installer l'application
+    </button>
+  </div>
+
+</div>
+
+<!-- ======== PETIT OVERLAY (lecture) ======== -->
+<div class="overlay-small" id="overlaySmall">
+  <div class="sheet-small">
+    <div class="sheet-handle"></div>
+    <div class="msg-header">
+      <div class="msg-icon" id="smallIcon">💬</div>
+      <div class="msg-meta">
+        <div class="msg-type" id="smallType">Message anonyme</div>
+        <div class="msg-time-display" id="smallTime">À l'instant</div>
+      </div>
+      <button class="close-small" id="closeSmall">✕</button>
+    </div>
+    <div class="msg-content">
+      <div class="msg-bubble" id="smallText">…</div>
+      <button class="btn-reply-small" id="btnReplySmall">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 00-4-4H4"/></svg>
+        Répondre
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== GRAND OVERLAY RÉPONSE ======== -->
+<div class="overlay-large" id="overlayLarge">
+
+  <!-- LA CARTE -->
+  <div class="capture-area" id="captureArea">
+    <div class="capture-content">
+      <div class="frame-header">
+        <div class="frame-header-box">
+          <h1>Mégane anonyme 23 ! ✉️❤️</h1>
+        </div>
+      </div>
+      <div class="frame-message">
+        <p id="originalMsgDisplay">…</p>
+      </div>
+      <div class="frame-reply" id="frameReply">
+        <textarea class="reply-textarea" id="replyInput" placeholder="✍️ Écris ta réponse ici…" rows="4"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="toolbar-content">
+      <div class="color-picker-wrap">
+        <label>🎨 A</label>
+        <input type="color" id="colorA" class="color-picker" value="#0ea5e9"/>
+      </div>
+      <div class="color-picker-wrap">
+        <label>🎨 B</label>
+        <input type="color" id="colorB" class="color-picker" value="#0284c7"/>
+      </div>
+      <button class="toolbar-btn download" id="downloadBtn" disabled>📸 Télécharger</button>
+      <button class="toolbar-btn share"    id="shareBtn"    disabled>📤 Envoyer</button>
+      <button class="toolbar-btn close"    id="closeLargeBtn">✕ Fermer</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======== SCRIPT ======== -->
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const USER_PSEUDO = 'ipoteivan5';
+const USER_LINK   = `https://ivan-26work.github.io/Ano23/envoyer.html?uid=${USER_PSEUDO}`;
+
+const MESSAGES_ALEATOIRES = [
+  "Salut, envoie-moi un message ! 👋",
+  "Dis-moi tout, je suis anonyme 🤫",
+  "Pose-moi ta question la plus folle ❓",
+  "Balance ton secret, je garde tout 🤐",
+  "Un petit message pour me faire plaisir ? 💬",
+  "Tu as quelque chose à me dire ? 🎤",
+  "Ose ! C'est anonyme 😏",
+  "N'aie pas peur, je ne mords pas 😊",
+  "Ton message sera lu avec attention 👀",
+  "Je veux savoir ce que tu penses vraiment 🔥",
+];
+
+let DEMO_MESSAGES = [
+  { id:1, type:'message',  emoji:'💬', label:'Message anonyme',  text:'Tu es vraiment quelqu\'un d\'inspirant, continue comme ça !', time:'Il y a 2 min', read:false, selected:false, timestamp:Date.now()-120000 },
+  { id:2, type:'question', emoji:'❓', label:'Question anonyme', text:'C\'est quoi ton rêve le plus fou dans la vie ?',               time:'Il y a 1h',  read:true,  selected:false, timestamp:Date.now()-3600000 },
+  { id:3, type:'secret',   emoji:'🤫', label:'Secret',           text:'J\'ai toujours voulu te dire que ta façon de voir les choses m\'a changé.', time:'Hier', read:true, selected:false, timestamp:Date.now()-86400000 },
+];
+
+let currentMessage = null;
+let selectMode     = false;
+let currentTab     = 'link';
+let deferredPrompt = null;
+
+// ============================================================
+// PWA INSTALL
+// ============================================================
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+document.getElementById('btnInstall').addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  } else {
+    alert('Pour installer : Menu du navigateur → "Ajouter à l\'écran d\'accueil"');
+  }
+});
+
+// ============================================================
+// TABS
+// ============================================================
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    if (tab === currentTab) return;
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab-${tab}`));
+    document.getElementById('btnDeleteHeader').classList.toggle('show', tab === 'inbox');
+    if (tab === 'inbox') renderInbox();
+  });
+});
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+document.getElementById('menuBtn').addEventListener('click', openSidebar);
+document.getElementById('sbBackdrop').addEventListener('click', closeSidebar);
+function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sbBackdrop').classList.add('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sbBackdrop').classList.remove('open'); }
+
+// Avatar upload
+document.getElementById('avatarInput').addEventListener('change', function() {
+  const file = this.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const av = document.getElementById('sbAvatar');
+    av.innerHTML = `<img src="${e.target.result}" alt="avatar"/>`;
+  };
+  r.readAsDataURL(file);
+});
+
+// Theme toggle
+document.getElementById('themeToggle').addEventListener('change', function() {
+  document.documentElement.setAttribute('data-theme', this.checked ? 'dark' : 'light');
+});
+
+// ============================================================
+// RENDER INBOX
+// ============================================================
+function renderInbox() {
+  const feed = document.getElementById('inboxFeed');
+  feed.innerHTML = '';
+  if (selectMode) feed.classList.add('select-mode');
+  else            feed.classList.remove('select-mode');
+
+  DEMO_MESSAGES.forEach(msg => {
+    const card = document.createElement('div');
+    card.className = `msg-card ${msg.read ? 'read' : 'unread'}`;
+
+    const preview = msg.text.length > 30 ? msg.text.substring(0, 30) + '…' : msg.text;
+
+    card.innerHTML = `
+      <div class="msg-check ${msg.selected ? 'on' : ''}" data-id="${msg.id}"></div>
+      <div class="msg-body">
+        <div class="msg-label">
+          ${!msg.read ? '<span class="animated-emoji">🔔</span>' : '📖'} ${msg.label}
+        </div>
+        <div class="msg-preview">${!msg.read ? 'Nouveau message !' : preview}${!msg.read ? ' <span class="arrow-hint">👉</span>' : ''}</div>
+        <div class="msg-time">${msg.time}</div>
+      </div>
+    `;
+
+    if (selectMode) {
+      card.querySelector('.msg-check').addEventListener('click', e => {
+        e.stopPropagation();
+        msg.selected = !msg.selected;
+        renderInbox();
+      });
+    } else {
+      card.addEventListener('click', () => openSmallOverlay(msg));
+    }
+
+    feed.appendChild(card);
+  });
+
+  updateCounts();
+}
+
+function updateCounts() {
+  const total  = DEMO_MESSAGES.length;
+  const unread = DEMO_MESSAGES.filter(m => !m.read).length;
+  document.getElementById('inboxCount').textContent  = `${total} message${total>1?'s':''}`;
+  document.getElementById('unreadCount').textContent = unread > 0 ? `(${unread})` : '';
+  document.getElementById('statTotal').textContent   = total;
+  document.getElementById('statUnread').textContent  = unread;
+  document.getElementById('notifDot').style.display  = unread > 0 ? '' : 'none';
+}
+
+// ============================================================
+// DELETE MODE
+// ============================================================
+document.getElementById('btnDeleteHeader').addEventListener('click', () => {
+  selectMode = true;
+  document.getElementById('btnSelect').style.display       = 'none';
+  document.getElementById('btnConfirmDel').classList.add('show');
+  renderInbox();
+});
+
+document.getElementById('btnSelect').addEventListener('click', () => {
+  selectMode = true;
+  document.getElementById('btnSelect').style.display       = 'none';
+  document.getElementById('btnConfirmDel').classList.add('show');
+  renderInbox();
+});
+
+document.getElementById('btnConfirmDel').addEventListener('click', () => {
+  DEMO_MESSAGES = DEMO_MESSAGES.filter(m => !m.selected);
+  exitSelectMode();
+});
+
+function exitSelectMode() {
+  selectMode = false;
+  DEMO_MESSAGES.forEach(m => m.selected = false);
+  document.getElementById('btnSelect').style.display = 'flex';
+  document.getElementById('btnConfirmDel').classList.remove('show');
+  renderInbox();
+}
+
+// ============================================================
+// PETIT OVERLAY
+// ============================================================
+function openSmallOverlay(msg) {
+  currentMessage = msg;
+  if (!msg.read) { msg.read = true; renderInbox(); }
+  document.getElementById('smallIcon').textContent = msg.emoji;
+  document.getElementById('smallType').textContent = msg.label;
+  document.getElementById('smallTime').textContent = msg.time;
+  document.getElementById('smallText').textContent = msg.text;
+  document.getElementById('overlaySmall').classList.add('open');
+}
+
+document.getElementById('closeSmall').addEventListener('click', () =>
+  document.getElementById('overlaySmall').classList.remove('open'));
+
+document.getElementById('overlaySmall').addEventListener('click', e => {
+  if (e.target === document.getElementById('overlaySmall'))
+    document.getElementById('overlaySmall').classList.remove('open');
+});
+
+// ============================================================
+// GRAND OVERLAY RÉPONSE
+// ============================================================
+document.getElementById('btnReplySmall').addEventListener('click', () => {
+  if (!currentMessage) return;
+  document.getElementById('overlaySmall').classList.remove('open');
+  document.getElementById('originalMsgDisplay').textContent = currentMessage.text;
+  document.getElementById('replyInput').value = '';
+  document.getElementById('frameReply').style.background = 'none';
+  document.getElementById('colorA').value = '#0ea5e9';
+  document.getElementById('colorB').value = '#0284c7';
+  document.getElementById('downloadBtn').disabled = true;
+  document.getElementById('shareBtn').disabled    = true;
+  document.getElementById('overlayLarge').classList.add('open');
+});
+
+// Activer boutons quand texte saisi
+document.getElementById('replyInput').addEventListener('input', e => {
+  const has = e.target.value.trim().length > 0;
+  document.getElementById('downloadBtn').disabled = !has;
+  document.getElementById('shareBtn').disabled    = !has;
+});
+
+// Color pickers → dégradé sur cadre réponse
+const colorA = document.getElementById('colorA');
+const colorB = document.getElementById('colorB');
+function applyGradient() {
+  document.getElementById('frameReply').style.background =
+    `linear-gradient(135deg, ${colorA.value}, ${colorB.value})`;
+}
+colorA.addEventListener('input', applyGradient);
+colorB.addEventListener('input', applyGradient);
+
+// Fermer
+document.getElementById('closeLargeBtn').addEventListener('click', () =>
+  document.getElementById('overlayLarge').classList.remove('open'));
+
+// Télécharger
+async function downloadImage() {
+  const el  = document.getElementById('captureArea');
+  const btn = document.getElementById('downloadBtn');
+  btn.textContent = '⏳…'; btn.disabled = true;
+  try {
+    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:true });
+    const a = document.createElement('a');
+    a.download = 'ano23-reponse.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  } catch(err) { alert('Erreur : ' + err.message); }
+  btn.innerHTML = '📸 Télécharger';
+  if (document.getElementById('replyInput').value.trim()) btn.disabled = false;
+}
+document.getElementById('downloadBtn').addEventListener('click', downloadImage);
+
+// Envoyer / Share WhatsApp
+async function shareImage() {
+  const el  = document.getElementById('captureArea');
+  const btn = document.getElementById('shareBtn');
+  btn.textContent = '⏳…'; btn.disabled = true;
+  try {
+    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:true });
+    const blob   = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    const file   = new File([blob], 'ano23-reponse.png', { type:'image/png' });
+    const text   = `🤔 Réponse anonyme sur Ano23\n\n👉 ${USER_LINK}`;
+    if (navigator.share && navigator.canShare && navigator.canShare({ files:[file] })) {
+      await navigator.share({ title:'Ano23', text, files:[file] });
+    } else {
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+      await downloadImage();
+    }
+  } catch(e) { alert('Erreur partage'); }
+  btn.innerHTML = '📤 Envoyer';
+  if (document.getElementById('replyInput').value.trim()) btn.disabled = false;
+}
+document.getElementById('shareBtn').addEventListener('click', shareImage);
+
+// ============================================================
+// CARTE LINK
+// ============================================================
+document.getElementById('diceBtn').addEventListener('click', () => {
+  document.getElementById('randomMessage').textContent =
+    MESSAGES_ALEATOIRES[Math.floor(Math.random() * MESSAGES_ALEATOIRES.length)];
+});
+
+document.getElementById('copyLinkBtn').addEventListener('click', async () => {
+  await navigator.clipboard.writeText(USER_LINK);
+  const btn = document.getElementById('copyLinkBtn');
+  btn.textContent = '✅ Copié !';
+  setTimeout(() => btn.innerHTML = '🔗 Copier', 2000);
+});
+
+async function downloadLinkCard() {
+  const el  = document.getElementById('shareCard');
+  const btn = document.getElementById('downloadLinkCardBtn');
+  btn.textContent = '⏳…';
+  try {
+    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:true });
+    const a = document.createElement('a');
+    a.download = 'ano23-share.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  } catch(e) { alert('Erreur : ' + e.message); }
+  btn.innerHTML = '📸 Télécharger';
+}
+document.getElementById('downloadLinkCardBtn').addEventListener('click', downloadLinkCard);
+
+async function shareLinkCard() {
+  const el  = document.getElementById('shareCard');
+  const btn = document.getElementById('shareLinkCardBtn');
+  btn.textContent = '⏳…';
+  try {
+    const canvas = await html2canvas(el, { scale:2, backgroundColor:null, useCORS:true });
+    const blob   = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    const file   = new File([blob], 'ano23-share.png', { type:'image/png' });
+    const text   = `📩 Envoie-moi un message anonyme !\n\n👉 ${USER_LINK}`;
+    if (navigator.share && navigator.canShare && navigator.canShare({ files:[file] })) {
+      await navigator.share({ title:'Ano23', text, files:[file] });
+    } else {
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+      alert('📸 Image téléchargée. Ajoute-la à ton statut WhatsApp.');
+    }
+  } catch(e) { alert('Erreur partage'); }
+  btn.innerHTML = '📤 Share';
+}
+document.getElementById('shareLinkCardBtn').addEventListener('click', shareLinkCard);
+
+// ============================================================
+// INIT
+// ============================================================
+updateCounts();
+document.getElementById('randomMessage').textContent =
+  MESSAGES_ALEATOIRES[Math.floor(Math.random() * MESSAGES_ALEATOIRES.length)];
+</script>
+</body>
+</html>

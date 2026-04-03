@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ano23 — Accueil</title>
+
+  <!-- PWA & Standalone -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ano23">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0ea5e9">
+  <meta name="description" content="Recevez des messages anonymes simplement">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Librairies -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ======== HEADER ======== -->
+  <div class="header">
+    <div class="logo-area">
+      <div class="logo-icon">
+        <svg viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="11" fill="white"/>
+          <ellipse cx="10" cy="13" rx="2.5" ry="3" fill="#0ea5e9"/>
+          <ellipse cx="18" cy="13" rx="2.5" ry="3" fill="#0ea5e9"/>
+          <path d="M10 18.5 Q14 21 18 18.5" stroke="#0ea5e9" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <span class="logo-text">Ano23</span>
+    </div>
+    <div class="header-right">
+      <button class="btn-delete-header" id="btnDeleteHeader" title="Sélectionner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+        </svg>
+      </button>
+      <button class="menu-btn" id="menuBtn">
+        <div class="notif-dot" id="notifDot"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="3" y1="6"  x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ======== TABS ======== -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="link">🔗 Link</button>
+    <button class="tab-btn" data-tab="inbox" id="inboxTabBtn">
+      📥 Inbox <span id="unreadCount"></span>
+    </button>
+  </div>
+
+  <!-- ======== ONGLET LINK ======== -->
+  <div class="tab-content active" id="tab-link">
+    <div class="tab-link-wrapper">
+      <div class="tab-link-scroll">
+        <div class="share-card" id="shareCard">
+          <div class="share-card-content">
+            <div class="share-header">
+              <h2>Envoie moi des messages anonymes ! ✉️❤️</h2>
+            </div>
+            <div class="share-message">
+              <p id="randomMessage">Demande moi n'importe quoi ! 👋</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="link-footer">
+        <div class="link-toolbar">
+          <button class="link-btn share"    id="shareLinkCardBtn">📤 Share link</button>
+          <button class="link-btn copy"     id="copyLinkBtn">🔗 Copier</button>
+          <button class="link-btn download" id="downloadLinkCardBtn">📸 Télécharger</button>
+          <button class="link-btn dice"     id="diceBtn">🎲 Dé</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== ONGLET INBOX ======== -->
+  <div class="tab-content" id="tab-inbox">
+    <div class="inbox-toolbar">
+      <span class="inbox-count" id="inboxCount">0 message</span>
+      <div class="inbox-actions">
+        <button class="btn-confirm-del" id="btnConfirmDel">🗑 Supprimer</button>
+        <button class="btn-select" id="btnSelect">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+          </svg>
+          Sélectionner
+        </button>
+      </div>
+    </div>
+    <div class="inbox-feed" id="inboxFeed"></div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ======== SIDEBAR BACKDROP ======== -->
+<div class="sb-backdrop" id="sbBackdrop"></div>
+
+<!-- ======== SIDEBAR ======== -->
+<div class="sidebar" id="sidebar">
+
+  <div class="sb-header">
+    <div class="sb-avatar-wrap">
+      <div class="sb-avatar" id="sbAvatar">😎
+        <input type="file" accept="image/*" id="avatarInput" style="display:none"/>
+      </div>
+      <div class="sb-avatar-edit" id="avatarEditBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 20h9"/>
+          <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+      </div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-name" id="sbUserName">Chargement...</div>
+      <div class="sb-uid" id="sbUserUid">@...</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="sb-stats">
+    <div class="sb-stat">
+      <div class="sb-stat-n" id="statTotal">0</div>
+      <div class="sb-stat-l">Messages</div>
+    </div>
+    <div class="sb-stat">
+      <div class="sb-stat-n" id="statUnread" style="color:#22c55e">0</div>
+      <div class="sb-stat-l">Non lus</div>
+    </div>
+    <div class="sb-stat">
+      <div class="sb-stat-n" id="statMonth">0</div>
+      <div class="sb-stat-l">Ce mois</div>
+    </div>
+  </div>
+
+  <div class="sb-body">
+
+    <div class="sb-section">Apparence</div>
+    <div class="sb-row">
+      <div class="sb-row-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+        Mode nuit
+      </div>
+      <label class="toggle-sw">
+        <input type="checkbox" id="themeToggle"/>
+        <div class="toggle-track"></div>
+      </label>
+    </div>
+
+    <div class="sb-section">Compte</div>
+    <button class="sb-btn" id="btnLogout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      Se déconnecter
+    </button>
+
+    <div class="sb-section">Légal</div>
+    <a href="mentions-legales.html" class="sb-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+      Mentions légales
+    </a>
+    <a href="confidentialite.html" class="sb-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      Confidentialité
+    </a>
+    <a href="cgu.html" class="sb-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      Conditions d'utilisation
+    </a>
+
+  </div>
+
+  <div class="sb-footer">
+    <button class="btn-install" id="btnInstall">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Installer l'application
+    </button>
+  </div>
+
+</div>
+
+<!-- ======== PETIT OVERLAY (lecture message) ======== -->
+<div class="overlay-small" id="overlaySmall">
+  <div class="sheet-small">
+    <div class="sheet-handle"></div>
+    <div class="msg-header">
+      <div class="msg-icon" id="smallIcon">💬</div>
+      <div class="msg-meta">
+        <div class="msg-type" id="smallType">Message anonyme</div>
+        <div class="msg-time-display" id="smallTime">À l'instant</div>
+      </div>
+      <button class="close-small" id="closeSmall">✕</button>
+    </div>
+    <div class="msg-content">
+      <div class="msg-bubble" id="smallText">…</div>
+      <button class="btn-reply-small" id="btnReplySmall">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 17 4 12 9 7"/>
+          <path d="M20 18v-2a4 4 0 00-4-4H4"/>
+        </svg>
+        Répondre
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== GRAND OVERLAY RÉPONSE ======== -->
+<div class="overlay-large" id="overlayLarge">
+
+  <!-- LA CARTE -->
+  <div class="capture-area" id="captureArea">
+    <div class="capture-content">
+      <div class="frame-header">
+        <div class="frame-header-box">
+          <h1>Ano23 - Réponse anonyme ✉️</h1>
+        </div>
+      </div>
+      <div class="frame-message">
+        <p id="originalMsgDisplay">…</p>
+      </div>
+      <div class="frame-reply" id="frameReply">
+        <textarea class="reply-textarea" id="replyInput" placeholder="✍️ Écris ta réponse ici…" rows="4"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="toolbar-content">
+      <div class="color-picker-wrap">
+        <label>🎨 A</label>
+        <input type="color" id="colorA" class="color-picker" value="#0ea5e9"/>
+      </div>
+      <div class="color-picker-wrap">
+        <label>🎨 B</label>
+        <input type="color" id="colorB" class="color-picker" value="#0284c7"/>
+      </div>
+      <button class="toolbar-btn download" id="downloadBtn" disabled>📸 Télécharger</button>
+      <button class="toolbar-btn share"    id="shareBtn"    disabled>📤 Envoyer</button>
+      <button class="toolbar-btn close"    id="closeLargeBtn">✕ Fermer</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
