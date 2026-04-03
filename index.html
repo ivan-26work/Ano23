@@ -19,7 +19,7 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
   
-  <!-- Font Awesome 6 (gratuit) -->
+  <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
   
   <!-- Styles -->
@@ -50,10 +50,10 @@
     <!-- Onglets dans le header -->
     <div class="header-tabs">
       <button class="header-tab-btn active" data-tab="link">
-        <i class="fas fa-link"></i>
+        <i class="fas fa-link"></i> Link
       </button>
       <button class="header-tab-btn" data-tab="inbox">
-        <i class="fas fa-inbox"></i>
+        <i class="fas fa-inbox"></i> Inbox
         <span class="tab-badge" id="unreadBadge" style="display:none"></span>
       </button>
     </div>
@@ -74,31 +74,76 @@
     
     <!-- ========== ONGLET LINK ========== -->
     <div class="tab-content active" id="tab-link">
-      <div class="share-card" id="shareCard">
-        <div class="share-card-content">
-          <div class="share-header">
-            <div class="share-header-rectangle">
-              <h2><i class="fas fa-envelope"></i> Envoie moi des messages anonymes !</h2>
-            </div>
-          </div>
-          
-          <div class="share-message" id="shareMessage">
-            <div class="animated-envelope" id="animatedEnvelope">
-              <div class="envelope-badge"><i class="fas fa-star"></i> Nouveau !</div>
-              <div class="envelope-icon">
-                <i class="fas fa-envelope-open-text"></i>
+      
+      <!-- Carte 1 : Messages -->
+      <div class="card-selector" data-card-type="message">
+        <div class="share-card" id="shareCardMessage" data-card="message" data-selected="true">
+          <div class="selection-dot"></div>
+          <div class="share-card-content">
+            <div class="share-header">
+              <div class="share-header-rectangle">
+                <h2><i class="fas fa-envelope"></i> Envoie-moi des messages anonymes !</h2>
               </div>
-              <span class="envelope-text"><i class="fas fa-share-alt"></i> Partage ton lien !</span>
             </div>
-            
-            <div id="randomMessageContainer" style="display: none;">
-              <div class="animated-message">
-                <p id="randomMessage"></p>
+            <div class="share-message">
+              <div class="animated-envelope">
+                <div class="envelope-badge"><i class="fas fa-star"></i> Nouveau !</div>
+                <div class="envelope-icon">
+                  <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <span class="envelope-text"><i class="fas fa-share-alt"></i> Partage ton lien !</span>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Carte 2 : Questions -->
+      <div class="card-selector" data-card-type="question">
+        <div class="share-card" id="shareCardQuestion" data-card="question" data-selected="false">
+          <div class="selection-dot"></div>
+          <div class="share-card-content">
+            <div class="share-header">
+              <div class="share-header-rectangle">
+                <h2><i class="fas fa-question-circle"></i> Pose-moi des questions anonymes !</h2>
+              </div>
+            </div>
+            <div class="share-message">
+              <div class="animated-envelope">
+                <div class="envelope-badge"><i class="fas fa-star"></i> Nouveau !</div>
+                <div class="envelope-icon">
+                  <i class="fas fa-comment-dots"></i>
+                </div>
+                <span class="envelope-text"><i class="fas fa-share-alt"></i> Partage ton lien !</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carte 3 : Discussion anonyme -->
+      <div class="card-selector" data-card-type="discussion">
+        <div class="share-card" id="shareCardDiscussion" data-card="discussion" data-selected="false">
+          <div class="selection-dot"></div>
+          <div class="share-card-content">
+            <div class="share-header">
+              <div class="share-header-rectangle">
+                <h2><i class="fas fa-comments"></i> Discussion anonyme !</h2>
+              </div>
+            </div>
+            <div class="share-message">
+              <div class="animated-envelope">
+                <div class="envelope-badge"><i class="fas fa-star"></i> Nouveau !</div>
+                <div class="envelope-icon">
+                  <i class="fas fa-message"></i>
+                </div>
+                <span class="envelope-text"><i class="fas fa-share-alt"></i> Partage ton lien !</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
     </div>
 
     <!-- ========== ONGLET INBOX ========== -->
@@ -122,6 +167,24 @@
   </div><!-- /scroll-area -->
 
 </div><!-- /app -->
+
+<!-- ========== BARRE D'ACTION FIXE (LINK) ========== -->
+<div class="link-footer" id="linkFooter">
+  <div class="link-toolbar">
+    <button class="link-btn share" id="shareLinkCardBtn">
+      <i class="fab fa-whatsapp"></i> Partager
+    </button>
+    <button class="link-btn copy" id="copyLinkBtn">
+      <i class="fas fa-copy"></i> Copier
+    </button>
+    <button class="link-btn download" id="downloadLinkCardBtn">
+      <i class="fas fa-download"></i> Télécharger
+    </button>
+    <button class="link-btn dice" id="diceBtn">
+      <i class="fas fa-dice"></i> Dé
+    </button>
+  </div>
+</div>
 
 <!-- ========== SIDEBAR BACKDROP ========== -->
 <div class="sb-backdrop" id="sbBackdrop"></div>
@@ -214,9 +277,14 @@
     </div>
     <div class="msg-content">
       <div class="msg-bubble" id="smallText">…</div>
-      <button class="btn-reply-small" id="btnReplySmall">
-        <i class="fas fa-reply"></i> Répondre
-      </button>
+      <div class="msg-actions-row">
+        <button class="btn-reply-small" id="btnReplySmall">
+          <i class="fas fa-reply"></i> Répondre
+        </button>
+        <button class="btn-chat-small" id="btnChatSmall">
+          <i class="fas fa-comment-dots"></i> Chat
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -264,21 +332,28 @@
   
 </div>
 
-<!-- ========== BARRE D'ACTION FIXE (LINK) ========== -->
-<div class="link-footer" id="linkFooter">
-  <div class="link-toolbar">
-    <button class="link-btn share" id="shareLinkCardBtn">
-      <i class="fab fa-whatsapp"></i> Partager
-    </button>
-    <button class="link-btn copy" id="copyLinkBtn">
-      <i class="fas fa-copy"></i> Copier
-    </button>
-    <button class="link-btn download" id="downloadLinkCardBtn">
-      <i class="fas fa-download"></i> Télécharger
-    </button>
-    <button class="link-btn dice" id="diceBtn">
-      <i class="fas fa-dice"></i> Dé
-    </button>
+<!-- ========== OVERLAY CHAT (nouveau) ========== -->
+<div class="overlay-chat" id="overlayChat">
+  <div class="chat-sheet">
+    <div class="chat-header">
+      <h3><i class="fas fa-comment-dots"></i> Réponse anonyme</h3>
+      <button class="close-chat" id="closeChatBtn"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="chat-warning">
+      <i class="fas fa-shield-haltered"></i> 
+      <span>Rien ne prouve que celui qui vous a envoyé ce message a un compte Ano23. Vous pouvez répondre en public en partageant la carte.</span>
+    </div>
+    <div class="chat-body">
+      <textarea id="chatReplyInput" class="chat-textarea" placeholder="✍️ Écris ta réponse anonyme ici..." rows="4" maxlength="500"></textarea>
+      <div class="chat-actions">
+        <button class="chat-btn cancel" id="cancelChatBtn">
+          <i class="fas fa-times"></i> Annuler
+        </button>
+        <button class="chat-btn send" id="sendChatBtn">
+          <i class="fas fa-paper-plane"></i> Envoyer
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
