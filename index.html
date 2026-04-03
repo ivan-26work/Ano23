@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Ano23 — Accueil</title>
-
-  <!-- PWA & Standalone -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Ano23">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#0ea5e9">
-  <meta name="description" content="Recevez des messages anonymes simplement">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
-
+  
+  <!-- ============================================================ -->
+  <!-- PWA & STANDALONE                                           -->
+  <!-- ============================================================ -->
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="icon" type="image/png" href="images/logo.png"/>
+  <link rel="apple-touch-icon" href="images/logo.png"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Ano23"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#0ea5e9"/>
+  <meta name="description" content="Recevez des messages anonymes simplement"/>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
+  
   <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css">
-
+  <link rel="stylesheet" href="css/style.css"/>
+  
   <!-- Librairies -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -28,7 +32,9 @@
 
 <div class="app">
 
-  <!-- ======== HEADER ======== -->
+  <!-- ============================================================ -->
+  <!-- BARRE 1 : HEADER (FIXE, TOUJOURS VISIBLE)                   -->
+  <!-- ============================================================ -->
   <div class="header">
     <div class="logo-area">
       <div class="logo-icon">
@@ -50,7 +56,7 @@
         </svg>
       </button>
       <button class="menu-btn" id="menuBtn">
-        <div class="notif-dot" id="notifDot"></div>
+        <div class="notif-dot" id="notifDot" style="display:none"></div>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <line x1="3" y1="6"  x2="21" y2="6"/>
           <line x1="3" y1="12" x2="21" y2="12"/>
@@ -60,57 +66,90 @@
     </div>
   </div>
 
-  <!-- ======== TABS ======== -->
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="link">🔗 Link</button>
-    <button class="tab-btn" data-tab="inbox" id="inboxTabBtn">
-      📥 Inbox <span id="unreadCount"></span>
-    </button>
-  </div>
+  <!-- ============================================================ -->
+  <!-- ZONE SCROLLABLE (contient onglets + contenu)                -->
+  <!-- ============================================================ -->
+  <div class="scroll-area" id="scrollArea">
+    
+    <!-- BARRE 2 : ONGLETS (centrés) -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="link">🔗 Link</button>
+      <button class="tab-btn" data-tab="inbox">
+        📥 Inbox <span id="unreadCount"></span>
+      </button>
+    </div>
 
-  <!-- ======== ONGLET LINK ======== -->
-  <div class="tab-content active" id="tab-link">
-    <div class="tab-link-wrapper">
-      <div class="tab-link-scroll">
-        <div class="share-card" id="shareCard">
-          <div class="share-card-content">
-            <div class="share-header">
+    <!-- ======== ONGLET LINK ======== -->
+    <div class="tab-content active" id="tab-link">
+      <div class="share-card" id="shareCard">
+        <div class="share-card-content">
+          
+          <!-- Header stylé avec rectangle animé -->
+          <div class="share-header">
+            <div class="share-header-rectangle">
               <h2>Envoie moi des messages anonymes ! ✉️❤️</h2>
             </div>
-            <div class="share-message">
-              <p id="randomMessage">Demande moi n'importe quoi ! 👋</p>
+          </div>
+          
+          <!-- Zone message avec enveloppe animée -->
+          <div class="share-message" id="shareMessage">
+            <!-- Enveloppe animée (visible par défaut) -->
+            <div class="animated-envelope" id="animatedEnvelope">
+              <div class="envelope-badge">✨ Nouveau !</div>
+              <div class="envelope-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" fill="none"/>
+                  <polyline points="2,8 12,14 22,8" stroke="currentColor" fill="none"/>
+                  <path d="M6,18 L6,10" stroke="currentColor" stroke-linecap="round"/>
+                  <path d="M18,18 L18,10" stroke="currentColor" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="envelope-text">📨 Partage ton lien !</span>
+            </div>
+            
+            <!-- Conteneur message (caché par défaut) -->
+            <div id="randomMessageContainer" style="display: none;">
+              <div class="animated-message">
+                <p id="randomMessage"></p>
+              </div>
             </div>
           </div>
+          
         </div>
       </div>
-      <div class="link-footer">
+      
+      <!-- Barre d'action flottante -->
+      <div class="link-footer" id="linkFooter">
         <div class="link-toolbar">
-          <button class="link-btn share"    id="shareLinkCardBtn">📤 Share link</button>
-          <button class="link-btn copy"     id="copyLinkBtn">🔗 Copier</button>
+          <button class="link-btn share" id="shareLinkCardBtn">📤 Share</button>
+          <button class="link-btn copy" id="copyLinkBtn">🔗 Copier</button>
           <button class="link-btn download" id="downloadLinkCardBtn">📸 Télécharger</button>
-          <button class="link-btn dice"     id="diceBtn">🎲 Dé</button>
+          <button class="link-btn dice" id="diceBtn">🎲 Dé</button>
+          <select id="dimensionSelect" class="dimension-select">
+            <option value="9/13">📐 Standard (9:13)</option>
+            <option value="1/1">⬜ Carré (1:1)</option>
+            <option value="9/16">📱 Story (9:16)</option>
+            <option value="4/5">📷 Post (4:5)</option>
+            <option value="16/9">🎬 Paysage (16:9)</option>
+            <option value="3/4">🖼️ Portrait (3:4)</option>
+          </select>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ======== ONGLET INBOX ======== -->
-  <div class="tab-content" id="tab-inbox">
-    <div class="inbox-toolbar">
-      <span class="inbox-count" id="inboxCount">0 message</span>
-      <div class="inbox-actions">
-        <button class="btn-confirm-del" id="btnConfirmDel">🗑 Supprimer</button>
-        <button class="btn-select" id="btnSelect">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3 6 5 6 21 6"/>
-            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
-          </svg>
-          Sélectionner
-        </button>
+    <!-- ======== ONGLET INBOX ======== -->
+    <div class="tab-content" id="tab-inbox">
+      <div class="inbox-toolbar">
+        <span class="inbox-count" id="inboxCount">0 message</span>
+        <div class="inbox-actions">
+          <button class="btn-confirm-del" id="btnConfirmDel">🗑 Supprimer</button>
+          <button class="btn-select" id="btnSelect">📋 Sélectionner</button>
+        </div>
       </div>
+      <div class="inbox-feed" id="inboxFeed"></div>
     </div>
-    <div class="inbox-feed" id="inboxFeed"></div>
-  </div>
+    
+  </div><!-- /scroll-area -->
 
 </div><!-- /app -->
 
@@ -119,7 +158,6 @@
 
 <!-- ======== SIDEBAR ======== -->
 <div class="sidebar" id="sidebar">
-
   <div class="sb-header">
     <div class="sb-avatar-wrap">
       <div class="sb-avatar" id="sbAvatar">😎
@@ -138,7 +176,6 @@
     </div>
   </div>
 
-  <!-- Stats -->
   <div class="sb-stats">
     <div class="sb-stat">
       <div class="sb-stat-n" id="statTotal">0</div>
@@ -155,7 +192,6 @@
   </div>
 
   <div class="sb-body">
-
     <div class="sb-section">Apparence</div>
     <div class="sb-row">
       <div class="sb-row-label">
@@ -202,7 +238,17 @@
       </svg>
       Conditions d'utilisation
     </a>
-
+    
+    <!-- Bouton installation PWA (caché par défaut, apparaît si disponible) -->
+    <div class="sb-section">Application</div>
+    <button class="sb-btn btn-install-pwa" id="btnInstallPWA" style="display: none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Installer l'application
+    </button>
   </div>
 
   <div class="sb-footer">
@@ -215,10 +261,9 @@
       Installer l'application
     </button>
   </div>
-
 </div>
 
-<!-- ======== PETIT OVERLAY (lecture message) ======== -->
+<!-- ======== OVERLAY LECTURE (petit) ======== -->
 <div class="overlay-small" id="overlaySmall">
   <div class="sheet-small">
     <div class="sheet-handle"></div>
@@ -243,10 +288,9 @@
   </div>
 </div>
 
-<!-- ======== GRAND OVERLAY RÉPONSE ======== -->
+<!-- ======== OVERLAY RÉPONSE (grand) ======== -->
 <div class="overlay-large" id="overlayLarge">
-
-  <!-- LA CARTE -->
+  
   <div class="capture-area" id="captureArea">
     <div class="capture-content">
       <div class="frame-header">
@@ -262,9 +306,8 @@
       </div>
     </div>
   </div>
-
-  <!-- TOOLBAR -->
-  <div class="toolbar">
+  
+  <div class="toolbar" id="replyToolbar">
     <div class="toolbar-content">
       <div class="color-picker-wrap">
         <label>🎨 A</label>
@@ -275,13 +318,85 @@
         <input type="color" id="colorB" class="color-picker" value="#0284c7"/>
       </div>
       <button class="toolbar-btn download" id="downloadBtn" disabled>📸 Télécharger</button>
-      <button class="toolbar-btn share"    id="shareBtn"    disabled>📤 Envoyer</button>
-      <button class="toolbar-btn close"    id="closeLargeBtn">✕ Fermer</button>
+      <button class="toolbar-btn share" id="shareBtn" disabled>📤 Envoyer</button>
+      <button class="toolbar-btn close" id="closeLargeBtn">✕ Fermer</button>
     </div>
   </div>
-
+  
 </div>
 
 <script src="js/app.js"></script>
+
+<!-- ============================================================ -->
+<!-- SCRIPT POUR LE SERVICE WORKER ET BOUTON INSTALLATION PWA    -->
+<!-- ============================================================ -->
+<!-- ============================================================ -->
+<!-- SCRIPT POUR LE SERVICE WORKER ET BOUTON INSTALLATION PWA    -->
+<!-- ============================================================ -->
+<script>
+  // Enregistrement du Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('✅ Service Worker enregistré avec succès');
+        })
+        .catch(error => {
+          console.error('❌ Erreur Service Worker:', error);
+        });
+    });
+  }
+
+  // Gestion du bouton d'installation PWA (sans conflit avec app.js)
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    window.deferredPrompt = e;
+    
+    // Afficher le bouton d'installation dans la sidebar
+    const btnInstallPWA = document.getElementById('btnInstallPWA');
+    if (btnInstallPWA) {
+      btnInstallPWA.style.display = 'flex';
+    }
+    
+    // Afficher aussi le bouton dans le footer
+    const btnInstall = document.getElementById('btnInstall');
+    if (btnInstall) {
+      btnInstall.style.display = 'flex';
+    }
+  });
+
+  // Bouton dans la sidebar
+  const btnInstallPWA = document.getElementById('btnInstallPWA');
+  if (btnInstallPWA) {
+    btnInstallPWA.addEventListener('click', async () => {
+      if (window.deferredPrompt) {
+        window.deferredPrompt.prompt();
+        const { outcome } = await window.deferredPrompt.userChoice;
+        window.deferredPrompt = null;
+        
+        // Cacher le bouton après installation
+        btnInstallPWA.style.display = 'none';
+        const btnInstall = document.getElementById('btnInstall');
+        if (btnInstall) btnInstall.style.display = 'none';
+      }
+    });
+  }
+
+  // Bouton dans le footer (existant)
+  const btnInstall = document.getElementById('btnInstall');
+  if (btnInstall) {
+    btnInstall.addEventListener('click', async () => {
+      if (window.deferredPrompt) {
+        window.deferredPrompt.prompt();
+        const { outcome } = await window.deferredPrompt.userChoice;
+        window.deferredPrompt = null;
+        
+        btnInstall.style.display = 'none';
+        if (btnInstallPWA) btnInstallPWA.style.display = 'none';
+      }
+    });
+  }
+</script>
+
 </body>
 </html>
