@@ -4,7 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ano23 — Connexion</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
   <link rel="stylesheet" href="css/auth.css"/>
 </head>
 <body>
@@ -27,11 +28,31 @@
     </div>
   </div>
 
-  <!-- Flip Scene -->
-  <div class="flip-scene">
+  <!-- ========== CARTE PROFIL (quand déjà connecté) ========== -->
+  <div class="profile-card" id="profileCard" style="display: none;">
+    <div class="profile-avatar">
+      <i class="fas fa-user-circle"></i>
+    </div>
+    <div class="profile-email" id="profileEmail">user@exemple.com</div>
+    <div class="profile-uid" id="profileUid">@username</div>
+    <div class="profile-badge">
+      <i class="fas fa-check-circle"></i> Déjà connecté
+    </div>
+    <div class="profile-buttons">
+      <button class="profile-btn primary" id="profileLoginBtn">
+        <i class="fas fa-sign-in-alt"></i> Se connecter
+      </button>
+      <button class="profile-btn secondary" id="profileOtherBtn">
+        <i class="fas fa-exchange-alt"></i> Utiliser un autre compte
+      </button>
+    </div>
+  </div>
+
+  <!-- ========== FLIP SCENE (formulaires) ========== -->
+  <div class="flip-scene" id="flipScene" style="display: none;">
     <div class="flip-card" id="flipCard">
 
-      <!-- ===== FACE AVANT : CONNEXION ===== -->
+      <!-- FACE AVANT : CONNEXION -->
       <div class="face face-front" id="face-login">
         <div class="face-header">
           <div class="face-title">Bon retour 👋</div>
@@ -52,13 +73,8 @@
             <div class="input-wrap">
               <input type="password" id="l-pw" placeholder="••••••••" autocomplete="current-password"/>
               <button class="toggle-eye" type="button" data-target="l-pw">
-                <svg class="eye-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-                <svg class="eye-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
-                  <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-                  <line x1="1" y1="1" x2="23" y2="23"/>
-                </svg>
+                <i class="far fa-eye eye-show"></i>
+                <i class="far fa-eye-slash eye-hide" style="display:none"></i>
               </button>
             </div>
             <span class="field-msg" id="l-pw-msg"></span>
@@ -82,7 +98,7 @@
         </div>
       </div>
 
-      <!-- ===== FACE ARRIÈRE : INSCRIPTION ===== -->
+      <!-- FACE ARRIÈRE : INSCRIPTION -->
       <div class="face face-back" id="face-register">
         <div class="face-header">
           <div class="face-title">Créer un compte 🚀</div>
@@ -103,13 +119,8 @@
             <div class="input-wrap">
               <input type="password" id="r-pw" placeholder="••••••••" autocomplete="new-password"/>
               <button class="toggle-eye" type="button" data-target="r-pw">
-                <svg class="eye-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-                <svg class="eye-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
-                  <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-                  <line x1="1" y1="1" x2="23" y2="23"/>
-                </svg>
+                <i class="far fa-eye eye-show"></i>
+                <i class="far fa-eye-slash eye-hide" style="display:none"></i>
               </button>
             </div>
             <div class="pw-strength">
@@ -142,24 +153,18 @@
         </div>
       </div>
 
-    </div><!-- /flip-card -->
-  </div><!-- /flip-scene -->
+    </div>
+  </div>
 
-  <!-- ===== MODAL MOT DE PASSE OUBLIÉ ===== -->
+  <!-- ========== MODAL MOT DE PASSE OUBLIÉ ========== -->
   <div class="modal-overlay" id="modal-forgot">
     <div class="modal">
       <button class="modal-close" id="btn-close-modal">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
+        <i class="fas fa-times"></i>
       </button>
 
       <div class="modal-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2"/>
-          <path d="M7 11V7a5 5 0 0110 0v4"/>
-          <circle cx="12" cy="16" r="1" fill="currentColor"/>
-        </svg>
+        <i class="fas fa-lock"></i>
       </div>
 
       <div class="modal-title">Mot de passe oublié</div>
@@ -179,6 +184,75 @@
       </button>
 
       <div class="alert" id="forgot-alert"></div>
+    </div>
+  </div>
+
+  <!-- ========== GUIDE OVERLAY ========== -->
+  <div class="guide-overlay" id="guideOverlay" style="display: none;">
+    <div class="guide-container">
+      <div class="guide-flip-card" id="guideFlipCard">
+        
+        <!-- Étape 1 -->
+        <div class="guide-face guide-front">
+          <div class="guide-header">
+            <i class="fas fa-smile-wink"></i>
+            <h2>Bienvenue sur Ano23</h2>
+          </div>
+          <div class="guide-content">
+            <p>Ano23 est une plateforme de <strong>messages anonymes</strong>. Recevez des messages de n'importe qui, sans qu'ils sachent qui vous êtes.</p>
+          </div>
+          <div class="guide-footer">
+            <button class="guide-skip">Ignorer</button>
+            <button class="guide-next">Continuer</button>
+          </div>
+        </div>
+        
+        <!-- Étape 2 -->
+        <div class="guide-face guide-back1">
+          <div class="guide-header">
+            <i class="fas fa-tools"></i>
+            <h2>Comment ça fonctionne ?</h2>
+          </div>
+          <div class="guide-content">
+            <ul>
+              <li><i class="fas fa-share-alt"></i> Partagez votre lien (carte verte)</li>
+              <li><i class="fas fa-inbox"></i> Recevez des messages dans votre Inbox</li>
+              <li><i class="fas fa-comment-dots"></i> Répondez anonymement via le chat</li>
+            </ul>
+          </div>
+          <div class="guide-footer">
+            <button class="guide-skip">Ignorer</button>
+            <button class="guide-next">Continuer</button>
+          </div>
+        </div>
+        
+        <!-- Étape 3 -->
+        <div class="guide-face guide-back2">
+          <div class="guide-header">
+            <i class="fas fa-shield-haltered"></i>
+            <h2>Votre vie privée</h2>
+          </div>
+          <div class="guide-content">
+            <ul>
+              <li><i class="fas fa-user-secret"></i> Aucune donnée personnelle collectée</li>
+              <li><i class="fas fa-database"></i> Messages stockés de manière sécurisée</li>
+              <li><i class="fas fa-trash-alt"></i> Suppression possible à tout moment</li>
+              <li><i class="fas fa-mask"></i> Anonymat total</li>
+            </ul>
+          </div>
+          <div class="guide-footer">
+            <button class="guide-skip">Ignorer</button>
+            <button class="guide-ok">OK</button>
+          </div>
+        </div>
+        
+      </div>
+      
+      <!-- Liens en bas -->
+      <div class="guide-links">
+        <a href="#" id="guideBackToLogin"><i class="fas fa-arrow-left"></i> Retour à la connexion</a>
+        <a href="confidentialite.html" target="_blank"><i class="fas fa-lock"></i> Politiques de confidentialité</a>
+      </div>
     </div>
   </div>
 
