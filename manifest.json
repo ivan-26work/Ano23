@@ -1,5 +1,5 @@
 {
-  "name": "Ano23 - Messages anonymes",
+  "name": "powered by megane",
   "short_name": "Ano23",
   "description": "Recevez des messages anonymes simplement",
   "start_url": "./index.html",
@@ -13,6 +13,44 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "📥 Messages reçus",
+      "short_name": "Inbox",
+      "description": "Voir mes messages anonymes",
+      "url": "./index.html?tab=inbox",
+      "icons": [
+        {
+          "src": "images/logo.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "🔗 Partager mon lien",
+      "short_name": "Partager",
+      "description": "Partagez votre lien pour recevoir des messages",
+      "url": "./index.html?tab=link",
+      "icons": [
+        {
+          "src": "images/logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "💬 Nouveau message",
+      "short_name": "Envoyer",
+      "description": "Envoyer un message anonyme",
+      "url": "./auth.html",
+      "icons": [
+        {
+          "src": "images/logo.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ],
   "categories": ["social", "communication"],
