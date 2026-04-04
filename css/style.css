@@ -217,7 +217,7 @@ body {
 .scroll-area {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 12px 100px;
+  padding: 16px 12px 80px;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -233,11 +233,15 @@ body {
 }
 
 /* ============================================================
-   CARTES LINK (3 cartes)
+   ONGLET LINK (cartes)
 ============================================================ */
 .card-selector {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   position: relative;
+}
+
+.card-selector:last-child {
+  margin-bottom: 0;
 }
 
 .share-card {
@@ -310,19 +314,31 @@ body {
   background: #22c55e;
 }
 
-/* Header de la carte */
+/* Header des cartes (noir, texte blanc centré) */
 .share-header {
   text-align: center;
   padding: 10px 0;
 }
-
 .share-header-rectangle {
   display: inline-block;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: #1e293b;
   border-radius: 60px;
   padding: 12px 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.share-header h2 {
+  font-size: clamp(14px, 4vw, 18px);
+  font-weight: 800;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: white;
+  mix-blend-mode: difference;
+}
 }
 
 .share-header h2 {
@@ -332,11 +348,13 @@ body {
   margin: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
 }
 
 .share-header h2 i {
   font-size: 18px;
+  color: white;
 }
 
 /* Zone message */
@@ -404,6 +422,39 @@ body {
   gap: 6px;
 }
 
+/* Message aléatoire */
+.animated-message {
+  animation: fadeInUp 0.5s ease-out;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(12px);
+  border-radius: 28px;
+  padding: 20px 24px;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.animated-message p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(16px, 5vw, 24px);
+  font-weight: 800;
+  color: white;
+  text-align: center;
+  line-height: 1.4;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ============================================================
    BARRE D'ACTION FIXE EN BAS
 ============================================================ */
@@ -464,7 +515,7 @@ body {
 }
 
 /* ============================================================
-   INBOX
+   INBOX (style natif)
 ============================================================ */
 .inbox-container {
   max-width: 600px;
@@ -530,7 +581,7 @@ body {
   gap: 10px;
 }
 
-/* Messages */
+/* Cartes messages - style natif */
 .msg-card {
   border-radius: 18px;
   padding: 14px;
@@ -546,6 +597,10 @@ body {
 .msg-card.unread {
   border-color: #22c55e;
   box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+}
+
+.msg-card:active {
+  transform: scale(0.99);
 }
 
 .msg-check {
@@ -583,6 +638,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+  color: var(--text3);
 }
 
 .msg-card.unread .msg-label {
@@ -605,26 +661,55 @@ body {
   font-weight: 500;
 }
 
-/* Boutons dans la carte message */
+/* Bouton chat dans les messages */
 .msg-actions {
   display: flex;
   gap: 8px;
-  margin-top: 8px;
+  margin-left: 8px;
 }
 
 .msg-chat-btn {
-  background: none;
+  background: rgba(34, 197, 94, 0.8);
   border: none;
-  color: #0ea5e9;
-  font-size: 18px;
+  border-radius: 30px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 20px;
-  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s, transform 0.15s;
 }
 
 .msg-chat-btn:hover {
-  background: var(--surface2);
+  background: #22c55e;
+}
+
+.msg-chat-btn:active {
+  transform: scale(0.95);
+}
+
+/* Animations */
+.animated-emoji {
+  display: inline-block;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+.arrow-hint {
+  display: inline-block;
+  animation: slidex 0.8s ease-in-out infinite;
+}
+
+@keyframes slidex {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
 }
 
 /* ============================================================
@@ -989,7 +1074,7 @@ body {
 }
 
 /* ============================================================
-   OVERLAY CHAT (nouveau)
+   OVERLAY CHAT
 ============================================================ */
 .overlay-chat {
   position: fixed;
@@ -1149,6 +1234,123 @@ body {
 .chat-btn.send {
   background: #0ea5e9;
   color: white;
+}
+
+/* ============================================================
+   OVERLAY CHAT ERROR
+============================================================ */
+.overlay-chat-error {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(14px);
+  z-index: 130;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+
+.overlay-chat-error.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.chat-error-sheet {
+  background: var(--surface);
+  border-radius: 28px;
+  width: 100%;
+  max-width: 340px;
+  overflow: hidden;
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.overlay-chat-error.open .chat-error-sheet {
+  transform: scale(1);
+}
+
+.chat-error-header {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+.chat-error-header i {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.chat-error-header h3 {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.chat-error-body {
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.chat-error-body p {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.chat-error-solution {
+  background: var(--surface2);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  text-align: left;
+  border-left: 4px solid #0ea5e9;
+}
+
+.chat-error-solution i {
+  font-size: 22px;
+  color: #0ea5e9;
+  flex-shrink: 0;
+}
+
+.chat-error-solution span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  line-height: 1.4;
+}
+
+.chat-error-solution strong {
+  color: #0ea5e9;
+}
+
+.chat-error-footer {
+  padding: 16px 20px 24px;
+}
+
+.chat-error-btn {
+  width: 100%;
+  padding: 14px;
+  background: #0ea5e9;
+  color: white;
+  border: none;
+  border-radius: 40px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.chat-error-btn:active {
+  transform: scale(0.97);
 }
 
 /* ============================================================
@@ -1551,59 +1753,57 @@ body {
   flex-shrink: 0;
 }
 /* ============================================================
-   ESPACEMENT ENTRE LES CARTES
+   CARTE RÉPONSE - STYLE HEADER
 ============================================================ */
-.card-selector {
-  margin-bottom: 24px;
-  position: relative;
+
+/* Conteneur du message reçu (même style que header des cartes link) */
+.received-message {
+  text-align: center;
+  padding: 20px;
+  margin: 0 16px 16px 16px;
+  background: #000000;
+  border: 2px solid white;
+  border-radius: 60px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Dernière carte pas de marge en bas */
-.card-selector:last-child {
-  margin-bottom: 0;
-}
-
-/* Effet de transition pour la sélection */
-.share-card {
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.share-card[data-selected="true"] {
-  box-shadow: 0 0 0 3px #22c55e, 0 8px 24px rgba(0,0,0,0.15);
-}
-/* Pour html2canvas - isole la carte */
-.share-card {
-  isolation: isolate;
-}
-/* Message aléatoire - style renforcé */
-.animated-message {
-  animation: fadeInUp 0.5s ease-out;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(12px);
-  border-radius: 28px;
-  padding: 20px 24px;
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-}
-
-.animated-message p {
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(16px, 5vw, 24px);
+.received-message p {
+  font-family: 'DM Mono', monospace;
+  font-size: clamp(14px, 4vw, 18px);
   font-weight: 800;
   color: white;
+  margin: 0;
   text-align: center;
   line-height: 1.4;
-  margin: 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  word-break: break-word;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Zone de réponse (en dessous) */
+.reply-area {
+  margin: 0 16px 24px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reply-textarea {
+  width: 100%;
+  padding: 18px;
+  font-family: 'DM Mono', monospace;
+  font-size: clamp(14px, 3.5vw, 16px);
+  font-weight: 700;
+  border: none;
+  resize: none;
+  min-height: 100px;
+  text-align: center;
+  background: transparent;
+  color: white;
+  outline: none;
+  line-height: 1.55;
+}
+
+.reply-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
