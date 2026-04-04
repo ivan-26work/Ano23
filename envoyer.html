@@ -3,346 +3,271 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Ano23 — Chat anonyme</title>
+  <title>Ano23 — Message anonyme</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
   <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      background: url('images/image3.png') center/cover no-repeat fixed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 24px;
+    }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    background: url('images/image5.png') center/cover no-repeat fixed;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 32px 16px 24px;
-    -webkit-font-smoothing: antialiased;
-  }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.18);
+      z-index: 0;
+    }
 
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.25);
-    z-index: 0;
-  }
+    .page {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 460px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 18px;
+      flex: 1;
+    }
 
-  .page {
-    position: relative; z-index: 1;
-    width: 100%; max-width: 460px;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 18px;
-    flex: 1;
-  }
+    .url-bar {
+      width: 100%;
+      background: rgba(255,255,255,0.95);
+      border-radius: 60px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .url-bar i { font-size: 18px; color: #0ea5e9; }
+    .url-bar input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      font-family: 'DM Mono', monospace;
+      padding: 10px 0;
+      background: transparent;
+    }
+    .url-bar .clear-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #94a3b8;
+      padding: 0 8px;
+    }
+    .url-bar .clear-btn:hover { color: #ef4444; }
+    .url-bar button {
+      background: #0ea5e9;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .url-bar button:active { transform: scale(0.96); }
 
-  /* Barre d'adresse */
-  .url-bar {
-    width: 100%;
-    background: rgba(255,255,255,0.95);
-    border-radius: 60px;
-    padding: 8px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  .url-bar i {
-    font-size: 18px;
-    color: #0ea5e9;
-  }
-  .url-bar input {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 14px;
-    font-family: 'DM Mono', monospace;
-    padding: 10px 0;
-    background: transparent;
-  }
-  .url-bar .clear-btn {
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    color: #94a3b8;
-    padding: 0 8px;
-    transition: color 0.2s;
-  }
-  .url-bar .clear-btn:hover { color: #ef4444; }
-  .url-bar button {
-    background: #0ea5e9;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 40px;
-    color: white;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    transition: transform 0.15s;
-  }
-  .url-bar button:active { transform: scale(0.96); }
+    .error-banner {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 10px 16px;
+      border-radius: 60px;
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+      width: 100%;
+      text-align: center;
+    }
+    .error-banner.show { display: block; }
 
-  /* Message d'erreur */
-  .error-banner {
-    background: #fee2e2;
-    color: #dc2626;
-    padding: 10px 16px;
-    border-radius: 60px;
-    font-size: 13px;
-    font-weight: 600;
-    display: none;
-    width: 100%;
-    text-align: center;
-  }
-  .error-banner.show { display: block; }
+    .main-card {
+      width: 100%;
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(14px);
+      border: 1.5px solid rgba(255,255,255,0.35);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      transition: opacity 0.3s;
+    }
+    .main-card.disabled { opacity: 0.5; pointer-events: none; }
 
-  /* Cadre principal (vert pour chat) */
-  .main-card {
-    width: 100%;
-    background: rgba(34,197,94,0.2);
-    backdrop-filter: blur(14px);
-    border: 2px solid rgba(34,197,94,0.6);
-    border-radius: 28px;
-    overflow: hidden;
-    box-shadow: 0 8px 32px rgba(34,197,94,0.3);
-    transition: opacity 0.3s;
-  }
-  .main-card.disabled {
-    opacity: 0.5;
-    pointer-events: none;
-  }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      background: rgba(255,255,255,0.92);
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+    }
 
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 18px 20px;
-    background: rgba(34,197,94,0.9);
-    border-bottom: 1px solid rgba(255,255,255,0.3);
-  }
+    .user-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: #e0f2fe;
+      border: 2.5px solid #0ea5e9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
 
-  .user-avatar {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    background: #fff;
-    border: 2.5px solid #16a34a;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; flex-shrink: 0;
-    color: #16a34a;
-  }
+    .user-info { flex: 1; min-width: 0; }
+    .user-uid {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px; font-weight: 700;
+      color: #0284c7;
+    }
+    .user-tagline {
+      font-size: 13px; font-weight: 600;
+      color: #475569; margin-top: 2px;
+    }
 
-  .user-info { flex: 1; min-width: 0; }
-  .user-uid {
-    font-family: 'DM Mono', monospace;
-    font-size: 14px; font-weight: 700;
-    color: #fff;
-  }
-  .user-tagline {
-    font-size: 13px; font-weight: 600;
-    color: #14532d; margin-top: 2px;
-  }
+    .card-body { padding: 4px 16px 16px; }
 
-  .card-body { padding: 4px 16px 16px; }
+    .msg-textarea {
+      width: 100%;
+      min-height: 130px;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      padding: 16px 0 8px;
+      line-height: 1.6;
+    }
+    .msg-textarea::placeholder { color: rgba(255,255,255,0.65); }
+    .msg-textarea:disabled { opacity: 0.7; }
 
-  .msg-textarea {
-    width: 100%;
-    min-height: 130px;
-    background: rgba(255,255,255,0.9);
-    border: 2px solid #22c55e;
-    border-radius: 20px;
-    outline: none;
-    resize: none;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    color: #1e293b;
-    padding: 16px;
-    line-height: 1.6;
-  }
-  .msg-textarea:focus {
-    border-color: #16a34a;
-    box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
-  }
-  .msg-textarea::placeholder { color: #94a3b8; }
-  .msg-textarea:disabled { opacity: 0.7; }
+    .card-footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0 0;
+    }
 
-  .card-footer-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0 0;
-  }
+    .char-count {
+      font-size: 12px; font-weight: 600;
+      color: rgba(255,255,255,0.6);
+    }
+    .char-count.warn { color: #fbbf24; }
+    .char-count.over { color: #f87171; }
 
-  .char-count {
-    font-size: 12px; font-weight: 600;
-    color: #166534;
-  }
-  .char-count.warn { color: #eab308; }
-  .char-count.over { color: #ef4444; }
+    .btn-dice {
+      width: 40px; height: 40px;
+      background: rgba(255,255,255,0.25);
+      border: 1.5px solid rgba(255,255,255,0.4);
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-dice:active { transform: scale(0.92) rotate(30deg); }
+    .btn-dice.disabled { opacity: 0.5; pointer-events: none; }
 
-  .btn-dice {
-    width: 40px; height: 40px;
-    background: rgba(34,197,94,0.8);
-    border: 1.5px solid rgba(34,197,94,0.6);
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background .2s, transform .15s;
-  }
-  .btn-dice:active { transform: scale(0.92) rotate(30deg); }
-  .btn-dice.disabled { opacity: 0.5; pointer-events: none; }
+    .btn-send {
+      width: 100%;
+      padding: 17px;
+      background: #22c55e;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-family: inherit;
+      font-size: 17px; font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .btn-send:active { transform: scale(0.97); }
+    .btn-send:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  .btn-send {
-    width: 100%;
-    padding: 17px;
-    background: #22c55e;
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-family: inherit;
-    font-size: 17px; font-weight: 800;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center; gap: 10px;
-    transition: transform .2s;
-  }
-  .btn-send:active { transform: scale(0.97); }
-  .btn-send:disabled { opacity: 0.6; cursor: not-allowed; }
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2.5px solid rgba(255,255,255,.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin .65s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-  .spinner {
-    width: 20px; height: 20px;
-    border: 2.5px solid rgba(255,255,255,.4);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin .65s linear infinite;
-    display: none;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+    .alert {
+      width: 100%;
+      padding: 0; max-height: 0; overflow: hidden;
+      border-radius: 16px;
+      font-size: 14px; font-weight: 700;
+      text-align: center;
+      transition: max-height .25s, padding .25s;
+    }
+    .alert.show { max-height: 60px; padding: 13px 16px; }
+    .alert.success { background: rgba(34,197,94,.15); color: #16a34a; border: 1px solid rgba(34,197,94,.4); }
+    .alert.error   { background: rgba(239,68,68,.15);  color: #dc2626;  border: 1px solid rgba(239,68,68,.4); }
 
-  .alert {
-    width: 100%;
-    padding: 0; max-height: 0; overflow: hidden;
-    border-radius: 16px;
-    font-size: 14px; font-weight: 700;
-    text-align: center;
-    transition: max-height .25s, padding .25s;
-  }
-  .alert.show { max-height: 60px; padding: 13px 16px; }
-  .alert.success { background: rgba(34,197,94,.15); color: #16a34a; border: 1px solid rgba(34,197,94,.4); }
-  .alert.error   { background: rgba(239,68,68,.15);  color: #dc2626;  border: 1px solid rgba(239,68,68,.4); }
+    .type-label {
+      font-size: 13px; font-weight: 700;
+      color: rgba(255,255,255,.8);
+      text-align: center;
+      text-shadow: 0 1px 4px rgba(0,0,0,.3);
+    }
 
-  .type-label {
-    font-size: 13px; font-weight: 700;
-    color: rgba(255,255,255,.9);
-    text-align: center;
-    background: rgba(34,197,94,0.8);
-    padding: 8px 16px;
-    border-radius: 40px;
-    backdrop-filter: blur(4px);
-  }
+    .btn-receive {
+      width: 100%;
+      padding: 17px;
+      background: rgba(0,0,0,0.75);
+      color: white;
+      border: none; border-radius: 50px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
 
-  .btn-receive {
-    width: 100%;
-    padding: 17px;
-    background: rgba(0,0,0,0.75);
-    color: white;
-    border: none; border-radius: 50px;
-    font-family: inherit;
-    font-size: 15px; font-weight: 800;
-    cursor: pointer;
-    text-decoration: none;
-    display: flex; align-items: center; justify-content: center;
-    gap: 8px;
-  }
+    .page-footer {
+      display: flex; gap: 20px;
+      padding: 12px 0 8px;
+    }
+    .page-footer a {
+      font-size: 12px; font-weight: 600;
+      color: rgba(255,255,255,.65);
+      text-decoration: none;
+    }
 
-  .page-footer {
-    display: flex; gap: 20px;
-    padding: 12px 0 8px;
-  }
-  .page-footer a {
-    font-size: 12px; font-weight: 600;
-    color: rgba(255,255,255,.65);
-    text-decoration: none;
-  }
-
-  .success-screen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    text-align: center;
-    padding: 40px 20px;
-  }
-  .success-screen.show { display: flex; }
-  .success-icon { font-size: 64px; animation: pop .4s ease-out; }
-  @keyframes pop { from{transform:scale(0);} to{transform:scale(1);} }
-
-  /* Overlay connexion */
-  .overlay-auth {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.88);
-    backdrop-filter: blur(14px);
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .3s;
-  }
-  .overlay-auth.open {
-    opacity: 1;
-    pointer-events: all;
-  }
-  .auth-sheet {
-    background: white;
-    border-radius: 28px;
-    width: 100%;
-    max-width: 340px;
-    overflow: hidden;
-    transform: scale(0.95);
-    transition: transform 0.3s;
-    text-align: center;
-  }
-  .overlay-auth.open .auth-sheet { transform: scale(1); }
-  .auth-header {
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    padding: 24px;
-    color: white;
-  }
-  .auth-header i { font-size: 48px; margin-bottom: 12px; }
-  .auth-header h3 { font-size: 20px; font-weight: 800; }
-  .auth-body { padding: 24px; }
-  .auth-body p { color: #475569; margin-bottom: 20px; line-height: 1.5; }
-  .auth-actions { display: flex; gap: 12px; }
-  .auth-btn {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 40px;
-    font-family: inherit;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  .auth-btn.continue { background: #22c55e; color: white; }
-  .auth-btn.cancel { background: #e2e8f0; color: #475569; }
+    .success-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .success-screen.show { display: flex; }
+    .success-icon { font-size: 64px; animation: pop .4s ease-out; }
+    @keyframes pop { from{transform:scale(0);} to{transform:scale(1);} }
   </style>
 </head>
 <body>
 
 <div class="page" id="mainPage">
 
-  <!-- Barre d'adresse -->
   <div class="url-bar">
-    <i class="fas fa-comments"></i>
+    <i class="fas fa-link"></i>
     <input type="text" id="urlInput" placeholder="Collez le lien de partage ici...">
     <button class="clear-btn" id="clearBtn" title="Effacer">×</button>
     <button id="validateBtn">Valider</button>
@@ -352,10 +277,9 @@
     <i class="fas fa-exclamation-triangle"></i> Lien invalide
   </div>
 
-  <!-- Cadre principal -->
   <div class="main-card disabled" id="mainCard">
     <div class="card-header">
-      <div class="user-avatar"><i class="fas fa-comments"></i></div>
+      <div class="user-avatar">😎</div>
       <div class="user-info">
         <div class="user-uid" id="userUid">@???</div>
         <div class="user-tagline" id="userTagline">lien non validé</div>
@@ -377,7 +301,7 @@
   </div>
 
   <div class="type-label" id="typeLabel">
-    <span>💬</span> Chat anonyme en direct
+    <span>🔒</span> Messages anonymes
   </div>
 
   <button class="btn-send" id="sendBtn" disabled>
@@ -387,8 +311,8 @@
 
   <div class="alert" id="alertBox"></div>
 
-  <a href="index.html" class="btn-receive">
-    <i class="fas fa-inbox"></i> Voir mes messages
+  <a href="auth.html" class="btn-receive" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);">
+    <i class="fas fa-user-plus"></i> Créez un compte pour recevoir des messages !
   </a>
 
 </div>
@@ -396,27 +320,10 @@
 <div class="page success-screen" id="successScreen">
   <div class="success-icon">✅</div>
   <h2>Message envoyé !</h2>
-  <p>Ton message anonyme a bien été transmis.<br/>La personne pourra te répondre directement 💚</p>
-  <a href="index.html" class="btn-receive" style="margin-top:8px">
-    <i class="fas fa-inbox"></i> Voir mes messages
+  <p>Ton message anonyme a bien été transmis.<br/>L'expéditeur ne saura jamais que c'est toi 🤫</p>
+  <a href="auth.html" class="btn-receive" style="margin-top:8px; background: linear-gradient(135deg, #0ea5e9, #0284c7);">
+    <i class="fas fa-user-plus"></i> Créez un compte pour recevoir des messages !
   </a>
-</div>
-
-<!-- Overlay connexion -->
-<div class="overlay-auth" id="overlayAuth">
-  <div class="auth-sheet">
-    <div class="auth-header">
-      <i class="fas fa-shield-haltered"></i>
-      <h3>Connexion requise</h3>
-    </div>
-    <div class="auth-body">
-      <p>Vous devez être connecté pour envoyer ce type de message anonyme.</p>
-      <div class="auth-actions">
-        <button class="auth-btn continue" id="authContinueBtn">Continuer</button>
-        <button class="auth-btn cancel" id="authCancelBtn">Annuler</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div class="page-footer">
@@ -427,22 +334,20 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ============================================================
-// SUPABASE AVEC CLÉ ANON (car utilisateur doit être connecté)
+// SUPABASE AVEC SERVICE_ROLE
 // ============================================================
 const SUPABASE_URL = 'https://waogbrxqyysibttlpoxj.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhb2dicnhxeXlzaWJ0dGxwb3hqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxNjE3NzUsImV4cCI6MjA5MDczNzc3NX0.Op1DUBfefbO2RkoitXws-7cFLW1T0DJGBDh1YPDcB1w';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhb2dicnhxeXlzaWJ0dGxwb3hqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTE2MTc3NSwiZXhwIjoyMDkwNzM3Nzc1fQ.Kxkn1avkOGI7FHOHMZDkPDRVXs9wGIC2BZkW5wYZwfM';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 // ============================================================
 // ÉTAT
 // ============================================================
 let currentUid = null;
-let currentType = 'discussion';
-let currentUser = null;
-let currentUserId = null;
+let currentType = 'message';
 
 // ============================================================
-// ÉLÉMENTS DOM
+// DOM
 // ============================================================
 const urlInput = document.getElementById('urlInput');
 const clearBtn = document.getElementById('clearBtn');
@@ -456,37 +361,28 @@ const charCount = document.getElementById('charCount');
 const diceBtn = document.getElementById('diceBtn');
 const sendBtn = document.getElementById('sendBtn');
 const typeLabel = document.getElementById('typeLabel');
-const overlayAuth = document.getElementById('overlayAuth');
 
 // ============================================================
 // MESSAGES ALÉATOIRES
 // ============================================================
-const RANDOM_MESSAGES = [
-  "Salut ! On discute ? 👋",
-  "Comment ça va aujourd'hui ? 😊",
-  "Quoi de neuf ? 💬",
-  "Tu penses à quoi ? 🤔",
-  "Raconte-moi ta journée ! 📅",
-  "Un sujet qui te passionne ? 🔥",
-  "Ton avis m'intéresse vraiment 🎯",
-  "Dis-moi tout, je suis anonyme 🤫",
-  "On a le temps de discuter ? ⏰",
-  "Tu es quelqu'un de bien 💚"
-];
-
-// ============================================================
-// VÉRIFICATION CONNEXION
-// ============================================================
-async function checkAuth() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    overlayAuth.classList.add('open');
-    return false;
-  }
-  currentUser = session.user;
-  currentUserId = currentUser.email.split('@')[0];
-  return true;
-}
+const RANDOM = {
+  message: [
+    "Tu m'inspires vraiment, continue comme ça ! 🔥",
+    "J'aime vraiment ta façon d'être 💙",
+    "T'as une énergie incroyable, garde-la !",
+    "Ton sourire donne la bonne humeur à tout le monde 😊",
+    "Tu es quelqu'un de vraiment spécial ✨",
+    "Continue d'être toi-même, c'est ta plus grande force 💪"
+  ],
+  question: [
+    "C'est quoi ton rêve le plus fou ? 🌟",
+    "Si tu pouvais changer une chose dans ta vie, ce serait quoi ?",
+    "Quel est ton plus grand secret ? 🤫",
+    "Qu'est-ce qui te rend vraiment heureux(se) ? 😊",
+    "Si tu pouvais vivre n'importe où, où serais-tu ?",
+    "Quelle est la chose dont tu es le plus fier(e) ? 🏆"
+  ]
+};
 
 // ============================================================
 // FONCTIONS
@@ -506,7 +402,7 @@ function showAlert(msg, type) {
 
 function activateForm(uid, type) {
   currentUid = uid;
-  currentType = type || 'discussion';
+  currentType = type || 'message';
   
   mainCard.classList.remove('disabled');
   msgInput.disabled = false;
@@ -514,9 +410,16 @@ function activateForm(uid, type) {
   sendBtn.disabled = false;
   
   userUidSpan.textContent = `@${uid}`;
-  userTaglineSpan.textContent = `discussion anonyme avec @${uid} 💚`;
-  typeLabel.innerHTML = '<span>💬</span> Chat anonyme en direct';
-  msgInput.placeholder = 'Écris ton message anonyme ici...';
+  
+  const typeConfig = {
+    message: { tagline: 'envoie-moi des messages anonymes !', label: '🔒 Messages anonymes', placeholder: 'Écris ton message ici...' },
+    question: { tagline: 'pose-moi une question anonyme !', label: '❓ Questions anonymes', placeholder: 'Écris ta question ici...' }
+  };
+  const config = typeConfig[type] || typeConfig.message;
+  
+  userTaglineSpan.textContent = config.tagline;
+  typeLabel.innerHTML = `<span>${config.label.split(' ')[0]}</span> ${config.label}`;
+  msgInput.placeholder = config.placeholder;
 }
 
 function deactivateForm() {
@@ -528,7 +431,7 @@ function deactivateForm() {
   userUidSpan.textContent = '@???';
   userTaglineSpan.textContent = 'lien non validé';
   msgInput.placeholder = 'Collez un lien valide pour activer l\'envoi...';
-  typeLabel.innerHTML = '<span>💬</span> Chat anonyme en direct';
+  typeLabel.innerHTML = '<span>🔒</span> Messages anonymes';
 }
 
 function extractUidFromUrl(inputUrl) {
@@ -538,26 +441,37 @@ function extractUidFromUrl(inputUrl) {
       url = 'https://fake.com/' + inputUrl;
     }
     const urlObj = new URL(url);
+    
+    // Refuser les liens live-chat
+    if (urlObj.pathname.includes('live-chat')) {
+      return { error: 'live_chat' };
+    }
+    
     const uid = urlObj.searchParams.get('uid');
-    const type = urlObj.searchParams.get('type') || 'discussion';
+    const type = urlObj.searchParams.get('type') || 'message';
+    
     if (uid && uid.trim().length > 0) {
       return { uid: uid.trim(), type };
     }
     return null;
   } catch (e) {
+    // Vérification manuelle
+    if (inputUrl.includes('live-chat')) {
+      return { error: 'live_chat' };
+    }
     const match = inputUrl.match(/[?&]uid=([^&]+)/);
     if (match && match[1]) {
       const typeMatch = inputUrl.match(/[?&]type=([^&]+)/);
-      return { uid: match[1], type: typeMatch ? typeMatch[1] : 'discussion' };
+      return { uid: match[1], type: typeMatch ? typeMatch[1] : 'message' };
     }
     return null;
   }
 }
 
 // ============================================================
-// VALIDATION MANUELLE
+// VALIDATION
 // ============================================================
-validateBtn.addEventListener('click', async () => {
+validateBtn.addEventListener('click', () => {
   const inputValue = urlInput.value.trim();
   if (!inputValue) {
     showError('Veuillez coller un lien');
@@ -566,11 +480,22 @@ validateBtn.addEventListener('click', async () => {
   }
   
   const result = extractUidFromUrl(inputValue);
+  
+  // Refuser les liens live-chat
+  if (result && result.error === 'live_chat') {
+    showError('❌ Ce lien est destiné au chat. Utilisez live-chat.html');
+    deactivateForm();
+    return;
+  }
+  
+  // Refuser les liens avec type=discussion
+  if (result && result.type === 'discussion') {
+    showError('❌ Ce lien est destiné au chat. Utilisez live-chat.html');
+    deactivateForm();
+    return;
+  }
+  
   if (result && result.uid) {
-    // Vérifier que l'utilisateur est connecté avant d'activer
-    const isAuth = await checkAuth();
-    if (!isAuth) return;
-    
     activateForm(result.uid, result.type);
     errorBanner.classList.remove('show');
   } else {
@@ -579,9 +504,6 @@ validateBtn.addEventListener('click', async () => {
   }
 });
 
-// ============================================================
-// BOUTON EFFACER
-// ============================================================
 clearBtn.addEventListener('click', () => {
   urlInput.value = '';
   urlInput.focus();
@@ -589,19 +511,24 @@ clearBtn.addEventListener('click', () => {
 });
 
 // ============================================================
-// DÉTECTION AUTOMATIQUE À L'OUVERTURE DE LA PAGE
+// DÉTECTION AUTOMATIQUE
 // ============================================================
-async function autoDetectFromUrl() {
+function autoDetectFromUrl() {
   const urlParams = new URLSearchParams(window.location.search);
   const autoUid = urlParams.get('uid');
-  const autoType = urlParams.get('type') || 'discussion';
+  const autoType = urlParams.get('type') || 'message';
   
   if (autoUid && autoUid.trim().length > 0) {
     urlInput.value = window.location.href;
-    const isAuth = await checkAuth();
-    if (isAuth) {
-      activateForm(autoUid, autoType);
+    
+    // Refuser les liens chat
+    if (autoType === 'discussion') {
+      showError('❌ Ce lien est destiné au chat. Utilisez live-chat.html');
+      deactivateForm();
+      return;
     }
+    
+    activateForm(autoUid, autoType);
   }
 }
 
@@ -618,20 +545,17 @@ msgInput.addEventListener('input', () => {
 // BOUTON DÉ
 // ============================================================
 diceBtn.addEventListener('click', () => {
-  const txt = RANDOM_MESSAGES[Math.floor(Math.random() * RANDOM_MESSAGES.length)];
+  const pool = RANDOM[currentType] || RANDOM.message;
+  const txt = pool[Math.floor(Math.random() * pool.length)];
   msgInput.value = txt;
   msgInput.dispatchEvent(new Event('input'));
 });
 
 // ============================================================
-// ENVOI (avec is_chat: true)
+// ENVOI
 // ============================================================
 sendBtn.addEventListener('click', async () => {
   const message = msgInput.value.trim();
-  
-  // Vérifier connexion
-  const isAuth = await checkAuth();
-  if (!isAuth) return;
   
   if (!message) {
     showAlert('✏️ Écris un message d\'abord !', 'error');
@@ -653,7 +577,7 @@ sendBtn.addEventListener('click', async () => {
       user_id: currentUid,
       content: message,
       type: currentType,
-      is_chat: true,  // ← Important : permet le bouton chat
+      is_chat: false,
       read: false,
       created_at: new Date().toISOString()
     });
@@ -673,24 +597,7 @@ sendBtn.addEventListener('click', async () => {
 });
 
 // ============================================================
-// OVERLAY CONNEXION
-// ============================================================
-document.getElementById('authContinueBtn').addEventListener('click', () => {
-  window.location.href = 'auth.html';
-});
-
-document.getElementById('authCancelBtn').addEventListener('click', () => {
-  window.location.href = `envoyer.html?uid=${currentUid || ''}`;
-});
-
-overlayAuth.addEventListener('click', (e) => {
-  if (e.target === overlayAuth) {
-    window.location.href = `envoyer.html?uid=${currentUid || ''}`;
-  }
-});
-
-// ============================================================
-// LANCER LA DÉTECTION AUTOMATIQUE AU CHARGEMENT
+// INIT
 // ============================================================
 autoDetectFromUrl();
 </script>

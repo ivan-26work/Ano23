@@ -7,346 +7,361 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
   <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      background: url('images/image5.png') center/cover no-repeat fixed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 24px;
+    }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    background: url('images/image5.png') center/cover no-repeat fixed;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 32px 16px 24px;
-    -webkit-font-smoothing: antialiased;
-  }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.25);
+      z-index: 0;
+    }
 
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.25);
-    z-index: 0;
-  }
+    .page {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 460px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 18px;
+      flex: 1;
+    }
 
-  .page {
-    position: relative; z-index: 1;
-    width: 100%; max-width: 460px;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 18px;
-    flex: 1;
-  }
+    .url-bar {
+      width: 100%;
+      background: rgba(255,255,255,0.95);
+      border-radius: 60px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .url-bar i { font-size: 18px; color: #0ea5e9; }
+    .url-bar input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      font-family: 'DM Mono', monospace;
+      padding: 10px 0;
+      background: transparent;
+    }
+    .url-bar .clear-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #94a3b8;
+      padding: 0 8px;
+    }
+    .url-bar .clear-btn:hover { color: #ef4444; }
+    .url-bar button {
+      background: #0ea5e9;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .url-bar button:active { transform: scale(0.96); }
 
-  /* ======== CADRE PRINCIPAL ======== */
-  .main-card {
-    width: 100%;
-    background: rgba(34,197,94,0.2);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 2px solid rgba(34,197,94,0.6);
-    border-radius: 28px;
-    overflow: hidden;
-    box-shadow: 0 8px 32px rgba(34,197,94,0.3);
-  }
+    .error-banner {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 10px 16px;
+      border-radius: 60px;
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+      width: 100%;
+      text-align: center;
+    }
+    .error-banner.show { display: block; }
 
-  /* Header cadre */
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 18px 20px;
-    background: rgba(34,197,94,0.9);
-    border-bottom: 1px solid rgba(255,255,255,0.3);
-  }
+    .main-card {
+      width: 100%;
+      background: rgba(34,197,94,0.2);
+      backdrop-filter: blur(14px);
+      border: 2px solid rgba(34,197,94,0.6);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(34,197,94,0.3);
+      transition: opacity 0.3s;
+    }
+    .main-card.disabled { opacity: 0.5; pointer-events: none; }
 
-  .user-avatar {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    background: #fff;
-    border: 2.5px solid #16a34a;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; flex-shrink: 0;
-    overflow: hidden;
-    color: #16a34a;
-  }
-  .user-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      background: rgba(34,197,94,0.9);
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+    }
 
-  .user-info { flex: 1; min-width: 0; }
-  .user-uid {
-    font-family: 'DM Mono', monospace;
-    font-size: 14px; font-weight: 700;
-    color: #fff;
-  }
-  .user-tagline {
-    font-size: 13px; font-weight: 600;
-    color: #14532d; margin-top: 2px;
-  }
+    .user-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2.5px solid #16a34a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #16a34a;
+    }
 
-  /* Zone texte */
-  .card-body { padding: 4px 16px 16px; position: relative; }
+    .user-info { flex: 1; min-width: 0; }
+    .user-uid {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px; font-weight: 700;
+      color: #fff;
+    }
+    .user-tagline {
+      font-size: 13px; font-weight: 600;
+      color: #14532d; margin-top: 2px;
+    }
 
-  .msg-textarea {
-    width: 100%;
-    min-height: 130px;
-    background: rgba(255,255,255,0.9);
-    border: 2px solid #22c55e;
-    border-radius: 20px;
-    outline: none;
-    resize: none;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    color: #1e293b;
-    padding: 16px;
-    line-height: 1.6;
-  }
-  .msg-textarea:focus {
-    border-color: #16a34a;
-    box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
-  }
-  .msg-textarea::placeholder { color: #94a3b8; }
+    .card-body { padding: 4px 16px 16px; }
 
-  .card-footer-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0 0;
-  }
+    .msg-textarea {
+      width: 100%;
+      min-height: 130px;
+      background: rgba(255,255,255,0.9);
+      border: 2px solid #22c55e;
+      border-radius: 20px;
+      outline: none;
+      resize: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: #1e293b;
+      padding: 16px;
+      line-height: 1.6;
+    }
+    .msg-textarea:focus {
+      border-color: #16a34a;
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+    }
+    .msg-textarea::placeholder { color: #94a3b8; }
+    .msg-textarea:disabled { opacity: 0.7; }
 
-  .char-count {
-    font-size: 12px; font-weight: 600;
-    color: #166534;
-  }
-  .char-count.warn { color: #eab308; }
-  .char-count.over { color: #ef4444; }
+    .card-footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0 0;
+    }
 
-  .btn-dice {
-    width: 40px; height: 40px;
-    background: rgba(34,197,94,0.8);
-    border: 1.5px solid rgba(34,197,94,0.6);
-    border-radius: 12px;
-    cursor: pointer; font-size: 20px;
-    display: flex; align-items: center; justify-content: center;
-    transition: background .2s, transform .15s;
-  }
-  .btn-dice:hover  { background: rgba(34,197,94,1); }
-  .btn-dice:active { transform: scale(0.92) rotate(30deg); }
+    .char-count {
+      font-size: 12px; font-weight: 600;
+      color: #166534;
+    }
+    .char-count.warn { color: #eab308; }
+    .char-count.over { color: #ef4444; }
 
-  /* ======== BOUTON ENVOYER ======== */
-  .btn-send {
-    width: 100%;
-    padding: 17px;
-    background: #22c55e;
-    color: white;
-    border: none; border-radius: 50px;
-    font-family: inherit;
-    font-size: 17px; font-weight: 800;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    box-shadow: 0 6px 20px rgba(34,197,94,0.45);
-    transition: transform .2s, box-shadow .2s, opacity .2s;
-  }
-  .btn-send:hover  { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(34,197,94,0.55); }
-  .btn-send:active { transform: translateY(0); }
-  .btn-send:disabled { opacity: .6; cursor: not-allowed; transform: none !important; }
+    .btn-dice {
+      width: 40px; height: 40px;
+      background: rgba(34,197,94,0.8);
+      border: 1.5px solid rgba(34,197,94,0.6);
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-dice:active { transform: scale(0.92) rotate(30deg); }
+    .btn-dice.disabled { opacity: 0.5; pointer-events: none; }
 
-  /* Spinner */
-  .spinner {
-    width: 20px; height: 20px;
-    border: 2.5px solid rgba(255,255,255,.4);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin .65s linear infinite;
-    display: none;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-send {
+      width: 100%;
+      padding: 17px;
+      background: #22c55e;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-family: inherit;
+      font-size: 17px; font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .btn-send:active { transform: scale(0.97); }
+    .btn-send:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  /* ======== ALERTE ======== */
-  .alert {
-    width: 100%;
-    padding: 0; max-height: 0; overflow: hidden;
-    border-radius: 16px;
-    font-size: 14px; font-weight: 700;
-    text-align: center;
-    transition: max-height .25s, padding .25s;
-  }
-  .alert.show { max-height: 60px; padding: 13px 16px; }
-  .alert.success { background: rgba(34,197,94,.15); color: #16a34a; border: 1px solid rgba(34,197,94,.4); }
-  .alert.error   { background: rgba(239,68,68,.15);  color: #dc2626;  border: 1px solid rgba(239,68,68,.4); }
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2.5px solid rgba(255,255,255,.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin .65s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ======== TYPE LABEL ======== */
-  .type-label {
-    font-size: 13px; font-weight: 700;
-    color: rgba(255,255,255,.9);
-    text-align: center;
-    text-shadow: 0 1px 4px rgba(0,0,0,.3);
-    background: rgba(34,197,94,0.8);
-    padding: 8px 16px;
-    border-radius: 40px;
-    backdrop-filter: blur(4px);
-  }
-  .type-label span { font-size: 16px; }
+    .alert {
+      width: 100%;
+      padding: 0; max-height: 0; overflow: hidden;
+      border-radius: 16px;
+      font-size: 14px; font-weight: 700;
+      text-align: center;
+      transition: max-height .25s, padding .25s;
+    }
+    .alert.show { max-height: 60px; padding: 13px 16px; }
+    .alert.success { background: rgba(34,197,94,.15); color: #16a34a; border: 1px solid rgba(34,197,94,.4); }
+    .alert.error   { background: rgba(239,68,68,.15);  color: #dc2626;  border: 1px solid rgba(239,68,68,.4); }
 
-  /* ======== BOUTON RECEVOIR ======== */
-  .btn-receive {
-    width: 100%;
-    padding: 17px;
-    background: rgba(0,0,0,0.75);
-    color: white;
-    border: none; border-radius: 50px;
-    font-family: inherit;
-    font-size: 15px; font-weight: 800;
-    cursor: pointer;
-    transition: background .2s, transform .15s;
-    backdrop-filter: blur(6px);
-    text-decoration: none;
-    display: flex; align-items: center; justify-content: center;
-    gap: 8px;
-  }
-  .btn-receive:hover { background: rgba(0,0,0,0.88); transform: translateY(-1px); }
-  .btn-receive:active { transform: translateY(0); }
+    .type-label {
+      font-size: 13px; font-weight: 700;
+      color: rgba(255,255,255,.9);
+      text-align: center;
+      background: rgba(34,197,94,0.8);
+      padding: 8px 16px;
+      border-radius: 40px;
+      backdrop-filter: blur(4px);
+    }
 
-  /* ======== FOOTER ======== */
-  .page-footer {
-    position: relative; z-index: 1;
-    display: flex; gap: 20px;
-    padding: 12px 0 8px;
-  }
-  .page-footer a {
-    font-size: 12px; font-weight: 600;
-    color: rgba(255,255,255,.65);
-    text-decoration: none;
-    transition: color .2s;
-  }
-  .page-footer a:hover { color: white; }
+    .btn-receive {
+      width: 100%;
+      padding: 17px;
+      background: rgba(0,0,0,0.75);
+      color: white;
+      border: none; border-radius: 50px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
 
-  /* ======== SUCCÈS SCREEN ======== */
-  .success-screen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    text-align: center;
-    padding: 40px 20px;
-  }
-  .success-screen.show { display: flex; }
-  .success-icon { font-size: 64px; animation: pop .4s cubic-bezier(.22,1,.36,1); }
-  @keyframes pop { from{transform:scale(0);} to{transform:scale(1);} }
-  .success-screen h2 { font-size: 22px; font-weight: 800; color: white; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
-  .success-screen p  { font-size: 14px; color: rgba(255,255,255,.8); font-weight: 600; }
+    .page-footer {
+      display: flex; gap: 20px;
+      padding: 12px 0 8px;
+    }
+    .page-footer a {
+      font-size: 12px; font-weight: 600;
+      color: rgba(255,255,255,.65);
+      text-decoration: none;
+    }
 
-  /* ======== OVERLAY AUTH ======== */
-  .overlay-auth {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.88);
-    backdrop-filter: blur(14px);
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .3s;
-  }
-  .overlay-auth.open {
-    opacity: 1;
-    pointer-events: all;
-  }
-  .auth-sheet {
-    background: var(--surface, #fff);
-    border-radius: 28px;
-    width: 100%;
-    max-width: 340px;
-    overflow: hidden;
-    transform: scale(0.95);
-    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    text-align: center;
-  }
-  .overlay-auth.open .auth-sheet {
-    transform: scale(1);
-  }
-  .auth-header {
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    padding: 24px;
-    color: white;
-  }
-  .auth-header i {
-    font-size: 48px;
-    margin-bottom: 12px;
-  }
-  .auth-header h3 {
-    font-size: 20px;
-    font-weight: 800;
-  }
-  .auth-body {
-    padding: 24px;
-  }
-  .auth-body p {
-    color: #475569;
-    margin-bottom: 20px;
-    line-height: 1.5;
-  }
-  .auth-actions {
-    display: flex;
-    gap: 12px;
-  }
-  .auth-btn {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 40px;
-    font-family: inherit;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.15s;
-  }
-  .auth-btn:active {
-    transform: scale(0.97);
-  }
-  .auth-btn.continue {
-    background: #22c55e;
-    color: white;
-  }
-  .auth-btn.cancel {
-    background: #e2e8f0;
-    color: #475569;
-  }
+    .success-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .success-screen.show { display: flex; }
+    .success-icon { font-size: 64px; animation: pop .4s ease-out; }
+    @keyframes pop { from{transform:scale(0);} to{transform:scale(1);} }
+
+    .overlay-auth {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(14px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+    .overlay-auth.open { opacity: 1; pointer-events: all; }
+    .auth-sheet {
+      background: white;
+      border-radius: 28px;
+      width: 100%;
+      max-width: 340px;
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.3s;
+      text-align: center;
+    }
+    .overlay-auth.open .auth-sheet { transform: scale(1); }
+    .auth-header {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      padding: 24px;
+      color: white;
+    }
+    .auth-header i { font-size: 48px; margin-bottom: 12px; }
+    .auth-header h3 { font-size: 20px; font-weight: 800; }
+    .auth-body { padding: 24px; }
+    .auth-body p { color: #475569; margin-bottom: 20px; line-height: 1.5; }
+    .auth-actions { display: flex; gap: 12px; }
+    .auth-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 40px;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .auth-btn.continue { background: #22c55e; color: white; }
+    .auth-btn.cancel { background: #e2e8f0; color: #475569; }
   </style>
 </head>
 <body>
 
 <div class="page" id="mainPage">
 
-  <div class="main-card">
+  <div class="url-bar">
+    <i class="fas fa-comments"></i>
+    <input type="text" id="urlInput" placeholder="Collez le lien de partage ici...">
+    <button class="clear-btn" id="clearBtn" title="Effacer">×</button>
+    <button id="validateBtn">Valider</button>
+  </div>
+
+  <div class="error-banner" id="errorBanner">
+    <i class="fas fa-exclamation-triangle"></i> Lien invalide
+  </div>
+
+  <div class="main-card disabled" id="mainCard">
     <div class="card-header">
-      <div class="user-avatar" id="userAvatar">
-        <i class="fas fa-comments"></i>
-      </div>
+      <div class="user-avatar"><i class="fas fa-comments"></i></div>
       <div class="user-info">
-        <div class="user-uid" id="userUid">@utilisateur</div>
-        <div class="user-tagline" id="userTagline">discussion anonyme en direct 💚</div>
+        <div class="user-uid" id="userUid">@???</div>
+        <div class="user-tagline" id="userTagline">lien non validé</div>
       </div>
     </div>
     <div class="card-body">
       <textarea
         class="msg-textarea"
         id="msgInput"
-        placeholder="Écris ton message anonyme ici..."
+        placeholder="Collez un lien valide pour activer l'envoi..."
         maxlength="500"
+        disabled
       ></textarea>
       <div class="card-footer-row">
         <span class="char-count" id="charCount">0 / 500</span>
-        <button class="btn-dice" id="diceBtn" title="Message aléatoire">🎲</button>
+        <button class="btn-dice" id="diceBtn" disabled>🎲</button>
       </div>
     </div>
   </div>
 
   <div class="type-label" id="typeLabel">
-    <span>💚</span> Chat anonyme en direct
+    <span>💬</span> Chat anonyme en direct
   </div>
 
-  <button class="btn-send" id="sendBtn">
+  <button class="btn-send" id="sendBtn" disabled>
     <span class="btn-text">Envoyer !</span>
     <span class="spinner" id="sendSpinner"></span>
   </button>
@@ -392,36 +407,34 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ============================================================
-// SUPABASE CONFIG
+// SUPABASE AVEC CLÉ ANON (utilisateur doit être connecté)
 // ============================================================
 const SUPABASE_URL = 'https://waogbrxqyysibttlpoxj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhb2dicnhxeXlzaWJ0dGxwb3hqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxNjE3NzUsImV4cCI6MjA5MDczNzc3NX0.Op1DUBfefbO2RkoitXws-7cFLW1T0DJGBDh1YPDcB1w';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================================
-// PARAMS URL
+// ÉTAT
 // ============================================================
-const params = new URLSearchParams(window.location.search);
-const targetUid = params.get('uid') || 'demo';
-
-// ============================================================
-// VÉRIFIER CONNEXION
-// ============================================================
+let currentUid = null;
 let currentUser = null;
 let currentUserId = null;
 
-async function checkAuth() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    document.getElementById('overlayAuth').classList.add('open');
-    return false;
-  }
-  currentUser = session.user;
-  currentUserId = currentUser.email.split('@')[0];
-  document.getElementById('userUid').textContent = `@${currentUserId}`;
-  document.getElementById('userTagline').textContent = `discussion anonyme avec @${targetUid} 💚`;
-  return true;
-}
+// ============================================================
+// DOM
+// ============================================================
+const urlInput = document.getElementById('urlInput');
+const clearBtn = document.getElementById('clearBtn');
+const validateBtn = document.getElementById('validateBtn');
+const errorBanner = document.getElementById('errorBanner');
+const mainCard = document.getElementById('mainCard');
+const userUidSpan = document.getElementById('userUid');
+const userTaglineSpan = document.getElementById('userTagline');
+const msgInput = document.getElementById('msgInput');
+const charCount = document.getElementById('charCount');
+const diceBtn = document.getElementById('diceBtn');
+const sendBtn = document.getElementById('sendBtn');
+const overlayAuth = document.getElementById('overlayAuth');
 
 // ============================================================
 // MESSAGES ALÉATOIRES
@@ -436,23 +449,142 @@ const RANDOM_MESSAGES = [
   "Ton avis m'intéresse vraiment 🎯",
   "Dis-moi tout, je suis anonyme 🤫",
   "On a le temps de discuter ? ⏰",
-  "Tu es quelqu'un de bien 💚",
-  "Continue comme ça ! ✨",
-  "Je suis là pour discuter 💬"
+  "Tu es quelqu'un de bien 💚"
 ];
 
 // ============================================================
-// INIT UI
+// AUTH
 // ============================================================
-document.getElementById('userUid').textContent = `@${targetUid}`;
-document.getElementById('userTagline').textContent = `discussion anonyme avec @${targetUid} 💚`;
+async function checkAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    overlayAuth.classList.add('open');
+    return false;
+  }
+  currentUser = session.user;
+  currentUserId = currentUser.email.split('@')[0];
+  return true;
+}
 
 // ============================================================
-// COMPTEUR CARACTÈRES
+// UI
 // ============================================================
-const msgInput = document.getElementById('msgInput');
-const charCount = document.getElementById('charCount');
+function showError(message) {
+  errorBanner.textContent = message || 'Lien invalide';
+  errorBanner.classList.add('show');
+  setTimeout(() => errorBanner.classList.remove('show'), 4000);
+}
 
+function showAlert(msg, type) {
+  const alertBox = document.getElementById('alertBox');
+  alertBox.textContent = msg;
+  alertBox.className = `alert show ${type}`;
+  setTimeout(() => alertBox.className = 'alert', 4000);
+}
+
+function activateForm(uid) {
+  currentUid = uid;
+  mainCard.classList.remove('disabled');
+  msgInput.disabled = false;
+  diceBtn.disabled = false;
+  sendBtn.disabled = false;
+  userUidSpan.textContent = `@${uid}`;
+  userTaglineSpan.textContent = `discussion anonyme avec @${uid} 💚`;
+  msgInput.placeholder = 'Écris ton message anonyme ici...';
+}
+
+function deactivateForm() {
+  currentUid = null;
+  mainCard.classList.add('disabled');
+  msgInput.disabled = true;
+  diceBtn.disabled = true;
+  sendBtn.disabled = true;
+  userUidSpan.textContent = '@???';
+  userTaglineSpan.textContent = 'lien non validé';
+  msgInput.placeholder = 'Collez un lien valide pour activer l\'envoi...';
+}
+
+function extractUidFromUrl(inputUrl) {
+  try {
+    let url = inputUrl;
+    if (!inputUrl.startsWith('http')) {
+      url = 'https://fake.com/' + inputUrl;
+    }
+    const urlObj = new URL(url);
+    const uid = urlObj.searchParams.get('uid');
+    const type = urlObj.searchParams.get('type') || '';
+    if (uid && uid.trim().length > 0) {
+      return { uid: uid.trim(), type };
+    }
+    return null;
+  } catch (e) {
+    const match = inputUrl.match(/[?&]uid=([^&]+)/);
+    if (match && match[1]) {
+      const typeMatch = inputUrl.match(/[?&]type=([^&]+)/);
+      return { uid: match[1], type: typeMatch ? typeMatch[1] : '' };
+    }
+    return null;
+  }
+}
+
+// ============================================================
+// VALIDATION
+// ============================================================
+validateBtn.addEventListener('click', async () => {
+  const inputValue = urlInput.value.trim();
+  if (!inputValue) {
+    showError('Veuillez coller un lien');
+    deactivateForm();
+    return;
+  }
+  
+  const result = extractUidFromUrl(inputValue);
+  if (result && result.uid) {
+    // Vérifier si c'est un lien de message normal
+    if (result.type !== 'discussion' && result.type !== '') {
+      showError('Ce lien est destiné aux utilisateurs non connectés. Utilisez envoyer.html');
+      deactivateForm();
+      return;
+    }
+    const isAuth = await checkAuth();
+    if (!isAuth) return;
+    activateForm(result.uid);
+    errorBanner.classList.remove('show');
+  } else {
+    showError('Lien invalide : uid manquant');
+    deactivateForm();
+  }
+});
+
+clearBtn.addEventListener('click', () => {
+  urlInput.value = '';
+  urlInput.focus();
+  deactivateForm();
+});
+
+// ============================================================
+// DÉTECTION AUTO
+// ============================================================
+async function autoDetectFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const autoUid = urlParams.get('uid');
+  const autoType = urlParams.get('type') || '';
+  
+  if (autoUid && autoUid.trim().length > 0) {
+    urlInput.value = window.location.href;
+    if (autoType !== 'discussion' && autoType !== '') {
+      showError('Ce lien est destiné aux utilisateurs non connectés. Utilisez envoyer.html');
+      deactivateForm();
+      return;
+    }
+    const isAuth = await checkAuth();
+    if (isAuth) activateForm(autoUid);
+  }
+}
+
+// ============================================================
+// COMPTEUR
+// ============================================================
 msgInput.addEventListener('input', () => {
   const len = msgInput.value.length;
   charCount.textContent = `${len} / 500`;
@@ -460,42 +592,31 @@ msgInput.addEventListener('input', () => {
 });
 
 // ============================================================
-// BOUTON DÉ
+// DÉ
 // ============================================================
-document.getElementById('diceBtn').addEventListener('click', () => {
+diceBtn.addEventListener('click', () => {
   const txt = RANDOM_MESSAGES[Math.floor(Math.random() * RANDOM_MESSAGES.length)];
   msgInput.value = txt;
   msgInput.dispatchEvent(new Event('input'));
 });
 
 // ============================================================
-// ALERTE
+// ENVOI (is_chat = true)
 // ============================================================
-function showAlert(msg, type) {
-  const el = document.getElementById('alertBox');
-  el.textContent = msg;
-  el.className = `alert show ${type}`;
-  setTimeout(() => { el.className = 'alert'; }, 4000);
-}
-
-// ============================================================
-// ENVOI
-// ============================================================
-document.getElementById('sendBtn').addEventListener('click', async () => {
-  // Vérifier connexion
+sendBtn.addEventListener('click', async () => {
+  const message = msgInput.value.trim();
+  
   const isAuth = await checkAuth();
   if (!isAuth) return;
   
-  const message = msgInput.value.trim();
-  const sendBtn = document.getElementById('sendBtn');
-
   if (!message) {
     showAlert('✏️ Écris un message d\'abord !', 'error');
     msgInput.focus();
     return;
   }
-  if (message.length > 500) {
-    showAlert('📏 Message trop long (max 500 caractères)', 'error');
+  
+  if (!currentUid) {
+    showAlert('❌ Destinataire invalide', 'error');
     return;
   }
 
@@ -505,7 +626,8 @@ document.getElementById('sendBtn').addEventListener('click', async () => {
 
   try {
     const { error } = await sb.from('messages').insert({
-      user_id: targetUid,
+      user_id: currentUid,
+      sender_id: currentUserId,
       content: message,
       type: 'discussion',
       is_chat: true,
@@ -530,28 +652,24 @@ document.getElementById('sendBtn').addEventListener('click', async () => {
 // ============================================================
 // OVERLAY AUTH
 // ============================================================
-function closeAuthOverlay() {
-  document.getElementById('overlayAuth').classList.remove('open');
-}
-
 document.getElementById('authContinueBtn').addEventListener('click', () => {
   window.location.href = 'auth.html';
 });
 
 document.getElementById('authCancelBtn').addEventListener('click', () => {
-  window.location.href = `envoyer.html?uid=${targetUid}`;
+  window.location.href = `envoyer.html?uid=${currentUid || ''}`;
 });
 
-document.getElementById('overlayAuth').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('overlayAuth')) {
-    window.location.href = `envoyer.html?uid=${targetUid}`;
+overlayAuth.addEventListener('click', (e) => {
+  if (e.target === overlayAuth) {
+    window.location.href = `envoyer.html?uid=${currentUid || ''}`;
   }
 });
 
 // ============================================================
-// VÉRIFIER CONNEXION AU CHARGEMENT
+// INIT
 // ============================================================
-checkAuth();
+autoDetectFromUrl();
 </script>
 </body>
 </html>

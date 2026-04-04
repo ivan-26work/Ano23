@@ -59,8 +59,8 @@
     </div>
     
     <div class="header-right">
-      <button class="btn-delete-header" id="btnDeleteHeader" title="Sélectionner">
-        <i class="fas fa-trash-can"></i>
+      <button class="btn-cancel-header" id="btnCancelHeader" style="display:none">
+        <i class="fas fa-times"></i>
       </button>
       <button class="menu-btn" id="menuBtn">
         <div class="notif-dot" id="notifDot" style="display:none"></div>
@@ -91,7 +91,7 @@
                 <div class="envelope-icon">
                   <i class="fas fa-envelope-open-text"></i>
                 </div>
-                <span class="envelope-text"><i class="fas fa-share-alt"></i> Partage ton lien !</span>
+                <span class="envelope-text"><i class="fas fa-smile-wink"></i> J'attends ! 🙂</span>
               </div>
             </div>
           </div>
@@ -114,7 +114,7 @@
                 <div class="envelope-icon">
                   <i class="fas fa-comment-dots"></i>
                 </div>
-                <span class="envelope-text"><i class="fas fa-share-alt"></i> Partage ton lien !</span>
+                <span class="envelope-text"><i class="fas fa-smile-wink"></i> J'attends ! 🙂</span>
               </div>
             </div>
           </div>
@@ -137,7 +137,7 @@
                 <div class="envelope-icon">
                   <i class="fas fa-message"></i>
                 </div>
-                <span class="envelope-text"><i class="fas fa-share-alt"></i> Partage ton lien !</span>
+                <span class="envelope-text"><i class="fas fa-smile-wink"></i> J'attends ! 🙂</span>
               </div>
             </div>
           </div>
@@ -146,15 +146,12 @@
       
     </div>
 
-    <!-- ========== ONGLET INBOX (style natif) ========== -->
+    <!-- ========== ONGLET INBOX ========== -->
     <div class="tab-content" id="tab-inbox">
       <div class="inbox-container">
         <div class="inbox-header">
           <span class="inbox-count" id="inboxCount">0 message</span>
           <div class="inbox-actions">
-            <button class="btn-confirm-del" id="btnConfirmDel">
-              <i class="fas fa-trash-can"></i> Supprimer
-            </button>
             <button class="btn-select" id="btnSelect">
               <i class="fas fa-check-square"></i> Sélectionner
             </button>
@@ -168,28 +165,26 @@
 
 </div><!-- /app -->
 
-<!-- ========== BARRE D'ACTION FIXE (LINK) ========== -->
+<!-- ========== BARRE D'ACTION FIXE (LINK UNIQUEMENT) ========== -->
 <div class="link-footer" id="linkFooter">
   <div class="link-toolbar">
     <button class="link-btn share" id="shareLinkCardBtn">
-      <i class="fab fa-whatsapp"></i> Partager
+      <i class="fab fa-whatsapp"></i> 
     </button>
     <button class="link-btn copy" id="copyLinkBtn">
-      <i class="fas fa-copy"></i> Copier
+      <i class="fas fa-copy"></i> 
     </button>
     <button class="link-btn download" id="downloadLinkCardBtn">
-      <i class="fas fa-download"></i> Télécharger
+      <i class="fas fa-download"></i> 
     </button>
     <button class="link-btn dice" id="diceBtn">
-      <i class="fas fa-dice"></i> Dé
+      <i class="fas fa-dice"></i> 
     </button>
   </div>
 </div>
 
-<!-- ========== SIDEBAR BACKDROP ========== -->
-<div class="sb-backdrop" id="sbBackdrop"></div>
-
 <!-- ========== SIDEBAR ========== -->
+<div class="sb-backdrop" id="sbBackdrop"></div>
 <div class="sidebar" id="sidebar">
   <div class="sb-header">
     <div class="sb-avatar-wrap">
@@ -237,6 +232,10 @@
     <div class="sb-section">Compte</div>
     <button class="sb-btn" id="btnLogout">
       <i class="fas fa-sign-out-alt"></i> Se déconnecter
+    </button>
+    
+    <button class="sb-btn" id="btnSendAnonymous">
+      <i class="fas fa-paper-plane"></i> Envoyer un message anonyme
     </button>
 
     <div class="sb-section">Légal</div>
@@ -291,30 +290,21 @@
 
 <!-- ========== OVERLAY RÉPONSE (grand) ========== -->
 <div class="overlay-large" id="overlayLarge">
-  
   <div class="capture-area" id="captureArea">
     <div class="capture-content">
-      
-      <!-- Header -->
       <div class="frame-header">
         <div class="frame-header-box">
           <h1><i class="fas fa-envelope"></i> Ano23 - Réponse anonyme</h1>
         </div>
       </div>
-      
-      <!-- Message reçu (même style que header des cartes link) -->
       <div class="received-message">
         <p id="originalMsgDisplay">…</p>
       </div>
-      
-      <!-- Zone de réponse -->
       <div class="reply-area">
         <textarea class="reply-textarea" id="replyInput" placeholder="✍️ Écris ta réponse ici…" rows="4"></textarea>
       </div>
-      
     </div>
   </div>
-  
   <div class="toolbar" id="replyToolbar">
     <div class="toolbar-content">
       <div class="color-picker-wrap">
@@ -336,8 +326,8 @@
       </button>
     </div>
   </div>
-  
 </div>
+
 <!-- ========== OVERLAY CHAT ========== -->
 <div class="overlay-chat" id="overlayChat">
   <div class="chat-sheet">
