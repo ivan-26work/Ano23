@@ -6,15 +6,14 @@
   <title>Ano23 — Message anonyme</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-    <style>
+  <style>
 
   *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
   body {
     font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
-    background:
-      url('images/image3.png') center/cover no-repeat fixed;
+    background: url('images/image3.png') center/cover no-repeat fixed;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -22,7 +21,6 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Overlay léger pour lisibilité */
   body::before {
     content: '';
     position: fixed; inset: 0;
@@ -38,19 +36,75 @@
     flex: 1;
   }
 
-  /* ======== CADRE PRINCIPAL ======== */
+  /* Barre d'adresse */
+  .url-bar {
+    width: 100%;
+    background: rgba(255,255,255,0.95);
+    border-radius: 60px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .url-bar i {
+    font-size: 18px;
+    color: #0ea5e9;
+  }
+  .url-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    font-family: 'DM Mono', monospace;
+    padding: 10px 0;
+    background: transparent;
+  }
+  .url-bar button {
+    background: #0ea5e9;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 40px;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .url-bar button:active { transform: scale(0.96); }
+  .url-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Message d'erreur */
+  .error-banner {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 10px 16px;
+    border-radius: 60px;
+    font-size: 13px;
+    font-weight: 600;
+    display: none;
+    width: 100%;
+    text-align: center;
+  }
+  .error-banner.show { display: block; }
+
+  /* Cadre principal (désactivé au début) */
   .main-card {
     width: 100%;
     background: rgba(255,255,255,0.18);
     backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
     border: 1.5px solid rgba(255,255,255,0.35);
     border-radius: 28px;
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    transition: opacity 0.3s;
+  }
+  .main-card.disabled {
+    opacity: 0.5;
+    pointer-events: none;
   }
 
-  /* Header cadre */
   .card-header {
     display: flex;
     align-items: center;
@@ -69,7 +123,6 @@
     font-size: 22px; flex-shrink: 0;
     overflow: hidden;
   }
-  .user-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
 
   .user-info { flex: 1; min-width: 0; }
   .user-uid {
@@ -82,21 +135,24 @@
     color: #475569; margin-top: 2px;
   }
 
-  /* Zone texte */
-  .card-body { padding: 4px 16px 16px; position: relative; }
+  .card-body { padding: 4px 16px 16px; }
 
   .msg-textarea {
     width: 100%;
     min-height: 130px;
     background: transparent;
-    border: none; outline: none; resize: none;
+    border: none;
+    outline: none;
+    resize: none;
     font-family: 'DM Sans', sans-serif;
-    font-size: 16px; font-weight: 600;
+    font-size: 16px;
+    font-weight: 600;
     color: white;
     padding: 16px 0 8px;
     line-height: 1.6;
   }
   .msg-textarea::placeholder { color: rgba(255,255,255,0.65); }
+  .msg-textarea:disabled { opacity: 0.7; }
 
   .card-footer-row {
     display: flex;
@@ -117,33 +173,34 @@
     background: rgba(255,255,255,0.25);
     border: 1.5px solid rgba(255,255,255,0.4);
     border-radius: 12px;
-    cursor: pointer; font-size: 20px;
-    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: background .2s, transform .15s;
-    backdrop-filter: blur(6px);
   }
-  .btn-dice:hover  { background: rgba(255,255,255,0.38); }
   .btn-dice:active { transform: scale(0.92) rotate(30deg); }
+  .btn-dice.disabled { opacity: 0.5; pointer-events: none; }
 
-  /* ======== BOUTON ENVOYER ======== */
   .btn-send {
     width: 100%;
     padding: 17px;
     background: #22c55e;
     color: white;
-    border: none; border-radius: 50px;
+    border: none;
+    border-radius: 50px;
     font-family: inherit;
     font-size: 17px; font-weight: 800;
     cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    box-shadow: 0 6px 20px rgba(34,197,94,0.45);
-    transition: transform .2s, box-shadow .2s, opacity .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center; gap: 10px;
+    transition: transform .2s, box-shadow .2s;
   }
-  .btn-send:hover  { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(34,197,94,0.55); }
-  .btn-send:active { transform: translateY(0); }
-  .btn-send:disabled { opacity: .6; cursor: not-allowed; transform: none !important; }
+  .btn-send:active { transform: scale(0.97); }
+  .btn-send:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  /* Spinner */
   .spinner {
     width: 20px; height: 20px;
     border: 2.5px solid rgba(255,255,255,.4);
@@ -154,7 +211,6 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ======== ALERTE ======== */
   .alert {
     width: 100%;
     padding: 0; max-height: 0; overflow: hidden;
@@ -167,16 +223,13 @@
   .alert.success { background: rgba(34,197,94,.15); color: #16a34a; border: 1px solid rgba(34,197,94,.4); }
   .alert.error   { background: rgba(239,68,68,.15);  color: #dc2626;  border: 1px solid rgba(239,68,68,.4); }
 
-  /* ======== TYPE LABEL ======== */
   .type-label {
     font-size: 13px; font-weight: 700;
     color: rgba(255,255,255,.8);
     text-align: center;
     text-shadow: 0 1px 4px rgba(0,0,0,.3);
   }
-  .type-label span { font-size: 16px; }
 
-  /* ======== BOUTON RECEVOIR ======== */
   .btn-receive {
     width: 100%;
     padding: 17px;
@@ -186,17 +239,12 @@
     font-family: inherit;
     font-size: 15px; font-weight: 800;
     cursor: pointer;
-    transition: background .2s, transform .15s;
-    backdrop-filter: blur(6px);
     text-decoration: none;
     display: flex; align-items: center; justify-content: center;
+    gap: 8px;
   }
-  .btn-receive:hover { background: rgba(0,0,0,0.88); transform: translateY(-1px); }
-  .btn-receive:active { transform: translateY(0); }
 
-  /* ======== FOOTER ======== */
   .page-footer {
-    position: relative; z-index: 1;
     display: flex; gap: 20px;
     padding: 12px 0 8px;
   }
@@ -204,11 +252,8 @@
     font-size: 12px; font-weight: 600;
     color: rgba(255,255,255,.65);
     text-decoration: none;
-    transition: color .2s;
   }
-  .page-footer a:hover { color: white; }
 
-  /* ======== SUCCÈS SCREEN ======== */
   .success-screen {
     display: none;
     flex-direction: column;
@@ -218,29 +263,45 @@
     padding: 40px 20px;
   }
   .success-screen.show { display: flex; }
-  .success-icon { font-size: 64px; animation: pop .4s cubic-bezier(.22,1,.36,1); }
+  .success-icon { font-size: 64px; animation: pop .4s ease-out; }
   @keyframes pop { from{transform:scale(0);} to{transform:scale(1);} }
-  .success-screen h2 { font-size: 22px; font-weight: 800; color: white; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
-  .success-screen p  { font-size: 14px; color: rgba(255,255,255,.8); font-weight: 600; }
-
   </style>
 </head>
 <body>
 
 <div class="page" id="mainPage">
-  <div class="main-card">
+
+  <!-- Barre d'adresse -->
+  <div class="url-bar">
+    <i class="fas fa-link"></i>
+    <input type="text" id="urlInput" placeholder="Collez le lien de partage ici...">
+    <button id="validateBtn">Valider</button>
+  </div>
+
+  <div class="error-banner" id="errorBanner">
+    <i class="fas fa-exclamation-triangle"></i> Lien invalide
+  </div>
+
+  <!-- Cadre principal (désactivé par défaut) -->
+  <div class="main-card disabled" id="mainCard">
     <div class="card-header">
       <div class="user-avatar" id="userAvatar">😎</div>
       <div class="user-info">
-        <div class="user-uid" id="userUid">@ipoteivan5</div>
-        <div class="user-tagline" id="userTagline">envoie-moi des messages anonymes !</div>
+        <div class="user-uid" id="userUid">@???</div>
+        <div class="user-tagline" id="userTagline">lien non validé</div>
       </div>
     </div>
     <div class="card-body">
-      <textarea class="msg-textarea" id="msgInput" placeholder="Écris ton message ici..." maxlength="500"></textarea>
+      <textarea
+        class="msg-textarea"
+        id="msgInput"
+        placeholder="Collez un lien valide pour activer l'envoi..."
+        maxlength="500"
+        disabled
+      ></textarea>
       <div class="card-footer-row">
         <span class="char-count" id="charCount">0 / 500</span>
-        <button class="btn-dice" id="diceBtn" title="Message aléatoire">🎲</button>
+        <button class="btn-dice" id="diceBtn" disabled>🎲</button>
       </div>
     </div>
   </div>
@@ -249,7 +310,7 @@
     <span>🔒</span> Messages anonymes
   </div>
 
-  <button class="btn-send" id="sendBtn">
+  <button class="btn-send" id="sendBtn" disabled>
     <span class="btn-text">Envoyer !</span>
     <span class="spinner" id="sendSpinner"></span>
   </button>
@@ -257,15 +318,18 @@
   <div class="alert" id="alertBox"></div>
 
   <a href="auth.html" class="btn-receive">
-    📥 Reçois tes propres messages !
+    <i class="fas fa-inbox"></i> Reçois tes propres messages !
   </a>
+
 </div>
 
 <div class="page success-screen" id="successScreen">
   <div class="success-icon">✅</div>
   <h2>Message envoyé !</h2>
   <p>Ton message anonyme a bien été transmis.<br/>L'expéditeur ne saura jamais que c'est toi 🤫</p>
-  <a href="auth.html" class="btn-receive" style="margin-top:8px">📥 Reçois tes propres messages !</a>
+  <a href="auth.html" class="btn-receive" style="margin-top:8px">
+    <i class="fas fa-inbox"></i> Reçois tes propres messages !
+  </a>
 </div>
 
 <div class="page-footer">
@@ -276,53 +340,36 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ============================================================
-// SUPABASE CONFIG
+// SUPABASE AVEC SERVICE_ROLE
 // ============================================================
 const SUPABASE_URL = 'https://waogbrxqyysibttlpoxj.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhb2dicnhxeXlzaWJ0dGxwb3hqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxNjE3NzUsImV4cCI6MjA5MDczNzc3NX0.Op1DUBfefbO2RkoitXws-7cFLW1T0DJGBDh1YPDcB1w';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhb2dicnhxeXlzaWJ0dGxwb3hqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTE2MTc3NSwiZXhwIjoyMDkwNzM3Nzc1fQ.Kxkn1avkOGI7FHOHMZDkPDRVXs9wGIC2BZkW5wYZwfM';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 // ============================================================
-// PARAMS URL
+// ÉTAT
 // ============================================================
-const params = new URLSearchParams(window.location.search);
-const targetUid = params.get('uid') || 'demo';
-const msgType = params.get('type') || 'message';
+let currentUid = null;
+let currentType = 'message';
 
 // ============================================================
-// TEXTES SELON TYPE (avec discussion ajouté)
+// ÉLÉMENTS DOM
 // ============================================================
-const TYPES = {
-  message: {
-    tagline: 'envoie-moi des messages anonymes !',
-    label: '🔒 Messages anonymes',
-    placeholder: 'Écris ton message ici...',
-    icon: 'fa-envelope'
-  },
-  question: {
-    tagline: 'pose-moi une question anonyme !',
-    label: '❓ Questions anonymes',
-    placeholder: 'Écris ta question ici...',
-    icon: 'fa-question-circle'
-  },
-  discussion: {
-    tagline: 'discutons anonymement !',
-    label: '💬 Discussion anonyme',
-    placeholder: 'Écris ton message ici...',
-    icon: 'fa-comments'
-  },
-  secret: {
-    tagline: 'dis-moi un truc que tu as toujours voulu me dire !',
-    label: '🤫 Secret anonyme',
-    placeholder: 'Dis-moi ce que tu as sur le cœur...',
-    icon: 'fa-lock'
-  }
-};
-
-const typeConfig = TYPES[msgType] || TYPES.message;
+const urlInput = document.getElementById('urlInput');
+const validateBtn = document.getElementById('validateBtn');
+const errorBanner = document.getElementById('errorBanner');
+const mainCard = document.getElementById('mainCard');
+const userUidSpan = document.getElementById('userUid');
+const userTaglineSpan = document.getElementById('userTagline');
+const msgInput = document.getElementById('msgInput');
+const charCount = document.getElementById('charCount');
+const diceBtn = document.getElementById('diceBtn');
+const sendBtn = document.getElementById('sendBtn');
+const typeLabel = document.getElementById('typeLabel');
+const alertBox = document.getElementById('alertBox');
 
 // ============================================================
-// MESSAGES ALÉATOIRES (avec discussion ajouté)
+// MESSAGES ALÉATOIRES
 // ============================================================
 const RANDOM = {
   message: [
@@ -347,36 +394,111 @@ const RANDOM = {
     "Comment tu te sens en ce moment ? 💭",
     "Raconte-moi ta journée ! 📅",
     "Tu penses à quoi en ce moment ? 🤔",
-    "Un sujet qui te passionne ? 🔥",
-    "Si on parlait de tout et de rien ? 💬",
-    "Ton avis m'intéresse vraiment ! 🎯",
-    "Dis-moi ce qui te rend heureux(se) ✨",
-    "On a le temps de discuter ? ⏰"
-  ],
-  secret: [
-    "J'ai toujours admiré ta façon de voir les choses 🙏",
-    "Tu m'as changé sans même le savoir 💙",
-    "J'ai toujours voulu te dire que tu comptes vraiment pour moi",
-    "Ta présence rend tout plus léger, merci ✨",
-    "Je pense souvent à une conversation qu'on a eue 💭",
-    "Tu mérites tellement plus que ce que tu penses 🌟"
+    "Un sujet qui te passionne ? 🔥"
   ]
 };
 
 // ============================================================
-// INIT UI
+// FONCTIONS
 // ============================================================
-document.getElementById('userUid').textContent = `@${targetUid}`;
-document.getElementById('userTagline').textContent = typeConfig.tagline;
-document.getElementById('typeLabel').innerHTML = `<span><i class="fas ${typeConfig.icon}"></i></span> ${typeConfig.label}`;
-document.getElementById('msgInput').placeholder = typeConfig.placeholder;
+function showError(message) {
+  errorBanner.textContent = message || 'Lien invalide';
+  errorBanner.classList.add('show');
+  setTimeout(() => errorBanner.classList.remove('show'), 4000);
+}
+
+function showAlert(msg, type) {
+  alertBox.textContent = msg;
+  alertBox.className = `alert show ${type}`;
+  setTimeout(() => alertBox.className = 'alert', 4000);
+}
+
+function activateForm(uid, type) {
+  currentUid = uid;
+  currentType = type || 'message';
+  
+  // Activer le cadre
+  mainCard.classList.remove('disabled');
+  msgInput.disabled = false;
+  diceBtn.disabled = false;
+  sendBtn.disabled = false;
+  
+  // Mettre à jour l'affichage
+  userUidSpan.textContent = `@${uid}`;
+  
+  const typeConfig = {
+    message: { tagline: 'envoie-moi des messages anonymes !', label: '🔒 Messages anonymes', placeholder: 'Écris ton message ici...' },
+    question: { tagline: 'pose-moi une question anonyme !', label: '❓ Questions anonymes', placeholder: 'Écris ta question ici...' },
+    discussion: { tagline: 'discutons anonymement !', label: '💬 Discussion anonyme', placeholder: 'Écris ton message ici...' }
+  };
+  const config = typeConfig[type] || typeConfig.message;
+  
+  userTaglineSpan.textContent = config.tagline;
+  typeLabel.innerHTML = `<span>${config.label.split(' ')[0]}</span> ${config.label}`;
+  msgInput.placeholder = config.placeholder;
+}
+
+function deactivateForm() {
+  currentUid = null;
+  mainCard.classList.add('disabled');
+  msgInput.disabled = true;
+  diceBtn.disabled = true;
+  sendBtn.disabled = true;
+  userUidSpan.textContent = '@???';
+  userTaglineSpan.textContent = 'lien non validé';
+  msgInput.placeholder = 'Collez un lien valide pour activer l\'envoi...';
+  typeLabel.innerHTML = '<span>🔒</span> Messages anonymes';
+}
+
+function extractUidFromUrl(inputUrl) {
+  try {
+    // Si l'utilisateur colle juste "?uid=xxx" ou "envoyer.html?uid=xxx"
+    let url = inputUrl;
+    if (!inputUrl.startsWith('http')) {
+      url = 'https://fake.com/' + inputUrl;
+    }
+    const urlObj = new URL(url);
+    const uid = urlObj.searchParams.get('uid');
+    const type = urlObj.searchParams.get('type') || 'message';
+    if (uid && uid.trim().length > 0) {
+      return { uid: uid.trim(), type };
+    }
+    return null;
+  } catch (e) {
+    // Essayer avec regex simple
+    const match = inputUrl.match(/[?&]uid=([^&]+)/);
+    if (match && match[1]) {
+      const typeMatch = inputUrl.match(/[?&]type=([^&]+)/);
+      return { uid: match[1], type: typeMatch ? typeMatch[1] : 'message' };
+    }
+    return null;
+  }
+}
+
+// ============================================================
+// VALIDATION
+// ============================================================
+validateBtn.addEventListener('click', () => {
+  const inputValue = urlInput.value.trim();
+  if (!inputValue) {
+    showError('Veuillez coller un lien');
+    deactivateForm();
+    return;
+  }
+  
+  const result = extractUidFromUrl(inputValue);
+  if (result && result.uid) {
+    activateForm(result.uid, result.type);
+    errorBanner.classList.remove('show');
+  } else {
+    showError('Lien invalide : uid manquant');
+    deactivateForm();
+  }
+});
 
 // ============================================================
 // COMPTEUR CARACTÈRES
 // ============================================================
-const msgInput = document.getElementById('msgInput');
-const charCount = document.getElementById('charCount');
-
 msgInput.addEventListener('input', () => {
   const len = msgInput.value.length;
   charCount.textContent = `${len} / 500`;
@@ -386,37 +508,27 @@ msgInput.addEventListener('input', () => {
 // ============================================================
 // BOUTON DÉ
 // ============================================================
-document.getElementById('diceBtn').addEventListener('click', () => {
-  const pool = RANDOM[msgType] || RANDOM.message;
+diceBtn.addEventListener('click', () => {
+  const pool = RANDOM[currentType] || RANDOM.message;
   const txt = pool[Math.floor(Math.random() * pool.length)];
   msgInput.value = txt;
   msgInput.dispatchEvent(new Event('input'));
 });
 
 // ============================================================
-// ALERTE
-// ============================================================
-function showAlert(msg, type) {
-  const el = document.getElementById('alertBox');
-  el.textContent = msg;
-  el.className = `alert show ${type}`;
-  setTimeout(() => { el.className = 'alert'; }, 4000);
-}
-
-// ============================================================
 // ENVOI
 // ============================================================
-document.getElementById('sendBtn').addEventListener('click', async () => {
+sendBtn.addEventListener('click', async () => {
   const message = msgInput.value.trim();
-  const sendBtn = document.getElementById('sendBtn');
-
+  
   if (!message) {
     showAlert('✏️ Écris un message d\'abord !', 'error');
     msgInput.focus();
     return;
   }
-  if (message.length > 500) {
-    showAlert('📏 Message trop long (max 500 caractères)', 'error');
+  
+  if (!currentUid) {
+    showAlert('❌ Destinataire invalide', 'error');
     return;
   }
 
@@ -426,9 +538,10 @@ document.getElementById('sendBtn').addEventListener('click', async () => {
 
   try {
     const { error } = await sb.from('messages').insert({
-      user_id: targetUid,
+      user_id: currentUid,
       content: message,
-      type: msgType,
+      type: currentType,
+      is_chat: false,
       read: false,
       created_at: new Date().toISOString()
     });
@@ -439,6 +552,7 @@ document.getElementById('sendBtn').addEventListener('click', async () => {
     document.getElementById('successScreen').classList.add('show');
 
   } catch (err) {
+    console.error('Erreur:', err);
     showAlert(`❌ Erreur : ${err.message || 'Impossible d\'envoyer'}`, 'error');
     sendBtn.disabled = false;
     sendBtn.querySelector('.btn-text').style.display = '';
