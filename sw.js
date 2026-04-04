@@ -82,7 +82,7 @@ self.addEventListener('message', event => {
     const { title, body, url } = event.data;
 
     self.registration.showNotification(title || 'Ano23', {
-      body:    body || '💬 Tu as reçu un nouveau message anonyme',
+      body:    body || ' Tu as reçu un nouveau message anonyme',
       icon:    './images/icon.png',
       badge:   './images/badge.png',
       tag:     'ano23-new-message',
@@ -90,7 +90,7 @@ self.addEventListener('message', event => {
       data:    { url: url || './index.html' },
       vibrate: [200, 100, 200],
       actions: [
-        { action: 'open', title: '📥 Voir le message' },
+        { action: 'open', title: 'ouvrir !' },
         { action: 'dismiss', title: 'Ignorer' }
       ]
     });
