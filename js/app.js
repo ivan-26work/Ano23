@@ -311,8 +311,8 @@ function subscribeToRealtime() {
         messagesList.unshift(msg);
         renderInbox(); updateStats();
         sendNotification(
-          `📩 Nouveau message — Ano23`,
-          `💬 Tu as reçu un nouveau message anonyme`
+          `Nouveau message`,
+          `Tu as reçu un nouveau message anonyme ! `
         );
       })
       .on('postgres_changes', {
