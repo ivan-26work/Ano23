@@ -5,6 +5,8 @@ const SUPABASE_URL = 'https://waogbrxqyysibttlpoxj.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhb2dicnhxeXlzaWJ0dGxwb3hqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxNjE3NzUsImV4cCI6MjA5MDczNzc3NX0.Op1DUBfefbO2RkoitXws-7cFLW1T0DJGBDh1YPDcB1w';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
+
+
 // ============================================================
 // ÉTAT GLOBAL
 // ============================================================
@@ -22,6 +24,11 @@ let selectedCardType = 'message';
 
 const BASE_URL = 'https://ivan-26work.github.io/Ano23';
 
+
+
+// ============================================================
+// MESSAGES ALÉATOIRES PAR TYPE DE CARTE
+// ============================================================
 const MESSAGES_ALEATOIRES = {
   message: [
     "!!! Envoie moi des messages ✉️❤️👇👇👇",
@@ -62,6 +69,8 @@ const MESSAGES_ALEATOIRES = {
   ]
 };
 
+
+
 // ============================================================
 // INITIALISATION
 // ============================================================
@@ -95,13 +104,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadMessages();
     subscribeToRealtime();
 
+    const btnSendAnonymous = document.getElementById('btnSendAnonymous');
+    if (btnSendAnonymous) {
+      btnSendAnonymous.addEventListener('click', () => {
+        window.open(`${BASE_URL}/sendmess.html`, '_blank');
+      });
+    }
+
   } catch (err) {
     console.error('Init error:', err);
   }
 });
 
+
+
 // ============================================================
-// SÉLECTION DES CARTES
+// SÉLECTION DES CARTES (LINK)
 // ============================================================
 function initCardSelection() {
   const cards = document.querySelectorAll('.share-card');
@@ -141,6 +159,8 @@ function getCardLink() {
   return `${BASE_URL}/envoyer.html?uid=${currentUserId}`;
 }
 
+
+
 // ============================================================
 // SERVICE WORKER
 // ============================================================
@@ -160,6 +180,8 @@ async function registerServiceWorker() {
     console.warn('SW registration failed:', err);
   }
 }
+
+
 
 // ============================================================
 // NOTIFICATIONS
@@ -244,6 +266,8 @@ function showInAppNotif(title, body) {
   setTimeout(dismiss, 5000);
 }
 
+
+
 // ============================================================
 // SWITCH TAB
 // ============================================================
@@ -256,10 +280,15 @@ function switchTab(tabName) {
   document.querySelectorAll('.tab-content').forEach(content =>
     content.classList.toggle('active', content.id === `tab-${tabName}`));
 
-  const delBtn = document.getElementById('btnDeleteHeader');
-  if (delBtn) delBtn.classList.toggle('show', tabName === 'inbox');
+  const linkFooter = document.getElementById('linkFooter');
+  if (linkFooter) {
+    linkFooter.style.display = tabName === 'inbox' ? 'none' : 'flex';
+  }
+  
   if (tabName === 'inbox') renderInbox();
 }
+
+
 
 // ============================================================
 // SCROLL HANDLERS
@@ -275,8 +304,10 @@ function setupScrollHandlers() {
   }
 }
 
+
+
 // ============================================================
-// CHARGEMENT MESSAGES
+// CHARGEMENT DES MESSAGES
 // ============================================================
 async function loadMessages() {
   try {
@@ -294,8 +325,10 @@ async function loadMessages() {
   updateStats();
 }
 
+
+
 // ============================================================
-// REALTIME + NOTIFICATION
+// REALTIME + NOTIFICATIONS
 // ============================================================
 function subscribeToRealtime() {
   if (realtimeChannel) { try { sb.removeChannel(realtimeChannel); } catch (e) {} }
@@ -311,8 +344,8 @@ function subscribeToRealtime() {
         messagesList.unshift(msg);
         renderInbox(); updateStats();
         sendNotification(
-          `Nouveau message`,
-          `Tu as reçu un nouveau message anonyme ! `
+          `📩 Nouveau message — Ano23`,
+          `💬 Tu as reçu un nouveau message anonyme`
         );
       })
       .on('postgres_changes', {
@@ -335,8 +368,10 @@ function subscribeToRealtime() {
   } catch (err) { console.warn('Realtime error:', err); }
 }
 
+
+
 // ============================================================
-// RENDER INBOX
+// RENDER INBOX (AFFICHAGE DES MESSAGES)
 // ============================================================
 function renderInbox() {
   const feed = document.getElementById('inboxFeed');
@@ -359,7 +394,7 @@ function renderInbox() {
     const typeIcon = getTypeIcon(msg.type);
     const typeLabel = getTypeLabel(msg.type);
 
-    const showChatButton = msg.is_chat === true;
+    const showChatButton = msg.is_chat === true && msg.sender_id;
     
     let messageHtml = `
       <div class="msg-check ${msg.selected ? 'on' : ''}" data-id="${msg.id}"></div>
@@ -373,7 +408,7 @@ function renderInbox() {
     if (showChatButton) {
       messageHtml += `
         <div class="msg-actions">
-          <button class="msg-chat-btn" data-id="${msg.id}" data-user="${msg.user_id}" data-content="${encodeURIComponent(msg.content)}" data-type="${msg.type}">
+          <button class="msg-chat-btn" data-id="${msg.id}" data-sender="${msg.sender_id}" data-content="${encodeURIComponent(msg.content)}" data-type="${msg.type}">
             <i class="fas fa-comment-dots"></i> Chat
           </button>
         </div>
@@ -400,16 +435,18 @@ function renderInbox() {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const id = btn.getAttribute('data-id');
-      const userId = btn.getAttribute('data-user');
+      const senderId = btn.getAttribute('data-sender');
       const content = decodeURIComponent(btn.getAttribute('data-content') || '');
       const type = btn.getAttribute('data-type');
-      openChatOverlay({ id, user_id: userId, content, type, is_chat: true });
+      openChatOverlay({ id, user_id: senderId, sender_id: senderId, content, type, is_chat: true });
     });
   });
 }
 
+
+
 // ============================================================
-// HELPERS
+// FONCTIONS UTILITAIRES
 // ============================================================
 function getTypeIcon(type) { 
   if (type === 'question') return '❓';
@@ -473,8 +510,10 @@ function getAnonymousLink(cardType = null) {
   return `${BASE_URL}/envoyer.html?uid=${currentUserId}`;
 }
 
+
+
 // ============================================================
-// CARTE LINK
+// CARTES LINK (PARTAGER, TÉLÉCHARGER, COPIER, DÉ)
 // ============================================================
 async function shareLinkCard() {
   const cardType = getSelectedCardType();
@@ -582,8 +621,10 @@ function randomizeMessage() {
   }
 }
 
+
+
 // ============================================================
-// OVERLAYS
+// OVERLAY LECTURE (PETIT)
 // ============================================================
 function openSmallOverlay(msg) {
   if (!msg) return;
@@ -622,6 +663,11 @@ async function markAsRead(id) {
   } catch (e) { console.error('markAsRead:', e); }
 }
 
+
+
+// ============================================================
+// OVERLAY RÉPONSE (GRAND AVEC IMAGE)
+// ============================================================
 function openLargeOverlay() {
   if (!currentMessage) return;
   closeSmallOverlay();
@@ -703,19 +749,13 @@ async function shareReplyImage() {
   if (ri?.value.trim()) btn.disabled = false;
 }
 
+
+
 // ============================================================
-// OVERLAY CHAT
+// OVERLAY CHAT (RÉPONSE RAPIDE)
 // ============================================================
 async function openChatOverlay(msg) {
-  const { data, error } = await sb
-    .from('messages')
-    .select('user_id')
-    .eq('user_id', msg.user_id)
-    .limit(1);
-  
-  const exists = data && data.length > 0;
-  
-  if (!exists) {
+  if (!msg.sender_id) {
     document.getElementById('overlayChatError')?.classList.add('open');
     return;
   }
@@ -747,6 +787,11 @@ async function sendChatMessage() {
     return;
   }
   
+  if (!currentChatMessage.sender_id) {
+    showToast('❌ Erreur: destinataire inconnu', 2000);
+    return;
+  }
+  
   const sendBtn = document.getElementById('sendChatBtn');
   const origHtml = sendBtn?.innerHTML;
   if (sendBtn) {
@@ -756,7 +801,8 @@ async function sendChatMessage() {
   
   try {
     const { error } = await sb.from('messages').insert({
-      user_id: currentChatMessage.user_id,
+      user_id: currentChatMessage.sender_id,
+      sender_id: currentUserId,
       content: message,
       type: 'discussion',
       is_chat: true,
@@ -784,47 +830,70 @@ function closeChatErrorOverlay() {
   document.getElementById('overlayChatError')?.classList.remove('open');
 }
 
+
+
 // ============================================================
-// SÉLECTION / SUPPRESSION
+// SÉLECTION / SUPPRESSION DES MESSAGES
 // ============================================================
 function enterSelectMode() {
   selectMode = true;
-  const bs = document.getElementById('btnSelect');
-  const bc = document.getElementById('btnConfirmDel');
-  if (bs) bs.style.display = 'none';
-  if (bc) bc.classList.add('show');
+  
+  const btnSelect = document.getElementById('btnSelect');
+  if (btnSelect) {
+    btnSelect.innerHTML = '<i class="fas fa-trash-can"></i> Supprimer';
+    btnSelect.classList.add('delete-mode');
+  }
+  
+  const btnCancelHeader = document.getElementById('btnCancelHeader');
+  if (btnCancelHeader) btnCancelHeader.classList.add('show');
+  
   renderInbox();
 }
 
 function exitSelectMode() {
   selectMode = false;
+  
+  const btnSelect = document.getElementById('btnSelect');
+  if (btnSelect) {
+    btnSelect.innerHTML = '<i class="fas fa-check-square"></i> Sélectionner';
+    btnSelect.classList.remove('delete-mode');
+  }
+  
+  const btnCancelHeader = document.getElementById('btnCancelHeader');
+  if (btnCancelHeader) btnCancelHeader.classList.remove('show');
+  
   messagesList.forEach(m => { if (m) m.selected = false; });
-  const bs = document.getElementById('btnSelect');
-  const bc = document.getElementById('btnConfirmDel');
-  if (bs) bs.style.display = 'flex';
-  if (bc) bc.classList.remove('show');
+  
   renderInbox();
+  updateStats();
 }
 
 async function confirmDelete() {
   const ids = messagesList.filter(m => m?.selected).map(m => m.id);
-  if (!ids.length) return;
+  if (!ids.length) {
+    showToast('Aucun message sélectionné', 2000);
+    return;
+  }
+  
   if (!confirm(`Supprimer ${ids.length} message${ids.length > 1 ? 's' : ''} ?`)) return;
+  
   try {
     const { error } = await sb.from('messages').delete().in('id', ids);
     if (error) throw error;
     messagesList = messagesList.filter(m => !ids.includes(m.id));
     showToast(`✅ ${ids.length} message${ids.length > 1 ? 's supprimés' : ' supprimé'}`, 2000);
+    exitSelectMode();
+    updateStats();
   } catch (e) {
     console.error('confirmDelete:', e);
     showToast('❌ Erreur lors de la suppression', 2000);
   }
-  exitSelectMode();
-  updateStats();
 }
 
+
+
 // ============================================================
-// SIDEBAR / THÈME / AVATAR / LOGOUT
+// SIDEBAR, THÈME, AVATAR, LOGOUT
 // ============================================================
 function openSidebar() {
   document.getElementById('sidebar')?.classList.add('open');
@@ -882,8 +951,10 @@ async function logout() {
   }
 }
 
+
+
 // ============================================================
-// TOAST
+// TOAST (NOTIFICATION TEMPORAIRE)
 // ============================================================
 function showToast(message, duration = 3000) {
   document.querySelector('.ano23-toast')?.remove();
@@ -897,8 +968,40 @@ function showToast(message, duration = 3000) {
   }, duration);
 }
 
+
+
 // ============================================================
-// EVENT LISTENERS
+// PWA INSTALLATION
+// ============================================================
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  const btnInstall = document.getElementById('btnInstall');
+  const btnInstallPWA = document.getElementById('btnInstallPWA');
+  
+  if (btnInstall) btnInstall.style.display = 'flex';
+  if (btnInstallPWA) btnInstallPWA.style.display = 'flex';
+});
+
+async function installPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  
+  const btnInstall = document.getElementById('btnInstall');
+  const btnInstallPWA = document.getElementById('btnInstallPWA');
+  if (btnInstall) btnInstall.style.display = 'none';
+  if (btnInstallPWA) btnInstallPWA.style.display = 'none';
+}
+
+
+
+// ============================================================
+// ÉCOUTEURS D'ÉVÉNEMENTS (INIT)
 // ============================================================
 function initEventListeners() {
   document.querySelectorAll('.header-tab-btn').forEach(btn => {
@@ -915,9 +1018,15 @@ function initEventListeners() {
   document.getElementById('copyLinkBtn')?.addEventListener('click', copyLink);
   document.getElementById('diceBtn')?.addEventListener('click', randomizeMessage);
 
-  document.getElementById('btnDeleteHeader')?.addEventListener('click', enterSelectMode);
-  document.getElementById('btnSelect')?.addEventListener('click', enterSelectMode);
-  document.getElementById('btnConfirmDel')?.addEventListener('click', confirmDelete);
+  document.getElementById('btnSelect')?.addEventListener('click', () => {
+    if (selectMode) {
+      confirmDelete();
+    } else {
+      enterSelectMode();
+    }
+  });
+  
+  document.getElementById('btnCancelHeader')?.addEventListener('click', exitSelectMode);
 
   document.getElementById('closeSmall')?.addEventListener('click', closeSmallOverlay);
   document.getElementById('overlaySmall')?.addEventListener('click', e => {
@@ -926,7 +1035,7 @@ function initEventListeners() {
 
   document.getElementById('btnReplySmall')?.addEventListener('click', openLargeOverlay);
   document.getElementById('btnChatSmall')?.addEventListener('click', () => {
-    if (currentMessage && currentMessage.is_chat) {
+    if (currentMessage && currentMessage.is_chat && currentMessage.sender_id) {
       closeSmallOverlay();
       openChatOverlay(currentMessage);
     }
@@ -958,4 +1067,7 @@ function initEventListeners() {
   document.getElementById('overlayChatError')?.addEventListener('click', (e) => {
     if (e.target === document.getElementById('overlayChatError')) closeChatErrorOverlay();
   });
+  
+  document.getElementById('btnInstall')?.addEventListener('click', installPWA);
+  document.getElementById('btnInstallPWA')?.addEventListener('click', installPWA);
 }
