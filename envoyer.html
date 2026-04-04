@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Ano23 — Message anonyme</title>
+  <title>Ano23 — Chat anonyme</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
   <style>
@@ -13,7 +13,7 @@
   body {
     font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
-    background: url('images/image3.png') center/cover no-repeat fixed;
+    background: url('images/image5.png') center/cover no-repeat fixed;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -24,7 +24,7 @@
   body::before {
     content: '';
     position: fixed; inset: 0;
-    background: rgba(0,0,0,0.18);
+    background: rgba(0,0,0,0.25);
     z-index: 0;
   }
 
@@ -83,7 +83,6 @@
     transition: transform 0.15s;
   }
   .url-bar button:active { transform: scale(0.96); }
-  .url-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
 
   /* Message d'erreur */
   .error-banner {
@@ -99,15 +98,15 @@
   }
   .error-banner.show { display: block; }
 
-  /* Cadre principal */
+  /* Cadre principal (vert pour chat) */
   .main-card {
     width: 100%;
-    background: rgba(255,255,255,0.18);
+    background: rgba(34,197,94,0.2);
     backdrop-filter: blur(14px);
-    border: 1.5px solid rgba(255,255,255,0.35);
+    border: 2px solid rgba(34,197,94,0.6);
     border-radius: 28px;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 32px rgba(34,197,94,0.3);
     transition: opacity 0.3s;
   }
   .main-card.disabled {
@@ -120,29 +119,29 @@
     align-items: center;
     gap: 14px;
     padding: 18px 20px;
-    background: rgba(255,255,255,0.92);
-    border-bottom: 1px solid rgba(255,255,255,0.4);
+    background: rgba(34,197,94,0.9);
+    border-bottom: 1px solid rgba(255,255,255,0.3);
   }
 
   .user-avatar {
     width: 48px; height: 48px;
     border-radius: 50%;
-    background: #e0f2fe;
-    border: 2.5px solid #0ea5e9;
+    background: #fff;
+    border: 2.5px solid #16a34a;
     display: flex; align-items: center; justify-content: center;
     font-size: 22px; flex-shrink: 0;
-    overflow: hidden;
+    color: #16a34a;
   }
 
   .user-info { flex: 1; min-width: 0; }
   .user-uid {
     font-family: 'DM Mono', monospace;
     font-size: 14px; font-weight: 700;
-    color: #0284c7;
+    color: #fff;
   }
   .user-tagline {
     font-size: 13px; font-weight: 600;
-    color: #475569; margin-top: 2px;
+    color: #14532d; margin-top: 2px;
   }
 
   .card-body { padding: 4px 16px 16px; }
@@ -150,18 +149,23 @@
   .msg-textarea {
     width: 100%;
     min-height: 130px;
-    background: transparent;
-    border: none;
+    background: rgba(255,255,255,0.9);
+    border: 2px solid #22c55e;
+    border-radius: 20px;
     outline: none;
     resize: none;
     font-family: 'DM Sans', sans-serif;
     font-size: 16px;
-    font-weight: 600;
-    color: white;
-    padding: 16px 0 8px;
+    font-weight: 500;
+    color: #1e293b;
+    padding: 16px;
     line-height: 1.6;
   }
-  .msg-textarea::placeholder { color: rgba(255,255,255,0.65); }
+  .msg-textarea:focus {
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+  }
+  .msg-textarea::placeholder { color: #94a3b8; }
   .msg-textarea:disabled { opacity: 0.7; }
 
   .card-footer-row {
@@ -173,15 +177,15 @@
 
   .char-count {
     font-size: 12px; font-weight: 600;
-    color: rgba(255,255,255,0.6);
+    color: #166534;
   }
-  .char-count.warn { color: #fbbf24; }
-  .char-count.over { color: #f87171; }
+  .char-count.warn { color: #eab308; }
+  .char-count.over { color: #ef4444; }
 
   .btn-dice {
     width: 40px; height: 40px;
-    background: rgba(255,255,255,0.25);
-    border: 1.5px solid rgba(255,255,255,0.4);
+    background: rgba(34,197,94,0.8);
+    border: 1.5px solid rgba(34,197,94,0.6);
     border-radius: 12px;
     cursor: pointer;
     font-size: 20px;
@@ -206,7 +210,7 @@
     display: flex;
     align-items: center;
     justify-content: center; gap: 10px;
-    transition: transform .2s, box-shadow .2s;
+    transition: transform .2s;
   }
   .btn-send:active { transform: scale(0.97); }
   .btn-send:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -235,9 +239,12 @@
 
   .type-label {
     font-size: 13px; font-weight: 700;
-    color: rgba(255,255,255,.8);
+    color: rgba(255,255,255,.9);
     text-align: center;
-    text-shadow: 0 1px 4px rgba(0,0,0,.3);
+    background: rgba(34,197,94,0.8);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(4px);
   }
 
   .btn-receive {
@@ -275,6 +282,58 @@
   .success-screen.show { display: flex; }
   .success-icon { font-size: 64px; animation: pop .4s ease-out; }
   @keyframes pop { from{transform:scale(0);} to{transform:scale(1);} }
+
+  /* Overlay connexion */
+  .overlay-auth {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(14px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s;
+  }
+  .overlay-auth.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .auth-sheet {
+    background: white;
+    border-radius: 28px;
+    width: 100%;
+    max-width: 340px;
+    overflow: hidden;
+    transform: scale(0.95);
+    transition: transform 0.3s;
+    text-align: center;
+  }
+  .overlay-auth.open .auth-sheet { transform: scale(1); }
+  .auth-header {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    padding: 24px;
+    color: white;
+  }
+  .auth-header i { font-size: 48px; margin-bottom: 12px; }
+  .auth-header h3 { font-size: 20px; font-weight: 800; }
+  .auth-body { padding: 24px; }
+  .auth-body p { color: #475569; margin-bottom: 20px; line-height: 1.5; }
+  .auth-actions { display: flex; gap: 12px; }
+  .auth-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 40px;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .auth-btn.continue { background: #22c55e; color: white; }
+  .auth-btn.cancel { background: #e2e8f0; color: #475569; }
   </style>
 </head>
 <body>
@@ -283,7 +342,7 @@
 
   <!-- Barre d'adresse -->
   <div class="url-bar">
-    <i class="fas fa-link"></i>
+    <i class="fas fa-comments"></i>
     <input type="text" id="urlInput" placeholder="Collez le lien de partage ici...">
     <button class="clear-btn" id="clearBtn" title="Effacer">×</button>
     <button id="validateBtn">Valider</button>
@@ -296,7 +355,7 @@
   <!-- Cadre principal -->
   <div class="main-card disabled" id="mainCard">
     <div class="card-header">
-      <div class="user-avatar" id="userAvatar">😎</div>
+      <div class="user-avatar"><i class="fas fa-comments"></i></div>
       <div class="user-info">
         <div class="user-uid" id="userUid">@???</div>
         <div class="user-tagline" id="userTagline">lien non validé</div>
@@ -318,7 +377,7 @@
   </div>
 
   <div class="type-label" id="typeLabel">
-    <span>🔒</span> Messages anonymes
+    <span>💬</span> Chat anonyme en direct
   </div>
 
   <button class="btn-send" id="sendBtn" disabled>
@@ -328,8 +387,8 @@
 
   <div class="alert" id="alertBox"></div>
 
-  <a href="auth.html" class="btn-receive">
-    <i class="fas fa-inbox"></i> Reçois tes propres messages !
+  <a href="index.html" class="btn-receive">
+    <i class="fas fa-inbox"></i> Voir mes messages
   </a>
 
 </div>
@@ -337,10 +396,27 @@
 <div class="page success-screen" id="successScreen">
   <div class="success-icon">✅</div>
   <h2>Message envoyé !</h2>
-  <p>Ton message anonyme a bien été transmis.<br/>L'expéditeur ne saura jamais que c'est toi 🤫</p>
-  <a href="auth.html" class="btn-receive" style="margin-top:8px">
-    <i class="fas fa-inbox"></i> Reçois tes propres messages !
+  <p>Ton message anonyme a bien été transmis.<br/>La personne pourra te répondre directement 💚</p>
+  <a href="index.html" class="btn-receive" style="margin-top:8px">
+    <i class="fas fa-inbox"></i> Voir mes messages
   </a>
+</div>
+
+<!-- Overlay connexion -->
+<div class="overlay-auth" id="overlayAuth">
+  <div class="auth-sheet">
+    <div class="auth-header">
+      <i class="fas fa-shield-haltered"></i>
+      <h3>Connexion requise</h3>
+    </div>
+    <div class="auth-body">
+      <p>Vous devez être connecté pour envoyer ce type de message anonyme.</p>
+      <div class="auth-actions">
+        <button class="auth-btn continue" id="authContinueBtn">Continuer</button>
+        <button class="auth-btn cancel" id="authCancelBtn">Annuler</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="page-footer">
@@ -351,17 +427,19 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ============================================================
-// SUPABASE AVEC SERVICE_ROLE
+// SUPABASE AVEC CLÉ ANON (car utilisateur doit être connecté)
 // ============================================================
 const SUPABASE_URL = 'https://waogbrxqyysibttlpoxj.supabase.co';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhb2dicnhxeXlzaWJ0dGxwb3hqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTE2MTc3NSwiZXhwIjoyMDkwNzM3Nzc1fQ.Kxkn1avkOGI7FHOHMZDkPDRVXs9wGIC2BZkW5wYZwfM';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhb2dicnhxeXlzaWJ0dGxwb3hqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxNjE3NzUsImV4cCI6MjA5MDczNzc3NX0.Op1DUBfefbO2RkoitXws-7cFLW1T0DJGBDh1YPDcB1w';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================================
 // ÉTAT
 // ============================================================
 let currentUid = null;
-let currentType = 'message';
+let currentType = 'discussion';
+let currentUser = null;
+let currentUserId = null;
 
 // ============================================================
 // ÉLÉMENTS DOM
@@ -378,36 +456,37 @@ const charCount = document.getElementById('charCount');
 const diceBtn = document.getElementById('diceBtn');
 const sendBtn = document.getElementById('sendBtn');
 const typeLabel = document.getElementById('typeLabel');
+const overlayAuth = document.getElementById('overlayAuth');
 
 // ============================================================
 // MESSAGES ALÉATOIRES
 // ============================================================
-const RANDOM = {
-  message: [
-    "Tu m'inspires vraiment, continue comme ça ! 🔥",
-    "J'aime vraiment ta façon d'être 💙",
-    "T'as une énergie incroyable, garde-la !",
-    "Ton sourire donne la bonne humeur à tout le monde 😊",
-    "Tu es quelqu'un de vraiment spécial ✨",
-    "Continue d'être toi-même, c'est ta plus grande force 💪"
-  ],
-  question: [
-    "C'est quoi ton rêve le plus fou ? 🌟",
-    "Si tu pouvais changer une chose dans ta vie, ce serait quoi ?",
-    "Quel est ton plus grand secret ? 🤫",
-    "Qu'est-ce qui te rend vraiment heureux(se) ? 😊",
-    "Si tu pouvais vivre n'importe où, où serais-tu ?",
-    "Quelle est la chose dont tu es le plus fier(e) ? 🏆"
-  ],
-  discussion: [
-    "Salut ! On discute ? 👋",
-    "Quoi de neuf aujourd'hui ? 😊",
-    "Comment tu te sens en ce moment ? 💭",
-    "Raconte-moi ta journée ! 📅",
-    "Tu penses à quoi en ce moment ? 🤔",
-    "Un sujet qui te passionne ? 🔥"
-  ]
-};
+const RANDOM_MESSAGES = [
+  "Salut ! On discute ? 👋",
+  "Comment ça va aujourd'hui ? 😊",
+  "Quoi de neuf ? 💬",
+  "Tu penses à quoi ? 🤔",
+  "Raconte-moi ta journée ! 📅",
+  "Un sujet qui te passionne ? 🔥",
+  "Ton avis m'intéresse vraiment 🎯",
+  "Dis-moi tout, je suis anonyme 🤫",
+  "On a le temps de discuter ? ⏰",
+  "Tu es quelqu'un de bien 💚"
+];
+
+// ============================================================
+// VÉRIFICATION CONNEXION
+// ============================================================
+async function checkAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    overlayAuth.classList.add('open');
+    return false;
+  }
+  currentUser = session.user;
+  currentUserId = currentUser.email.split('@')[0];
+  return true;
+}
 
 // ============================================================
 // FONCTIONS
@@ -427,7 +506,7 @@ function showAlert(msg, type) {
 
 function activateForm(uid, type) {
   currentUid = uid;
-  currentType = type || 'message';
+  currentType = type || 'discussion';
   
   mainCard.classList.remove('disabled');
   msgInput.disabled = false;
@@ -435,17 +514,9 @@ function activateForm(uid, type) {
   sendBtn.disabled = false;
   
   userUidSpan.textContent = `@${uid}`;
-  
-  const typeConfig = {
-    message: { tagline: 'envoie-moi des messages anonymes !', label: '🔒 Messages anonymes', placeholder: 'Écris ton message ici...' },
-    question: { tagline: 'pose-moi une question anonyme !', label: '❓ Questions anonymes', placeholder: 'Écris ta question ici...' },
-    discussion: { tagline: 'discutons anonymement !', label: '💬 Discussion anonyme', placeholder: 'Écris ton message ici...' }
-  };
-  const config = typeConfig[type] || typeConfig.message;
-  
-  userTaglineSpan.textContent = config.tagline;
-  typeLabel.innerHTML = `<span>${config.label.split(' ')[0]}</span> ${config.label}`;
-  msgInput.placeholder = config.placeholder;
+  userTaglineSpan.textContent = `discussion anonyme avec @${uid} 💚`;
+  typeLabel.innerHTML = '<span>💬</span> Chat anonyme en direct';
+  msgInput.placeholder = 'Écris ton message anonyme ici...';
 }
 
 function deactivateForm() {
@@ -457,7 +528,7 @@ function deactivateForm() {
   userUidSpan.textContent = '@???';
   userTaglineSpan.textContent = 'lien non validé';
   msgInput.placeholder = 'Collez un lien valide pour activer l\'envoi...';
-  typeLabel.innerHTML = '<span>🔒</span> Messages anonymes';
+  typeLabel.innerHTML = '<span>💬</span> Chat anonyme en direct';
 }
 
 function extractUidFromUrl(inputUrl) {
@@ -468,7 +539,7 @@ function extractUidFromUrl(inputUrl) {
     }
     const urlObj = new URL(url);
     const uid = urlObj.searchParams.get('uid');
-    const type = urlObj.searchParams.get('type') || 'message';
+    const type = urlObj.searchParams.get('type') || 'discussion';
     if (uid && uid.trim().length > 0) {
       return { uid: uid.trim(), type };
     }
@@ -477,7 +548,7 @@ function extractUidFromUrl(inputUrl) {
     const match = inputUrl.match(/[?&]uid=([^&]+)/);
     if (match && match[1]) {
       const typeMatch = inputUrl.match(/[?&]type=([^&]+)/);
-      return { uid: match[1], type: typeMatch ? typeMatch[1] : 'message' };
+      return { uid: match[1], type: typeMatch ? typeMatch[1] : 'discussion' };
     }
     return null;
   }
@@ -486,7 +557,7 @@ function extractUidFromUrl(inputUrl) {
 // ============================================================
 // VALIDATION MANUELLE
 // ============================================================
-validateBtn.addEventListener('click', () => {
+validateBtn.addEventListener('click', async () => {
   const inputValue = urlInput.value.trim();
   if (!inputValue) {
     showError('Veuillez coller un lien');
@@ -496,6 +567,10 @@ validateBtn.addEventListener('click', () => {
   
   const result = extractUidFromUrl(inputValue);
   if (result && result.uid) {
+    // Vérifier que l'utilisateur est connecté avant d'activer
+    const isAuth = await checkAuth();
+    if (!isAuth) return;
+    
     activateForm(result.uid, result.type);
     errorBanner.classList.remove('show');
   } else {
@@ -516,15 +591,17 @@ clearBtn.addEventListener('click', () => {
 // ============================================================
 // DÉTECTION AUTOMATIQUE À L'OUVERTURE DE LA PAGE
 // ============================================================
-function autoDetectFromUrl() {
+async function autoDetectFromUrl() {
   const urlParams = new URLSearchParams(window.location.search);
   const autoUid = urlParams.get('uid');
-  const autoType = urlParams.get('type') || 'message';
+  const autoType = urlParams.get('type') || 'discussion';
   
   if (autoUid && autoUid.trim().length > 0) {
-    // Pré-remplir le champ avec l'URL actuelle
     urlInput.value = window.location.href;
-    activateForm(autoUid, autoType);
+    const isAuth = await checkAuth();
+    if (isAuth) {
+      activateForm(autoUid, autoType);
+    }
   }
 }
 
@@ -541,17 +618,20 @@ msgInput.addEventListener('input', () => {
 // BOUTON DÉ
 // ============================================================
 diceBtn.addEventListener('click', () => {
-  const pool = RANDOM[currentType] || RANDOM.message;
-  const txt = pool[Math.floor(Math.random() * pool.length)];
+  const txt = RANDOM_MESSAGES[Math.floor(Math.random() * RANDOM_MESSAGES.length)];
   msgInput.value = txt;
   msgInput.dispatchEvent(new Event('input'));
 });
 
 // ============================================================
-// ENVOI
+// ENVOI (avec is_chat: true)
 // ============================================================
 sendBtn.addEventListener('click', async () => {
   const message = msgInput.value.trim();
+  
+  // Vérifier connexion
+  const isAuth = await checkAuth();
+  if (!isAuth) return;
   
   if (!message) {
     showAlert('✏️ Écris un message d\'abord !', 'error');
@@ -573,7 +653,7 @@ sendBtn.addEventListener('click', async () => {
       user_id: currentUid,
       content: message,
       type: currentType,
-      is_chat: false,
+      is_chat: true,  // ← Important : permet le bouton chat
       read: false,
       created_at: new Date().toISOString()
     });
@@ -589,6 +669,23 @@ sendBtn.addEventListener('click', async () => {
     sendBtn.disabled = false;
     sendBtn.querySelector('.btn-text').style.display = '';
     sendBtn.querySelector('#sendSpinner').style.display = 'none';
+  }
+});
+
+// ============================================================
+// OVERLAY CONNEXION
+// ============================================================
+document.getElementById('authContinueBtn').addEventListener('click', () => {
+  window.location.href = 'auth.html';
+});
+
+document.getElementById('authCancelBtn').addEventListener('click', () => {
+  window.location.href = `envoyer.html?uid=${currentUid || ''}`;
+});
+
+overlayAuth.addEventListener('click', (e) => {
+  if (e.target === overlayAuth) {
+    window.location.href = `envoyer.html?uid=${currentUid || ''}`;
   }
 });
 
