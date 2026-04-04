@@ -18,7 +18,6 @@ let currentTab = 'link';
 let currentMessage = null;
 let currentChatMessage = null;
 let realtimeChannel = null;
-let hasMessageShown = false;
 let swRegistration = null;
 let selectedCardType = 'message';
 
@@ -27,7 +26,7 @@ const BASE_URL = 'https://ivan-26work.github.io/Ano23';
 
 
 // ============================================================
-// MESSAGES ALÉATOIRES PAR TYPE DE CARTE
+// MESSAGES ALÉATOIRES
 // ============================================================
 const MESSAGES_ALEATOIRES = {
   message: [
@@ -85,8 +84,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     currentUser = session.user;
     currentUserId = currentUser.email.split('@')[0];
 
-    setText('sbUserName', currentUser.email);
-    setText('sbUserUid', `@${currentUserId}`);
+    document.getElementById('sbUserName').textContent = currentUser.email;
+    document.getElementById('sbUserUid').textContent = `@${currentUserId}`;
 
     initTheme();
     initEventListeners();
@@ -119,11 +118,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 // ============================================================
-// SÉLECTION DES CARTES (LINK)
+// SÉLECTION DES CARTES
 // ============================================================
 function initCardSelection() {
   const cards = document.querySelectorAll('.share-card');
-  
   cards.forEach(card => {
     card.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -131,13 +129,11 @@ function initCardSelection() {
       selectCard(cardType);
     });
   });
-  
   selectCard('message');
 }
 
 function selectCard(cardType) {
   selectedCardType = cardType;
-  
   document.querySelectorAll('.share-card').forEach(card => {
     const isSelected = card.getAttribute('data-card') === cardType;
     card.setAttribute('data-selected', isSelected);
@@ -328,7 +324,7 @@ async function loadMessages() {
 
 
 // ============================================================
-// REALTIME + NOTIFICATIONS
+// REALTIME
 // ============================================================
 function subscribeToRealtime() {
   if (realtimeChannel) { try { sb.removeChannel(realtimeChannel); } catch (e) {} }
@@ -343,10 +339,7 @@ function subscribeToRealtime() {
         if (!msg) return;
         messagesList.unshift(msg);
         renderInbox(); updateStats();
-        sendNotification(
-          `📩 Nouveau message — Ano23`,
-          `💬 Tu as reçu un nouveau message anonyme`
-        );
+        sendNotification(`📩 Nouveau message — Ano23`, `💬 Tu as reçu un nouveau message anonyme`);
       })
       .on('postgres_changes', {
         event: 'UPDATE', schema: 'public', table: 'messages',
@@ -371,7 +364,7 @@ function subscribeToRealtime() {
 
 
 // ============================================================
-// RENDER INBOX (AFFICHAGE DES MESSAGES)
+// RENDER INBOX
 // ============================================================
 function renderInbox() {
   const feed = document.getElementById('inboxFeed');
@@ -393,7 +386,6 @@ function renderInbox() {
     const timeAgo = formatTimeAgo(msg.created_at);
     const typeIcon = getTypeIcon(msg.type);
     const typeLabel = getTypeLabel(msg.type);
-
     const showChatButton = msg.is_chat === true && msg.sender_id;
     
     let messageHtml = `
@@ -462,8 +454,6 @@ function getTypeLabel(type) {
   return 'Message anonyme';
 }
 
-function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
-
 function formatTimeAgo(ts) {
   if (!ts) return 'Date inconnue';
   const diff = Date.now() - new Date(ts).getTime();
@@ -480,19 +470,15 @@ function updateStats() {
   const month1 = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   const monthly = messagesList.filter(m => m?.created_at && new Date(m.created_at) >= month1).length;
 
-  setText('inboxCount', `${total} message${total > 1 ? 's' : ''}`);
-  setText('statTotal', total);
-  setText('statUnread', unread);
-  setText('statMonth', monthly);
+  document.getElementById('inboxCount').textContent = `${total} message${total > 1 ? 's' : ''}`;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statUnread').textContent = unread;
+  document.getElementById('statMonth').textContent = monthly;
 
   const badge = document.getElementById('unreadBadge');
   if (badge) {
-    if (unread > 0) {
-      badge.textContent = unread;
-      badge.style.display = 'inline-block';
-    } else {
-      badge.style.display = 'none';
-    }
+    badge.textContent = unread;
+    badge.style.display = unread > 0 ? 'inline-block' : 'none';
   }
 
   const dot = document.getElementById('notifDot');
@@ -513,7 +499,7 @@ function getAnonymousLink(cardType = null) {
 
 
 // ============================================================
-// CARTES LINK (PARTAGER, TÉLÉCHARGER, COPIER, DÉ)
+// CARTES LINK
 // ============================================================
 async function shareLinkCard() {
   const cardType = getSelectedCardType();
@@ -612,11 +598,7 @@ function randomizeMessage() {
   if (card) {
     const msgContainer = card.querySelector('.share-message');
     if (msgContainer) {
-      msgContainer.innerHTML = `
-        <div class="animated-message">
-          <p>✨ ${randomMsg} ✨</p>
-        </div>
-      `;
+      msgContainer.innerHTML = `<div class="animated-message"><p>✨ ${randomMsg} ✨</p></div>`;
     }
   }
 }
@@ -624,22 +606,17 @@ function randomizeMessage() {
 
 
 // ============================================================
-// OVERLAY LECTURE (PETIT)
+// OVERLAY LECTURE
 // ============================================================
 function openSmallOverlay(msg) {
   if (!msg) return;
   currentMessage = msg;
   if (!msg.read) markAsRead(msg.id);
   
-  const icon = document.getElementById('smallIcon');
-  const typeLabel = document.getElementById('smallType');
-  const timeDisplay = document.getElementById('smallTime');
-  const textDisplay = document.getElementById('smallText');
-  
-  if (icon) icon.innerHTML = `<i class="fas ${getIconClass(msg.type)}"></i>`;
-  if (typeLabel) typeLabel.textContent = getTypeLabel(msg.type);
-  if (timeDisplay) timeDisplay.textContent = formatTimeAgo(msg.created_at);
-  if (textDisplay) textDisplay.textContent = msg.content || 'Message vide';
+  document.getElementById('smallIcon').innerHTML = `<i class="fas ${getIconClass(msg.type)}"></i>`;
+  document.getElementById('smallType').textContent = getTypeLabel(msg.type);
+  document.getElementById('smallTime').textContent = formatTimeAgo(msg.created_at);
+  document.getElementById('smallText').textContent = msg.content || 'Message vide';
   
   document.getElementById('overlaySmall')?.classList.add('open');
 }
@@ -666,24 +643,20 @@ async function markAsRead(id) {
 
 
 // ============================================================
-// OVERLAY RÉPONSE (GRAND AVEC IMAGE)
+// OVERLAY RÉPONSE
 // ============================================================
 function openLargeOverlay() {
   if (!currentMessage) return;
   closeSmallOverlay();
-  setText('originalMsgDisplay', currentMessage.content || '...');
+  document.getElementById('originalMsgDisplay').textContent = currentMessage.content || '...';
   const ri = document.getElementById('replyInput');
   if (ri) ri.value = '';
   const fr = document.getElementById('frameReply');
   if (fr) fr.style.background = 'none';
-  const ca = document.getElementById('colorA');
-  if (ca) ca.value = '#0ea5e9';
-  const cb = document.getElementById('colorB');
-  if (cb) cb.value = '#0284c7';
-  const dl = document.getElementById('downloadBtn');
-  if (dl) dl.disabled = true;
-  const sh = document.getElementById('shareBtn');
-  if (sh) sh.disabled = true;
+  document.getElementById('colorA').value = '#0ea5e9';
+  document.getElementById('colorB').value = '#0284c7';
+  document.getElementById('downloadBtn').disabled = true;
+  document.getElementById('shareBtn').disabled = true;
   document.getElementById('overlayLarge')?.classList.add('open');
 }
 
@@ -752,24 +725,20 @@ async function shareReplyImage() {
 
 
 // ============================================================
-// OVERLAY CHAT (RÉPONSE RAPIDE)
+// OVERLAY CHAT
 // ============================================================
 async function openChatOverlay(msg) {
   if (!msg.sender_id) {
     document.getElementById('overlayChatError')?.classList.add('open');
     return;
   }
-  
   currentChatMessage = msg;
-  const overlay = document.getElementById('overlayChat');
-  const textarea = document.getElementById('chatReplyInput');
-  if (textarea) textarea.value = '';
-  if (overlay) overlay.classList.add('open');
+  document.getElementById('chatReplyInput').value = '';
+  document.getElementById('overlayChat')?.classList.add('open');
 }
 
 function closeChatOverlay() {
-  const overlay = document.getElementById('overlayChat');
-  if (overlay) overlay.classList.remove('open');
+  document.getElementById('overlayChat')?.classList.remove('open');
   currentChatMessage = null;
 }
 
@@ -781,12 +750,10 @@ async function sendChatMessage() {
     showToast('✏️ Écris un message d\'abord !', 2000);
     return;
   }
-  
   if (!currentChatMessage) {
     showToast('❌ Erreur: message original introuvable', 2000);
     return;
   }
-  
   if (!currentChatMessage.sender_id) {
     showToast('❌ Erreur: destinataire inconnu', 2000);
     return;
@@ -809,12 +776,9 @@ async function sendChatMessage() {
       read: false,
       created_at: new Date().toISOString(),
     });
-    
     if (error) throw error;
-    
     showToast('✅ Message envoyé anonymement !', 2000);
     closeChatOverlay();
-    
   } catch (err) {
     console.error('sendChatMessage:', err);
     showToast(`❌ Erreur: ${err.message}`, 3000);
@@ -833,7 +797,7 @@ function closeChatErrorOverlay() {
 
 
 // ============================================================
-// SÉLECTION / SUPPRESSION DES MESSAGES
+// SÉLECTION / SUPPRESSION (avec croix d'annulation)
 // ============================================================
 function enterSelectMode() {
   selectMode = true;
@@ -863,7 +827,6 @@ function exitSelectMode() {
   if (btnCancelHeader) btnCancelHeader.classList.remove('show');
   
   messagesList.forEach(m => { if (m) m.selected = false; });
-  
   renderInbox();
   updateStats();
 }
@@ -874,7 +837,6 @@ async function confirmDelete() {
     showToast('Aucun message sélectionné', 2000);
     return;
   }
-  
   if (!confirm(`Supprimer ${ids.length} message${ids.length > 1 ? 's' : ''} ?`)) return;
   
   try {
@@ -893,7 +855,7 @@ async function confirmDelete() {
 
 
 // ============================================================
-// SIDEBAR, THÈME, AVATAR, LOGOUT
+// SIDEBAR, THÈME, AVATAR
 // ============================================================
 function openSidebar() {
   document.getElementById('sidebar')?.classList.add('open');
@@ -954,7 +916,7 @@ async function logout() {
 
 
 // ============================================================
-// TOAST (NOTIFICATION TEMPORAIRE)
+// TOAST
 // ============================================================
 function showToast(message, duration = 3000) {
   document.querySelector('.ano23-toast')?.remove();
@@ -978,10 +940,8 @@ let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  
   const btnInstall = document.getElementById('btnInstall');
   const btnInstallPWA = document.getElementById('btnInstallPWA');
-  
   if (btnInstall) btnInstall.style.display = 'flex';
   if (btnInstallPWA) btnInstallPWA.style.display = 'flex';
 });
@@ -989,9 +949,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 async function installPWA() {
   if (!deferredPrompt) return;
   deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
+  await deferredPrompt.userChoice;
   deferredPrompt = null;
-  
   const btnInstall = document.getElementById('btnInstall');
   const btnInstallPWA = document.getElementById('btnInstallPWA');
   if (btnInstall) btnInstall.style.display = 'none';
@@ -1001,7 +960,7 @@ async function installPWA() {
 
 
 // ============================================================
-// ÉCOUTEURS D'ÉVÉNEMENTS (INIT)
+// ÉCOUTEURS D'ÉVÉNEMENTS
 // ============================================================
 function initEventListeners() {
   document.querySelectorAll('.header-tab-btn').forEach(btn => {
@@ -1018,15 +977,23 @@ function initEventListeners() {
   document.getElementById('copyLinkBtn')?.addEventListener('click', copyLink);
   document.getElementById('diceBtn')?.addEventListener('click', randomizeMessage);
 
-  document.getElementById('btnSelect')?.addEventListener('click', () => {
-    if (selectMode) {
-      confirmDelete();
-    } else {
-      enterSelectMode();
-    }
-  });
+  // Bouton Sélectionner / Supprimer
+  const btnSelect = document.getElementById('btnSelect');
+  if (btnSelect) {
+    btnSelect.addEventListener('click', () => {
+      if (selectMode) {
+        confirmDelete();
+      } else {
+        enterSelectMode();
+      }
+    });
+  }
   
-  document.getElementById('btnCancelHeader')?.addEventListener('click', exitSelectMode);
+  // Bouton Annuler (croix dans le header)
+  const btnCancelHeader = document.getElementById('btnCancelHeader');
+  if (btnCancelHeader) {
+    btnCancelHeader.addEventListener('click', exitSelectMode);
+  }
 
   document.getElementById('closeSmall')?.addEventListener('click', closeSmallOverlay);
   document.getElementById('overlaySmall')?.addEventListener('click', e => {
