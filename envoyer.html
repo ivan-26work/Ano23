@@ -61,6 +61,16 @@
     padding: 10px 0;
     background: transparent;
   }
+  .url-bar .clear-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #94a3b8;
+    padding: 0 8px;
+    transition: color 0.2s;
+  }
+  .url-bar .clear-btn:hover { color: #ef4444; }
   .url-bar button {
     background: #0ea5e9;
     border: none;
@@ -89,7 +99,7 @@
   }
   .error-banner.show { display: block; }
 
-  /* Cadre principal (désactivé au début) */
+  /* Cadre principal */
   .main-card {
     width: 100%;
     background: rgba(255,255,255,0.18);
@@ -275,6 +285,7 @@
   <div class="url-bar">
     <i class="fas fa-link"></i>
     <input type="text" id="urlInput" placeholder="Collez le lien de partage ici...">
+    <button class="clear-btn" id="clearBtn" title="Effacer">×</button>
     <button id="validateBtn">Valider</button>
   </div>
 
@@ -282,7 +293,7 @@
     <i class="fas fa-exclamation-triangle"></i> Lien invalide
   </div>
 
-  <!-- Cadre principal (désactivé par défaut) -->
+  <!-- Cadre principal -->
   <div class="main-card disabled" id="mainCard">
     <div class="card-header">
       <div class="user-avatar" id="userAvatar">😎</div>
@@ -356,6 +367,7 @@ let currentType = 'message';
 // ÉLÉMENTS DOM
 // ============================================================
 const urlInput = document.getElementById('urlInput');
+const clearBtn = document.getElementById('clearBtn');
 const validateBtn = document.getElementById('validateBtn');
 const errorBanner = document.getElementById('errorBanner');
 const mainCard = document.getElementById('mainCard');
@@ -366,7 +378,6 @@ const charCount = document.getElementById('charCount');
 const diceBtn = document.getElementById('diceBtn');
 const sendBtn = document.getElementById('sendBtn');
 const typeLabel = document.getElementById('typeLabel');
-const alertBox = document.getElementById('alertBox');
 
 // ============================================================
 // MESSAGES ALÉATOIRES
@@ -408,6 +419,7 @@ function showError(message) {
 }
 
 function showAlert(msg, type) {
+  const alertBox = document.getElementById('alertBox');
   alertBox.textContent = msg;
   alertBox.className = `alert show ${type}`;
   setTimeout(() => alertBox.className = 'alert', 4000);
@@ -417,13 +429,11 @@ function activateForm(uid, type) {
   currentUid = uid;
   currentType = type || 'message';
   
-  // Activer le cadre
   mainCard.classList.remove('disabled');
   msgInput.disabled = false;
   diceBtn.disabled = false;
   sendBtn.disabled = false;
   
-  // Mettre à jour l'affichage
   userUidSpan.textContent = `@${uid}`;
   
   const typeConfig = {
@@ -452,7 +462,6 @@ function deactivateForm() {
 
 function extractUidFromUrl(inputUrl) {
   try {
-    // Si l'utilisateur colle juste "?uid=xxx" ou "envoyer.html?uid=xxx"
     let url = inputUrl;
     if (!inputUrl.startsWith('http')) {
       url = 'https://fake.com/' + inputUrl;
@@ -465,7 +474,6 @@ function extractUidFromUrl(inputUrl) {
     }
     return null;
   } catch (e) {
-    // Essayer avec regex simple
     const match = inputUrl.match(/[?&]uid=([^&]+)/);
     if (match && match[1]) {
       const typeMatch = inputUrl.match(/[?&]type=([^&]+)/);
@@ -476,7 +484,7 @@ function extractUidFromUrl(inputUrl) {
 }
 
 // ============================================================
-// VALIDATION
+// VALIDATION MANUELLE
 // ============================================================
 validateBtn.addEventListener('click', () => {
   const inputValue = urlInput.value.trim();
@@ -495,6 +503,30 @@ validateBtn.addEventListener('click', () => {
     deactivateForm();
   }
 });
+
+// ============================================================
+// BOUTON EFFACER
+// ============================================================
+clearBtn.addEventListener('click', () => {
+  urlInput.value = '';
+  urlInput.focus();
+  deactivateForm();
+});
+
+// ============================================================
+// DÉTECTION AUTOMATIQUE À L'OUVERTURE DE LA PAGE
+// ============================================================
+function autoDetectFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const autoUid = urlParams.get('uid');
+  const autoType = urlParams.get('type') || 'message';
+  
+  if (autoUid && autoUid.trim().length > 0) {
+    // Pré-remplir le champ avec l'URL actuelle
+    urlInput.value = window.location.href;
+    activateForm(autoUid, autoType);
+  }
+}
 
 // ============================================================
 // COMPTEUR CARACTÈRES
@@ -559,6 +591,11 @@ sendBtn.addEventListener('click', async () => {
     sendBtn.querySelector('#sendSpinner').style.display = 'none';
   }
 });
+
+// ============================================================
+// LANCER LA DÉTECTION AUTOMATIQUE AU CHARGEMENT
+// ============================================================
+autoDetectFromUrl();
 </script>
 </body>
 </html>
