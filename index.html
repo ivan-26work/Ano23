@@ -33,7 +33,7 @@
 
 <div class="app">
 
-  <!-- ========== HEADER (avec onglets intégrés) ========== -->
+  <!-- ========== HEADER ========== -->
   <div class="header">
     <div class="logo-area">
       <div class="logo-icon">
@@ -146,7 +146,7 @@
       
     </div>
 
-    <!-- ========== ONGLET INBOX ========== -->
+    <!-- ========== ONGLET INBOX (style natif) ========== -->
     <div class="tab-content" id="tab-inbox">
       <div class="inbox-container">
         <div class="inbox-header">
@@ -294,17 +294,24 @@
   
   <div class="capture-area" id="captureArea">
     <div class="capture-content">
+      
+      <!-- Header -->
       <div class="frame-header">
         <div class="frame-header-box">
           <h1><i class="fas fa-envelope"></i> Ano23 - Réponse anonyme</h1>
         </div>
       </div>
-      <div class="frame-message">
+      
+      <!-- Message reçu (même style que header des cartes link) -->
+      <div class="received-message">
         <p id="originalMsgDisplay">…</p>
       </div>
-      <div class="frame-reply" id="frameReply">
+      
+      <!-- Zone de réponse -->
+      <div class="reply-area">
         <textarea class="reply-textarea" id="replyInput" placeholder="✍️ Écris ta réponse ici…" rows="4"></textarea>
       </div>
+      
     </div>
   </div>
   
@@ -331,8 +338,7 @@
   </div>
   
 </div>
-
-<!-- ========== OVERLAY CHAT (nouveau) ========== -->
+<!-- ========== OVERLAY CHAT ========== -->
 <div class="overlay-chat" id="overlayChat">
   <div class="chat-sheet">
     <div class="chat-header">
@@ -353,6 +359,26 @@
           <i class="fas fa-paper-plane"></i> Envoyer
         </button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== OVERLAY CHAT ERROR ========== -->
+<div class="overlay-chat-error" id="overlayChatError">
+  <div class="chat-error-sheet">
+    <div class="chat-error-header">
+      <i class="fas fa-shield-haltered"></i>
+      <h3>Expéditeur non connecté</h3>
+    </div>
+    <div class="chat-error-body">
+      <p>Cette personne n'a pas de compte Ano23.</p>
+      <div class="chat-error-solution">
+        <i class="fas fa-lightbulb"></i>
+        <span>Vous pouvez l'inviter en partageant la carte <strong>"Discussion anonyme"</strong> depuis l'onglet Link.</span>
+      </div>
+    </div>
+    <div class="chat-error-footer">
+      <button class="chat-error-btn" id="closeChatErrorBtn">Fermer</button>
     </div>
   </div>
 </div>

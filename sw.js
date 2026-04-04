@@ -9,19 +9,19 @@ const CACHE_STATIC = [
   './index.html',
   './auth.html',
   './envoyer.html',
+  './live-chat.html',
   './css/style.css',
   './css/auth.css',
   './js/app.js',
   './js/auth.js',
   './manifest.json',
   './images/logo.png',
-  './images/image.png',
-  './images/image1.png',
-  './images/image3.png',
+  './images/icon.png',
+  './images/badge.png'
 ];
 
 // ============================================================
-// INSTALL — Mise en cache des ressources statiques
+// INSTALL
 // ============================================================
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -32,7 +32,7 @@ self.addEventListener('install', event => {
 });
 
 // ============================================================
-// ACTIVATE — Nettoyage des vieux caches
+// ACTIVATE
 // ============================================================
 self.addEventListener('activate', event => {
   event.waitUntil(
@@ -47,7 +47,7 @@ self.addEventListener('activate', event => {
 });
 
 // ============================================================
-// FETCH — Stale-While-Revalidate
+// FETCH
 // ============================================================
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
@@ -73,7 +73,7 @@ self.addEventListener('fetch', event => {
 });
 
 // ============================================================
-// MESSAGE — Notifications
+// NOTIFICATION
 // ============================================================
 self.addEventListener('message', event => {
   if (!event.data) return;
@@ -82,17 +82,17 @@ self.addEventListener('message', event => {
     const { title, body, url } = event.data;
 
     self.registration.showNotification(title || 'Ano23', {
-      body:    body || '💬 Tu as reçu un nouveau message anonyme !',
-      icon:    './images/logo.png',
-      badge:   './images/logo.png',
+      body:    body || '💬 Tu as reçu un nouveau message anonyme',
+      icon:    './images/icon.png',
+      badge:   './images/badge.png',
       tag:     'ano23-new-message',
       renotify: true,
       data:    { url: url || './index.html' },
       vibrate: [200, 100, 200],
       actions: [
         { action: 'open', title: '📥 Voir le message' },
-        { action: 'dismiss', title: 'Ignorer' },
-      ],
+        { action: 'dismiss', title: 'Ignorer' }
+      ]
     });
   }
 });
@@ -136,12 +136,12 @@ self.addEventListener('push', event => {
 
   event.waitUntil(
     self.registration.showNotification(data.title || 'Ano23', {
-      body:    data.body || '💬 Nouveau message anonyme !',
-      icon:    './images/logo.png',
-      badge:   './images/logo.png',
+      body:    data.body || ' Nouveau message anonyme',
+      icon:    './images/icon.png',
+      badge:   './images/badge.png',
       tag:     'ano23-push',
       data:    { url: data.url || './index.html' },
-      vibrate: [200, 100, 200],
+      vibrate: [200, 100, 200]
     })
   );
 });
