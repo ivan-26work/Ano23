@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Ano23 — Accueil</title>
   
-  <!-- PWA & STANDALONE -->
   <link rel="manifest" href="manifest.json"/>
   <link rel="icon" type="image/png" href="images/logo.png"/>
   <link rel="apple-touch-icon" href="images/logo.png"/>
@@ -16,16 +15,11 @@
   <meta name="theme-color" content="#0ea5e9"/>
   <meta name="description" content="Recevez des messages anonymes simplement"/>
   
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
-  
-  <!-- Font Awesome 6 -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-  
-  <!-- Styles -->
   <link rel="stylesheet" href="css/style.css"/>
   
-  <!-- Librairies -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -33,21 +27,14 @@
 
 <div class="app">
 
-  <!-- ========== HEADER ========== -->
+  <!-- HEADER -->
   <div class="header">
     <div class="logo-area">
-      <div class="logo-icon">
-        <svg viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="11" fill="white"/>
-          <ellipse cx="10" cy="13" rx="2.5" ry="3" fill="#0ea5e9"/>
-          <ellipse cx="18" cy="13" rx="2.5" ry="3" fill="#0ea5e9"/>
-          <path d="M10 18.5 Q14 21 18 18.5" stroke="#0ea5e9" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-        </svg>
+      <div class="logo-img" id="logoImgWrap">
+        <img src="images/logo.png" alt="Ano23" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex'"/>
+        <span id="logoFallback" class="logo-img-fallback" style="display:none">A</span>
       </div>
-      <span class="logo-text">Ano23</span>
     </div>
-    
-    <!-- Onglets dans le header -->
     <div class="header-tabs">
       <button class="header-tab-btn active" data-tab="link">
         <i class="fas fa-link"></i> Link
@@ -57,11 +44,7 @@
         <span class="tab-badge" id="unreadBadge" style="display:none"></span>
       </button>
     </div>
-    
     <div class="header-right">
-      <button class="btn-cancel-header" id="btnCancelHeader" style="display:none">
-        <i class="fas fa-times"></i>
-      </button>
       <button class="menu-btn" id="menuBtn">
         <div class="notif-dot" id="notifDot" style="display:none"></div>
         <i class="fas fa-bars"></i>
@@ -69,121 +52,132 @@
     </div>
   </div>
 
-  <!-- ========== ZONE SCROLLABLE ========== -->
+  <!-- SCROLL AREA -->
   <div class="scroll-area" id="scrollArea">
-    
-    <!-- ========== ONGLET LINK ========== -->
+
+    <!-- ONGLET LINK -->
     <div class="tab-content active" id="tab-link">
       
-      <!-- Carte 1 : Messages -->
-      <div class="card-selector" data-card-type="message">
-        <div class="share-card" id="shareCardMessage" data-card="message" data-selected="true">
-          <div class="selection-dot"></div>
-          <div class="share-card-content">
-            <div class="share-header">
-              <div class="share-header-rectangle">
-                <h2><i class="fas fa-envelope"></i> Envoie-moi des messages anonymes !</h2>
-              </div>
-            </div>
-            <div class="share-message">
-              <div class="animated-envelope">
-                <div class="envelope-badge"><i class="fas fa-star"></i> Nouveau !</div>
-                <div class="envelope-icon">
-                  <i class="fas fa-envelope-open-text"></i>
+      <div class="cards-scroll-container">
+        <div class="cards-scroll" id="cardsScroll">
+          
+          <!-- Carte 1 -->
+          <div class="card-selector" data-card-type="message">
+            <div class="share-card" id="shareCardMessage" data-card="message" data-selected="true">
+              <div class="selection-dot"></div>
+              <div class="share-card-content">
+                <div class="share-header">
+                  <div class="profile-preview">
+                    <div class="profile-preview-avatar" id="previewAvatar1">
+                      <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="profile-preview-text">
+                      <div class="profile-preview-name">@<span id="previewUsername1">utilisateur</span></div>
+                      <div class="profile-preview-action">Envoie-moi un message anonyme</div>
+                    </div>
+                  </div>
+                  <div class="share-message-preview">
+                    <p>Envoie-moi un message anonyme</p>
+                  </div>
                 </div>
-                <span class="envelope-text"><i class="fas fa-smile-wink"></i> J'attends ! 🙂</span>
               </div>
             </div>
           </div>
+
+          <!-- Carte 2 -->
+          <div class="card-selector" data-card-type="question">
+            <div class="share-card" id="shareCardQuestion" data-card="question" data-selected="false">
+              <div class="selection-dot"></div>
+              <div class="share-card-content">
+                <div class="share-header">
+                  <div class="profile-preview">
+                    <div class="profile-preview-avatar" id="previewAvatar2">
+                      <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="profile-preview-text">
+                      <div class="profile-preview-name">@<span id="previewUsername2">utilisateur</span></div>
+                      <div class="profile-preview-action">Pose-moi une question anonyme</div>
+                    </div>
+                  </div>
+                  <div class="share-message-preview">
+                    <p>Pose-moi une question anonyme</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte 3 -->
+          <div class="card-selector" data-card-type="discussion">
+            <div class="share-card" id="shareCardDiscussion" data-card="discussion" data-selected="false">
+              <div class="selection-dot"></div>
+              <div class="share-card-content">
+                <div class="share-header">
+                  <div class="profile-preview">
+                    <div class="profile-preview-avatar" id="previewAvatar3">
+                      <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="profile-preview-text">
+                      <div class="profile-preview-name">@<span id="previewUsername3">utilisateur</span></div>
+                      <div class="profile-preview-action">Discussion anonyme</div>
+                    </div>
+                  </div>
+                  <div class="share-message-preview">
+                    <p>Discussion anonyme</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      <!-- Carte 2 : Questions -->
-      <div class="card-selector" data-card-type="question">
-        <div class="share-card" id="shareCardQuestion" data-card="question" data-selected="false">
-          <div class="selection-dot"></div>
-          <div class="share-card-content">
-            <div class="share-header">
-              <div class="share-header-rectangle">
-                <h2><i class="fas fa-question-circle"></i> Pose-moi des questions anonymes !</h2>
-              </div>
-            </div>
-            <div class="share-message">
-              <div class="animated-envelope">
-                <div class="envelope-badge"><i class="fas fa-star"></i> Nouveau !</div>
-                <div class="envelope-icon">
-                  <i class="fas fa-comment-dots"></i>
-                </div>
-                <span class="envelope-text"><i class="fas fa-smile-wink"></i> J'attends ! 🙂</span>
-              </div>
-            </div>
-          </div>
+      <!-- CADRE 2 : ACTIONS -->
+      <div class="actions-card">
+        <div class="actions-buttons">
+          <button class="action-btn copy" id="copyLinkBtn">
+            <i class="fas fa-copy"></i> Copier
+          </button>
+          <button class="action-btn color" id="colorBtn">
+            <i class="fas fa-palette"></i> Couleur
+          </button>
+          <button class="action-btn download" id="downloadCardBtn">
+            <i class="fas fa-download"></i> Telecharger
+          </button>
         </div>
-      </div>
-
-      <!-- Carte 3 : Discussion anonyme -->
-      <div class="card-selector" data-card-type="discussion">
-        <div class="share-card" id="shareCardDiscussion" data-card="discussion" data-selected="false">
-          <div class="selection-dot"></div>
-          <div class="share-card-content">
-            <div class="share-header">
-              <div class="share-header-rectangle">
-                <h2><i class="fas fa-comments"></i> Discussion anonyme !</h2>
-              </div>
-            </div>
-            <div class="share-message">
-              <div class="animated-envelope">
-                <div class="envelope-badge"><i class="fas fa-star"></i> Nouveau !</div>
-                <div class="envelope-icon">
-                  <i class="fas fa-message"></i>
-                </div>
-                <span class="envelope-text"><i class="fas fa-smile-wink"></i> J'attends ! 🙂</span>
-              </div>
-            </div>
-          </div>
+        <div class="share-whatsapp">
+          <button class="action-btn share-wa" id="shareCardBtn">
+            <i class="fab fa-whatsapp"></i> Partager sur WhatsApp
+          </button>
         </div>
       </div>
       
     </div>
 
-    <!-- ========== ONGLET INBOX ========== -->
+    <!-- ONGLET INBOX -->
     <div class="tab-content" id="tab-inbox">
       <div class="inbox-container">
         <div class="inbox-header">
           <span class="inbox-count" id="inboxCount">0 message</span>
           <div class="inbox-actions">
+            <button class="btn-cancel-select" id="btnCancelSelect">
+              <i class="fas fa-times"></i> Annuler
+            </button>
             <button class="btn-select" id="btnSelect">
-              <i class="fas fa-check-square"></i> Sélectionner
+              <i class="fas fa-check-square"></i> Selectionner
             </button>
           </div>
         </div>
         <div class="inbox-feed" id="inboxFeed"></div>
       </div>
     </div>
-    
-  </div><!-- /scroll-area -->
 
-</div><!-- /app -->
-
-<!-- ========== BARRE D'ACTION FIXE (LINK UNIQUEMENT) ========== -->
-<div class="link-footer" id="linkFooter">
-  <div class="link-toolbar">
-    <button class="link-btn share" id="shareLinkCardBtn">
-      <i class="fab fa-whatsapp"></i> 
-    </button>
-    <button class="link-btn copy" id="copyLinkBtn">
-      <i class="fas fa-copy"></i> 
-    </button>
-    <button class="link-btn download" id="downloadLinkCardBtn">
-      <i class="fas fa-download"></i> 
-    </button>
-    <button class="link-btn dice" id="diceBtn">
-      <i class="fas fa-dice"></i> 
-    </button>
   </div>
+
 </div>
 
-<!-- ========== SIDEBAR ========== -->
+<!-- SIDEBAR -->
 <div class="sb-backdrop" id="sbBackdrop"></div>
 <div class="sidebar" id="sidebar">
   <div class="sb-header">
@@ -220,49 +214,45 @@
   <div class="sb-body">
     <div class="sb-section">Apparence</div>
     <div class="sb-row">
-      <div class="sb-row-label">
-        <i class="fas fa-moon"></i> Mode nuit
-      </div>
-      <label class="toggle-sw">
-        <input type="checkbox" id="themeToggle"/>
-        <div class="toggle-track"></div>
-      </label>
+      <div class="sb-row-label"><i class="fas fa-moon"></i> Mode nuit</div>
+      <label class="toggle-sw"><input type="checkbox" id="themeToggle"/><div class="toggle-track"></div></label>
     </div>
-
     <div class="sb-section">Compte</div>
-    <button class="sb-btn" id="btnLogout">
-      <i class="fas fa-sign-out-alt"></i> Se déconnecter
-    </button>
-    
-    <button class="sb-btn" id="btnSendAnonymous">
-      <i class="fas fa-paper-plane"></i> Envoyer un message anonyme
-    </button>
-
-    <div class="sb-section">Légal</div>
-    <a href="mentions-legales.html" class="sb-btn">
-      <i class="fas fa-file-lines"></i> Mentions légales
-    </a>
-    <a href="confidentialite.html" class="sb-btn">
-      <i class="fas fa-shield-haltered"></i> Confidentialité
-    </a>
-    <a href="cgu.html" class="sb-btn">
-      <i class="fas fa-scale-balanced"></i> Conditions d'utilisation
-    </a>
-    
+    <button class="sb-btn" id="btnLogout"><i class="fas fa-sign-out-alt"></i> Se deconnecter</button>
+    <div class="sb-section">Legal</div>
+    <a href="mentions-legales.html" class="sb-btn"><i class="fas fa-file-lines"></i> Mentions legales</a>
+    <a href="confidentialite.html" class="sb-btn"><i class="fas fa-shield-haltered"></i> Confidentialite</a>
+    <a href="cgu.html" class="sb-btn"><i class="fas fa-scale-balanced"></i> Conditions</a>
     <div class="sb-section">Application</div>
-    <button class="sb-btn btn-install-pwa" id="btnInstallPWA" style="display: none;">
-      <i class="fas fa-download"></i> Installer l'application
-    </button>
+    <button class="sb-btn btn-install-pwa" id="btnInstallPWA" style="display: none;"><i class="fas fa-download"></i> Installer</button>
   </div>
+  <div class="sb-footer"><button class="btn-install" id="btnInstall"><i class="fas fa-download"></i> Installer</button></div>
+</div>
 
-  <div class="sb-footer">
-    <button class="btn-install" id="btnInstall">
-      <i class="fas fa-download"></i> Installer l'application
-    </button>
+<!-- OVERLAY COULEUR (structure fixe) -->
+<div class="overlay-color" id="overlayColorFixed">
+  <div class="color-sheet">
+    <div class="color-header">
+      <h3><i class="fas fa-palette"></i> Choisir ta couleur</h3>
+      <div class="color-header-actions">
+        <button class="color-reset" id="colorResetBtn">Reset</button>
+        <button class="color-ok" id="colorOkBtn">OK</button>
+      </div>
+    </div>
+    <div class="color-content">
+      <div class="color-section">
+        <div class="color-section-title">Couleurs</div>
+        <div class="color-grid" id="pureColorsGrid"></div>
+      </div>
+      <div class="color-section">
+        <div class="color-section-title">Degrades</div>
+        <div class="color-grid" id="gradientsGrid"></div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ========== OVERLAY LECTURE (petit) ========== -->
+<!-- OVERLAY LECTURE -->
 <div class="overlay-small" id="overlaySmall">
   <div class="sheet-small">
     <div class="sheet-handle"></div>
@@ -270,109 +260,71 @@
       <div class="msg-icon" id="smallIcon"><i class="fas fa-comment"></i></div>
       <div class="msg-meta">
         <div class="msg-type" id="smallType">Message anonyme</div>
-        <div class="msg-time-display" id="smallTime">À l'instant</div>
+        <div class="msg-time-display" id="smallTime">A l'instant</div>
       </div>
       <button class="close-small" id="closeSmall"><i class="fas fa-times"></i></button>
     </div>
     <div class="msg-content">
       <div class="msg-bubble" id="smallText">…</div>
       <div class="msg-actions-row">
-        <button class="btn-reply-small" id="btnReplySmall">
-          <i class="fas fa-reply"></i> Répondre
-        </button>
-        <button class="btn-chat-small" id="btnChatSmall">
-          <i class="fas fa-comment-dots"></i> Chat
-        </button>
+        <button class="btn-reply-small" id="btnReplySmall"><i class="fas fa-reply"></i> Repondre</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ========== OVERLAY RÉPONSE (grand) ========== -->
+<!-- OVERLAY REPONSE -->
 <div class="overlay-large" id="overlayLarge">
   <div class="capture-area" id="captureArea">
     <div class="capture-content">
       <div class="frame-header">
         <div class="frame-header-box">
-          <h1><i class="fas fa-envelope"></i> Ano23 - Réponse anonyme</h1>
+          <h1><i class="fas fa-envelope"></i> Ano23 - Reponse anonyme</h1>
         </div>
       </div>
       <div class="received-message">
         <p id="originalMsgDisplay">…</p>
       </div>
-      <div class="reply-area">
-        <textarea class="reply-textarea" id="replyInput" placeholder="✍️ Écris ta réponse ici…" rows="4"></textarea>
+      <div class="reply-area" id="replyArea">
+        <textarea class="reply-textarea" id="replyInput" placeholder="Ecris ta reponse ici…" rows="4"></textarea>
       </div>
     </div>
   </div>
   <div class="toolbar" id="replyToolbar">
     <div class="toolbar-content">
-      <div class="color-picker-wrap">
-        <i class="fas fa-palette"></i>
-        <input type="color" id="colorA" class="color-picker" value="#0ea5e9"/>
-      </div>
-      <div class="color-picker-wrap">
-        <i class="fas fa-palette"></i>
-        <input type="color" id="colorB" class="color-picker" value="#0284c7"/>
-      </div>
-      <button class="toolbar-btn download" id="downloadBtn" disabled>
-        <i class="fas fa-camera"></i> Télécharger
+      <div class="color-picker-wrap"><i class="fas fa-palette"></i><input type="color" id="colorA" class="color-picker" value="#0ea5e9"/></div>
+      <div class="color-picker-wrap"><i class="fas fa-palette"></i><input type="color" id="colorB" class="color-picker" value="#0284c7"/></div>
+      <button class="toolbar-btn download" id="downloadBtn" disabled><i class="fas fa-camera"></i> Telecharger</button>
+      <button class="toolbar-btn send-reply" id="sendReplyBtn" disabled>
+  <i class="fas fa-paper-plane"></i> Envoyer la reponse
+</button>
+      <button class="toolbar-btn close" id="closeLargeBtn"><i class="fas fa-times"></i> Fermer</button>
+      
+    </div>
+  </div>
+</div>
+<!-- MODALE DE CONFIRMATION POUR ENVOI -->
+<div class="modal-confirm" id="modalConfirm">
+  <div class="modal-confirm-content">
+    <div class="modal-confirm-header">
+      <h3><i class="fas fa-paper-plane"></i> Envoyer la reponse ?</h3>
+    </div>
+    <div class="modal-confirm-body">
+      <p>Voulez-vous envoyer cette reponse ?</p>
+    </div>
+    <div class="modal-confirm-actions">
+      <button class="modal-confirm-ok" id="modalConfirmOk">
+        <i class="fas fa-check"></i> OK
       </button>
-      <button class="toolbar-btn share" id="shareBtn" disabled>
-        <i class="fab fa-whatsapp"></i> Envoyer
-      </button>
-      <button class="toolbar-btn close" id="closeLargeBtn">
-        <i class="fas fa-times"></i> Fermer
+      <button class="modal-confirm-cancel" id="modalConfirmCancel">
+        <i class="fas fa-times"></i> Annuler
       </button>
     </div>
   </div>
 </div>
-
-<!-- ========== OVERLAY CHAT ========== -->
-<div class="overlay-chat" id="overlayChat">
-  <div class="chat-sheet">
-    <div class="chat-header">
-      <h3><i class="fas fa-comment-dots"></i> Réponse anonyme</h3>
-      <button class="close-chat" id="closeChatBtn"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="chat-warning">
-      <i class="fas fa-shield-haltered"></i> 
-      <span>Rien ne prouve que celui qui vous a envoyé ce message a un compte Ano23. Vous pouvez répondre en public en partageant la carte.</span>
-    </div>
-    <div class="chat-body">
-      <textarea id="chatReplyInput" class="chat-textarea" placeholder="✍️ Écris ta réponse anonyme ici..." rows="4" maxlength="500"></textarea>
-      <div class="chat-actions">
-        <button class="chat-btn cancel" id="cancelChatBtn">
-          <i class="fas fa-times"></i> Annuler
-        </button>
-        <button class="chat-btn send" id="sendChatBtn">
-          <i class="fas fa-paper-plane"></i> Envoyer
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ========== OVERLAY CHAT ERROR ========== -->
-<div class="overlay-chat-error" id="overlayChatError">
-  <div class="chat-error-sheet">
-    <div class="chat-error-header">
-      <i class="fas fa-shield-haltered"></i>
-      <h3>Expéditeur non connecté</h3>
-    </div>
-    <div class="chat-error-body">
-      <p>Cette personne n'a pas de compte Ano23.</p>
-      <div class="chat-error-solution">
-        <i class="fas fa-lightbulb"></i>
-        <span>Vous pouvez l'inviter en partageant la carte <strong>"Discussion anonyme"</strong> depuis l'onglet Link.</span>
-      </div>
-    </div>
-    <div class="chat-error-footer">
-      <button class="chat-error-btn" id="closeChatErrorBtn">Fermer</button>
-    </div>
-  </div>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="js/app.js"></script>
+
 </body>
 </html>
