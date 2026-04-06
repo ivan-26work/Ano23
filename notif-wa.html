@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Ano23 — Notifications WhatsApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800;900&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ── THEMES ── */
+:root {
+  --bg: #f0f9ff;
+  --surface: #ffffff;
+  --surface2: #f1f5f9;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --text2: #64748b;
+  --text3: #94a3b8;
+  --wa: #25D366;
+  --wa-dark: #128C7E;
+}
+[data-theme="dark"] {
+  --bg: #0c1929;
+  --surface: #162840;
+  --surface2: #1e3652;
+  --border: #1e3a5f;
+  --text: #e2f0ff;
+  --text2: #7fb3d3;
+  --text3: #4a7fa0;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; }
+body {
+  font-family: 'Playfair Display', serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  transition: background .3s, color .3s;
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%, rgba(37,211,102,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 100%, rgba(14,165,233,0.07) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── HEADER ── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: rgba(240,249,255,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+[data-theme="dark"] .header { background: rgba(12,25,41,0.88); }
+
+.header-back {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--text2);
+  font-size: 15px;
+  text-decoration: none;
+  transition: all .2s;
+}
+.header-back:hover { border-color: var(--wa); color: var(--wa); }
+.header-title { flex: 1; font-size: 17px; font-weight: 800; color: var(--text); }
+.theme-toggle {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--text2);
+  font-size: 15px;
+}
+
+/* ── MAIN ── */
+.main {
+  position: relative;
+  z-index: 1;
+  padding: 28px 20px 60px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── ÉTATS ── */
+.state { display: none; }
+.state.active { display: block; animation: fadeUp .35s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── LOADING ── */
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+  color: var(--text3);
+}
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--wa);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── HERO ── */
+.hero { text-align: center; margin-bottom: 28px; }
+.hero-icon {
+  width: 80px; height: 80px;
+  border-radius: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 38px;
+  margin: 0 auto 16px;
+  position: relative;
+}
+.hero-icon.green { background: linear-gradient(135deg, #25D366, #128C7E); color: white; box-shadow: 0 8px 24px rgba(37,211,102,0.3); }
+.hero-icon.orange { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; box-shadow: 0 8px 24px rgba(245,158,11,0.3); }
+.badge-dot {
+  position: absolute;
+  top: -4px; right: -4px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 3px solid var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: white;
+}
+.badge-dot.green { background: #22c55e; }
+.badge-dot.pulse {
+  background: #f59e0b;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245,158,11,.4); }
+  50% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(245,158,11,0); }
+}
+
+.hero h1 { font-size: 22px; font-weight: 900; color: var(--text); margin-bottom: 8px; line-height: 1.2; }
+.hero p { font-size: 14px; color: var(--text2); line-height: 1.6; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 12px;
+}
+
+.pending-card {
+  background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.02));
+  border: 1.5px solid rgba(245,158,11,0.3);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.subscribed-card {
+  background: linear-gradient(135deg, rgba(37,211,102,0.08), rgba(37,211,102,0.02));
+  border: 1.5px solid rgba(37,211,102,0.3);
+  border-radius: 20px;
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* ── PHONE INPUT ── */
+.phone-row { display: flex; gap: 10px; align-items: center; }
+.phone-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 13px 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 15px; font-weight: 500;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s;
+}
+.phone-input:focus { border-color: var(--wa); }
+.phone-input::placeholder { color: var(--text3); font-family: 'Playfair Display', serif; font-size: 13px; }
+.phone-input.error { border-color: #ef4444; animation: shake .3s ease; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* ── PENDING STEPS ── */
+.pending-steps { display: flex; flex-direction: column; gap: 14px; margin: 14px 0; }
+.pending-step { display: flex; align-items: flex-start; gap: 12px; }
+.step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--wa);
+  color: white;
+  font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+}
+.step-text { font-size: 14px; color: var(--text2); line-height: 1.5; }
+.step-text strong { color: var(--text); font-weight: 800; }
+.step-code {
+  display: inline-block;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 14px; color: var(--wa-dark); font-weight: 500;
+  margin-top: 6px;
+}
+
+/* ── SUBSCRIBED ── */
+.subscribed-emoji { font-size: 44px; margin-bottom: 12px; }
+.subscribed-title { font-size: 18px; font-weight: 900; color: var(--wa-dark); margin-bottom: 8px; }
+.subscribed-number {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px; color: var(--text3);
+  background: var(--surface2);
+  border-radius: 8px; padding: 4px 14px;
+  display: inline-block; margin-bottom: 8px;
+}
+.subscribed-desc { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+/* ── BOUTONS ── */
+.btn-wa {
+  width: 100%; padding: 15px;
+  border: none; border-radius: 40px;
+  background: linear-gradient(135deg, var(--wa), var(--wa-dark));
+  color: white;
+  font-family: 'Playfair Display', serif;
+  font-weight: 800; font-size: 15px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity .2s, transform .1s;
+  box-shadow: 0 4px 16px rgba(37,211,102,0.25);
+}
+.btn-wa:active { transform: scale(0.98); opacity: .9; }
+.btn-wa:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-success {
+  width: 100%; padding: 15px;
+  border: none; border-radius: 40px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  font-family: 'Playfair Display', serif;
+  font-weight: 800; font-size: 15px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity .2s, transform .1s;
+  box-shadow: 0 4px 16px rgba(34,197,94,0.25);
+  margin-bottom: 10px;
+}
+.btn-success:active { transform: scale(0.98); }
+
+.btn-danger {
+  width: 100%; padding: 15px;
+  border: 1.5px solid #ef4444;
+  border-radius: 40px; background: transparent;
+  color: #ef4444;
+  font-family: 'Playfair Display', serif;
+  font-weight: 800; font-size: 15px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all .2s;
+}
+.btn-danger:hover { background: #ef4444; color: white; }
+
+.btn-ghost {
+  width: 100%; padding: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 40px; background: var(--surface2);
+  color: var(--text2);
+  font-family: 'Playfair Display', serif;
+  font-weight: 700; font-size: 14px;
+  cursor: pointer; margin-top: 10px;
+  transition: all .2s;
+}
+.btn-ghost:hover { border-color: var(--text3); }
+
+/* ── OVERLAY ── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,0.9);
+  backdrop-filter: blur(14px);
+  z-index: 200;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 16px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s;
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+.sheet {
+  background: var(--surface);
+  border-radius: 28px;
+  width: 100%; max-width: 440px;
+  padding: 24px 24px 32px;
+  transform: translateY(40px);
+  transition: transform .3s;
+  text-align: center;
+}
+.overlay.open .sheet { transform: translateY(0); }
+.sheet-handle { width: 36px; height: 4px; background: var(--border); border-radius: 4px; margin: 0 auto 20px; }
+.sheet-wa-icon {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, var(--wa), var(--wa-dark));
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; color: white;
+  margin: 0 auto 16px;
+  box-shadow: 0 6px 20px rgba(37,211,102,0.3);
+}
+.sheet h3 { font-size: 20px; font-weight: 900; color: var(--text); margin-bottom: 8px; }
+.sheet p { font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 20px; }
+.sheet-info {
+  background: var(--surface2);
+  border-radius: 16px; padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.sheet-info-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 8px; }
+.sheet-number { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 10px; font-family: 'DM Mono', monospace; }
+.sheet-code {
+  display: inline-block;
+  background: var(--wa); color: white;
+  font-size: 15px; font-weight: 800;
+  padding: 8px 22px; border-radius: 40px;
+  font-family: 'DM Mono', monospace;
+}
+.sheet-actions { display: flex; gap: 10px; }
+.sheet-cancel {
+  flex: 1; padding: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 40px; background: var(--surface2);
+  color: var(--text2);
+  font-family: 'Playfair Display', serif;
+  font-weight: 700; font-size: 14px; cursor: pointer;
+}
+.sheet-confirm {
+  flex: 1; padding: 14px;
+  border: none; border-radius: 40px;
+  background: linear-gradient(135deg, var(--wa), var(--wa-dark));
+  color: white;
+  font-family: 'Playfair Display', serif;
+  font-weight: 800; font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  box-shadow: 0 4px 12px rgba(37,211,102,0.25);
+  transition: opacity .2s, transform .1s;
+}
+.sheet-confirm:active { transform: scale(0.97); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 30px; left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  border-radius: 40px;
+  font-size: 13px; font-weight: 700;
+  color: white; z-index: 500;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+.toast.success { background: #22c55e; }
+.toast.error { background: #ef4444; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <a class="header-back" href="index.html">
+    <i class="fas fa-arrow-left"></i>
+  </a>
+  <div class="header-title">Notifications WhatsApp</div>
+  <button class="theme-toggle" onclick="toggleTheme()">
+    <i class="fas fa-moon" id="themeIcon"></i>
+  </button>
+</div>
+
+<div class="main">
+
+  <!-- ══ LOADING ══ -->
+  <div class="state active" id="stateLoading">
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span>Chargement...</span>
+    </div>
+  </div>
+
+  <!-- ══ ÉTAT 1 : NON ABONNÉ ══ -->
+  <div class="state" id="stateUnsubscribed">
+    <div class="hero">
+      <div class="hero-icon green">
+        <i class="fab fa-whatsapp"></i>
+      </div>
+      <h1>Reçois tes messages sur WhatsApp</h1>
+      <p>Entre ton numéro pour recevoir une notification WhatsApp à chaque nouveau message anonyme.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Ton numéro WhatsApp</div>
+      <div class="phone-row">
+        <input class="phone-input" type="tel" id="phoneInput" placeholder="+2250000000000"/>
+      </div>
+    </div>
+
+    <button class="btn-wa" id="btnSubscribe">
+      <i class="fab fa-whatsapp"></i> S'abonner aux notifications
+    </button>
+  </div>
+
+  <!-- ══ ÉTAT 2 : EN ATTENTE ══ -->
+  <div class="state" id="statePending">
+    <div class="hero">
+      <div class="hero-icon orange">
+        <i class="fas fa-clock"></i>
+        <div class="badge-dot pulse">!</div>
+      </div>
+      <h1>Une dernière étape !</h1>
+      <p>Tu as été redirigé sur WhatsApp. Envoie le message ci-dessous pour activer tes notifications.</p>
+    </div>
+
+    <div class="pending-card">
+      <div class="card-label" style="color:#d97706;">⏳ Activation en attente</div>
+      <div class="pending-steps">
+        <div class="pending-step">
+          <div class="step-num">1</div>
+          <div class="step-text">Ouvre <strong>WhatsApp</strong> et va dans la conversation avec <strong>+1 415 523 8886</strong></div>
+        </div>
+        <div class="pending-step">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            Envoie exactement ce message :
+            <div class="step-code">join does-establish</div>
+          </div>
+        </div>
+        <div class="pending-step">
+          <div class="step-num">3</div>
+          <div class="step-text">Reviens ici et appuie sur <strong>"J'ai envoyé le message"</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-success" id="btnConfirmSent">
+      <i class="fas fa-check-circle"></i> J'ai envoyé le message
+    </button>
+    <button class="btn-ghost" id="btnCancelPending">
+      <i class="fas fa-times"></i> Annuler
+    </button>
+  </div>
+
+  <!-- ══ ÉTAT 3 : ABONNÉ ══ -->
+  <div class="state" id="stateSubscribed">
+    <div class="hero">
+      <div class="hero-icon green">
+        <i class="fab fa-whatsapp"></i>
+        <div class="badge-dot green"><i class="fas fa-check" style="font-size:9px"></i></div>
+      </div>
+      <h1>Notifications activées !</h1>
+      <p>Tu recevras un message WhatsApp à chaque nouveau message anonyme sur Ano23.</p>
+    </div>
+
+    <div class="subscribed-card">
+      <div class="subscribed-emoji">✅</div>
+      <div class="subscribed-title">Vous êtes abonné</div>
+      <div class="subscribed-number" id="subscribedNumber">+2250000000000</div>
+      <div class="subscribed-desc">Les notifications WhatsApp sont actives sur ce numéro.</div>
+    </div>
+
+    <button class="btn-danger" id="btnUnsubscribe">
+      <i class="fas fa-bell-slash"></i> Annuler l'abonnement
+    </button>
+  </div>
+
+</div>
+
+<!-- OVERLAY CONFIRMATION -->
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-wa-icon"><i class="fab fa-whatsapp"></i></div>
+    <h3>Activer les notifications</h3>
+    <p>Tu vas être redirigé sur WhatsApp. Envoie le message ci-dessous pour confirmer ton abonnement aux notifications Ano23.</p>
+    <div class="sheet-info">
+      <div class="sheet-info-label">Envoie ce message au numéro</div>
+      <div class="sheet-number">+1 415 523 8886</div>
+      <div class="sheet-code">join does-establish</div>
+    </div>
+    <div class="sheet-actions">
+      <button class="sheet-cancel" id="btnOverlayCancel">
+        <i class="fas fa-times"></i> Annuler
+      </button>
+      <button class="sheet-confirm" id="btnOverlayConfirm">
+        <i class="fab fa-whatsapp"></i> Ouvrir WhatsApp
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG SUPABASE ──
+const SUPABASE_URL  = 'https://waogbrxqyysibttlpoxj.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhb2dicnhxeXlzaWJ0dGxwb3hqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxNjE3NzUsImV4cCI6MjA5MDczNzc3NX0.Op1DUBfefbO2RkoitXws-7cFLW1T0DJGBDh1YPDcB1w';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+let currentUserId = null;
+let pendingPhone  = null;
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', async () => {
+  // Vérifier session
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    window.location.href = 'auth.html';
+    return;
+  }
+  currentUserId = session.user.email.split('@')[0];
+
+  // Thème
+  const saved = localStorage.getItem('ano23-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('themeIcon').className = 'fas fa-sun';
+  }
+
+  // Charger profil
+  await loadProfile();
+
+  // Events
+  document.getElementById('btnSubscribe').addEventListener('click', onSubscribeClick);
+  document.getElementById('btnOverlayCancel').addEventListener('click', closeOverlay);
+  document.getElementById('btnOverlayConfirm').addEventListener('click', onOverlayConfirm);
+  document.getElementById('btnConfirmSent').addEventListener('click', onConfirmSent);
+  document.getElementById('btnCancelPending').addEventListener('click', onCancelPending);
+  document.getElementById('btnUnsubscribe').addEventListener('click', onUnsubscribe);
+  document.getElementById('overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('overlay')) closeOverlay();
+  });
+});
+
+// ── CHARGER PROFIL ──
+async function loadProfile() {
+  try {
+    const { data } = await sb
+      .from('profiles')
+      .select('whatsapp_number, wa_pending')
+      .eq('user_id', currentUserId)
+      .single();
+
+    if (data?.whatsapp_number) {
+      // Abonné
+      const display = data.whatsapp_number.replace('whatsapp:', '');
+      document.getElementById('subscribedNumber').textContent = display;
+      showState('stateSubscribed');
+    } else if (localStorage.getItem('wa-pending-' + currentUserId)) {
+      // En attente
+      showState('statePending');
+    } else {
+      // Non abonné
+      showState('stateUnsubscribed');
+    }
+  } catch (e) {
+    showState('stateUnsubscribed');
+  }
+}
+
+// ── ÉTATS ──
+function showState(id) {
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── ABONNEMENT ──
+function onSubscribeClick() {
+  const phone = document.getElementById('phoneInput').value.trim();
+  if (!phone || phone.length < 8) {
+    const input = document.getElementById('phoneInput');
+    input.classList.add('error');
+    setTimeout(() => input.classList.remove('error'), 800);
+    showToast('Entre un numéro valide', 'error');
+    return;
+  }
+  pendingPhone = phone;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('open');
+  pendingPhone = null;
+}
+
+function onOverlayConfirm() {
+  if (!pendingPhone) return;
+  // Sauvegarder en attente dans localStorage
+  localStorage.setItem('wa-pending-' + currentUserId, pendingPhone);
+  // Ouvrir WhatsApp
+  const msg = encodeURIComponent('join does-establish');
+  window.open(`https://wa.me/14155238886?text=${msg}`, '_blank');
+  // Fermer overlay et passer à l'état attente
+  document.getElementById('overlay').classList.remove('open');
+  showState('statePending');
+}
+
+// ── CONFIRMATION ENVOI ──
+async function onConfirmSent() {
+  const phone = localStorage.getItem('wa-pending-' + currentUserId);
+  if (!phone) { showState('stateUnsubscribed'); return; }
+
+  const btn = document.getElementById('btnConfirmSent');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+  btn.disabled = true;
+
+  try {
+    const { error } = await sb.from('profiles').upsert({
+      user_id: currentUserId,
+      whatsapp_number: `whatsapp:${phone}`,
+      wa_pending: false
+    }, { onConflict: 'user_id' });
+
+    if (error) throw error;
+
+    localStorage.removeItem('wa-pending-' + currentUserId);
+    document.getElementById('subscribedNumber').textContent = phone;
+    showToast('Notifications activées ! 🎉', 'success');
+    showState('stateSubscribed');
+
+  } catch (err) {
+    showToast('Erreur — réessaie', 'error');
+    btn.innerHTML = '<i class="fas fa-check-circle"></i> J\'ai envoyé le message';
+    btn.disabled = false;
+  }
+}
+
+// ── ANNULER ATTENTE ──
+function onCancelPending() {
+  localStorage.removeItem('wa-pending-' + currentUserId);
+  document.getElementById('phoneInput').value = '';
+  showState('stateUnsubscribed');
+}
+
+// ── DÉSABONNEMENT ──
+async function onUnsubscribe() {
+  if (!confirm('Annuler les notifications WhatsApp ?')) return;
+  try {
+    await sb.from('profiles').upsert({
+      user_id: currentUserId,
+      whatsapp_number: null
+    }, { onConflict: 'user_id' });
+
+    localStorage.removeItem('wa-pending-' + currentUserId);
+    document.getElementById('phoneInput').value = '';
+    showToast('Abonnement annulé', 'success');
+    showState('stateUnsubscribed');
+  } catch (err) {
+    showToast('Erreur — réessaie', 'error');
+  }
+}
+
+// ── THÈME ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('ano23-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeIcon').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+}
+
+// ── TOAST ──
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
