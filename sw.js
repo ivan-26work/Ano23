@@ -1,15 +1,14 @@
 // ============================================================
-// ANO23 — SERVICE WORKER
+// WHOIS — SERVICE WORKER
 // Cache + Web Push Notifications
 // ============================================================
 
-const CACHE_NAME   = 'ano23-v2';
+const CACHE_NAME   = 'whois-v1';
 const CACHE_STATIC = [
   './',
   './index.html',
   './auth.html',
   './envoyer.html',
-  './live-chat.html',
   './css/style.css',
   './css/auth.css',
   './js/app.js',
@@ -19,6 +18,48 @@ const CACHE_STATIC = [
   './images/icon.png',
   './images/badge.png'
 ];
+
+// ============================================================
+// MESSAGES DE NOTIFICATION PAR TYPE (10 chacun)
+// ============================================================
+const NOTIF_MESSAGES = {
+  message: [
+    "💬 Vous avez reçu un nouveau message anonyme",
+    "✉️ Quelqu'un vous a écrit !",
+    "📩 Découvrez qui vous a écrit !",
+    "💌 Un message anonyme vous attend",
+    "📨 Nouvelle activité sur votre profil",
+    "💭 Quelqu'un pense à vous",
+    "📝 Vous avez un nouveau message",
+    "🔔 Ne manquez pas ce message anonyme",
+    "💙 Quelqu'un a quelque chose à vous dire",
+    "👀 Ouvrez pour lire votre message anonyme"
+  ],
+  question: [
+    "❓ Quelqu'un vous a posé une question anonyme",
+    "🤔 Une nouvelle question anonyme vous attend",
+    "💭 On aimerait connaître votre avis",
+    "📝 Question anonyme : répondez maintenant",
+    "💬 Quelqu'un attend votre réponse",
+    "🔍 Une question mystère pour vous",
+    "🎯 Votre avis est demandé !",
+    "📢 Question anonyme reçue",
+    "💡 Quelqu'un veut votre opinion",
+    "🤫 Question secrète pour vous"
+  ],
+  discussion: [
+    "💬 Quelqu'un veut discuter anonymement",
+    "🗣️ Nouvelle demande de discussion anonyme",
+    "💭 Une discussion anonyme vous attend",
+    "👥 Quelqu'un a lancé une discussion",
+    "💬 Souhaitez-vous discuter ?",
+    "🎭 Discussion anonyme disponible",
+    "💬 Rejoignez la conversation anonyme",
+    "🗨️ Quelqu'un vous parle en privé",
+    "💬 Une âme anonyme veut discuter",
+    "🤝 Discussion anonyme en attente"
+  ]
+};
 
 // ============================================================
 // INSTALL
@@ -73,17 +114,27 @@ self.addEventListener('fetch', event => {
 });
 
 // ============================================================
-// NOTIFICATION (avec tag unique pour cumuler)
+// NOTIFICATION (avec message aléatoire selon le type)
 // ============================================================
 self.addEventListener('message', event => {
   if (!event.data) return;
 
   if (event.data.type === 'NEW_MESSAGE') {
-    const { title, body, url } = event.data;
-    const uniqueTag = `ano23-msg-${Date.now()}`;
+    const { title, url, msgType } = event.data;
+    const uniqueTag = `whois-msg-${Date.now()}`;
+    
+    // Sélection du tableau selon le type (défaut: message)
+    let messagesArray = NOTIF_MESSAGES.message;
+    if (msgType === 'question') messagesArray = NOTIF_MESSAGES.question;
+    if (msgType === 'discussion') messagesArray = NOTIF_MESSAGES.discussion;
+    
+    // Message aléatoire
+    const randomIndex = Math.floor(Math.random() * messagesArray.length);
+    const randomBody = messagesArray[randomIndex];
 
-    self.registration.showNotification(title || 'Ano23', {
-      body:    body || 'Tu as reçu un nouveau message anonyme!',
+    // Affichage de la notification
+    self.registration.showNotification(title || 'whois', {
+      body:    randomBody,
       icon:    './images/icon.png',
       badge:   './images/badge.png',
       tag:     uniqueTag,
@@ -91,8 +142,8 @@ self.addEventListener('message', event => {
       data:    { url: url || './index.html' },
       vibrate: [200, 100, 200],
       actions: [
-        { action: 'open', title: ' Voir' },
-        { action: 'dismiss', title: 'Ignorer' }
+        { action: 'open', title: '📥 Voir' },
+        { action: 'dismiss', title: '❌ Ignorer' }
       ]
     });
   }
@@ -135,11 +186,20 @@ self.addEventListener('push', event => {
   let data = {};
   try { data = event.data.json(); } catch (e) { data = { body: event.data.text() }; }
   
-  const uniqueTag = `ano23-push-${Date.now()}`;
+  const uniqueTag = `whois-push-${Date.now()}`;
+  
+  // Déterminer le type depuis les données push (défaut: message)
+  const msgType = data.msgType || 'message';
+  let messagesArray = NOTIF_MESSAGES.message;
+  if (msgType === 'question') messagesArray = NOTIF_MESSAGES.question;
+  if (msgType === 'discussion') messagesArray = NOTIF_MESSAGES.discussion;
+  
+  const randomIndex = Math.floor(Math.random() * messagesArray.length);
+  const randomBody = messagesArray[randomIndex];
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Ano23', {
-      body:    data.body || ' Nouveau message anonyme',
+    self.registration.showNotification(data.title || 'whois', {
+      body:    randomBody,
       icon:    './images/icon.png',
       badge:   './images/badge.png',
       tag:     uniqueTag,

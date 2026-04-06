@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Ano23 — Accueil</title>
   
+  <!-- PWA & STANDALONE -->
   <link rel="manifest" href="manifest.json"/>
   <link rel="icon" type="image/png" href="images/logo.png"/>
   <link rel="apple-touch-icon" href="images/logo.png"/>
@@ -15,11 +16,17 @@
   <meta name="theme-color" content="#0ea5e9"/>
   <meta name="description" content="Recevez des messages anonymes simplement"/>
   
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
+  
+  <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  
+  <!-- Styles -->
   <link rel="stylesheet" href="css/style.css"/>
   
+  <!-- Librairies -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -27,7 +34,7 @@
 
 <div class="app">
 
-  <!-- HEADER -->
+  <!-- ========== HEADER ========== -->
   <div class="header">
     <div class="logo-area">
       <div class="logo-img" id="logoImgWrap">
@@ -45,6 +52,9 @@
       </button>
     </div>
     <div class="header-right">
+      <button class="btn-refresh" id="btnRefresh" title="Rafraîchir">
+        <i class="fas fa-sync-alt"></i>
+      </button>
       <button class="menu-btn" id="menuBtn">
         <div class="notif-dot" id="notifDot" style="display:none"></div>
         <i class="fas fa-bars"></i>
@@ -52,22 +62,23 @@
     </div>
   </div>
 
-  <!-- SCROLL AREA -->
+  <!-- ========== SCROLL AREA ========== -->
   <div class="scroll-area" id="scrollArea">
 
-    <!-- ONGLET LINK -->
+    <!-- ========== ONGLET LINK ========== -->
     <div class="tab-content active" id="tab-link">
       
+      <!-- Cadre 1 : Scroll horizontal des cartes -->
       <div class="cards-scroll-container">
         <div class="cards-scroll" id="cardsScroll">
           
-          <!-- Carte 1 -->
+          <!-- Carte 1 : Messages -->
           <div class="card-selector" data-card-type="message">
             <div class="share-card" id="shareCardMessage" data-card="message" data-selected="true">
               <div class="selection-dot"></div>
               <div class="share-card-content">
                 <div class="share-header">
-                  <div class="profile-preview">
+                  <div class="profile-preview" id="profilePreview1">
                     <div class="profile-preview-avatar" id="previewAvatar1">
                       <i class="fas fa-user-circle"></i>
                     </div>
@@ -76,7 +87,7 @@
                       <div class="profile-preview-action">Envoie-moi un message anonyme</div>
                     </div>
                   </div>
-                  <div class="share-message-preview">
+                  <div class="share-message-preview" id="previewMessage1">
                     <p>Envoie-moi un message anonyme</p>
                   </div>
                 </div>
@@ -84,13 +95,13 @@
             </div>
           </div>
 
-          <!-- Carte 2 -->
+          <!-- Carte 2 : Questions -->
           <div class="card-selector" data-card-type="question">
             <div class="share-card" id="shareCardQuestion" data-card="question" data-selected="false">
               <div class="selection-dot"></div>
               <div class="share-card-content">
                 <div class="share-header">
-                  <div class="profile-preview">
+                  <div class="profile-preview" id="profilePreview2">
                     <div class="profile-preview-avatar" id="previewAvatar2">
                       <i class="fas fa-user-circle"></i>
                     </div>
@@ -99,7 +110,7 @@
                       <div class="profile-preview-action">Pose-moi une question anonyme</div>
                     </div>
                   </div>
-                  <div class="share-message-preview">
+                  <div class="share-message-preview" id="previewMessage2">
                     <p>Pose-moi une question anonyme</p>
                   </div>
                 </div>
@@ -107,13 +118,13 @@
             </div>
           </div>
 
-          <!-- Carte 3 -->
+          <!-- Carte 3 : Discussion -->
           <div class="card-selector" data-card-type="discussion">
             <div class="share-card" id="shareCardDiscussion" data-card="discussion" data-selected="false">
               <div class="selection-dot"></div>
               <div class="share-card-content">
                 <div class="share-header">
-                  <div class="profile-preview">
+                  <div class="profile-preview" id="profilePreview3">
                     <div class="profile-preview-avatar" id="previewAvatar3">
                       <i class="fas fa-user-circle"></i>
                     </div>
@@ -122,7 +133,7 @@
                       <div class="profile-preview-action">Discussion anonyme</div>
                     </div>
                   </div>
-                  <div class="share-message-preview">
+                  <div class="share-message-preview" id="previewMessage3">
                     <p>Discussion anonyme</p>
                   </div>
                 </div>
@@ -133,7 +144,7 @@
         </div>
       </div>
 
-      <!-- CADRE 2 : ACTIONS -->
+      <!-- Cadre 2 : Actions -->
       <div class="actions-card">
         <div class="actions-buttons">
           <button class="action-btn copy" id="copyLinkBtn">
@@ -148,14 +159,14 @@
         </div>
         <div class="share-whatsapp">
           <button class="action-btn share-wa" id="shareCardBtn">
-            <i class="fab fa-whatsapp"></i> Partager sur WhatsApp
+            <i class="fab fa-whatsapp"></i> Partager
           </button>
         </div>
       </div>
       
     </div>
 
-    <!-- ONGLET INBOX -->
+    <!-- ========== ONGLET INBOX ========== -->
     <div class="tab-content" id="tab-inbox">
       <div class="inbox-container">
         <div class="inbox-header">
@@ -173,11 +184,11 @@
       </div>
     </div>
 
-  </div>
+  </div><!-- /scroll-area -->
 
-</div>
+</div><!-- /app -->
 
-<!-- SIDEBAR -->
+<!-- ========== SIDEBAR ========== -->
 <div class="sb-backdrop" id="sbBackdrop"></div>
 <div class="sidebar" id="sidebar">
   <div class="sb-header">
@@ -214,22 +225,62 @@
   <div class="sb-body">
     <div class="sb-section">Apparence</div>
     <div class="sb-row">
-      <div class="sb-row-label"><i class="fas fa-moon"></i> Mode nuit</div>
-      <label class="toggle-sw"><input type="checkbox" id="themeToggle"/><div class="toggle-track"></div></label>
+      <div class="sb-row-label">
+        <i class="fas fa-moon"></i> Mode nuit
+      </div>
+      <label class="toggle-sw">
+        <input type="checkbox" id="themeToggle"/>
+        <div class="toggle-track"></div>
+      </label>
     </div>
+
     <div class="sb-section">Compte</div>
-    <button class="sb-btn" id="btnLogout"><i class="fas fa-sign-out-alt"></i> Se deconnecter</button>
-    <div class="sb-section">Legal</div>
-    <a href="mentions-legales.html" class="sb-btn"><i class="fas fa-file-lines"></i> Mentions legales</a>
-    <a href="confidentialite.html" class="sb-btn"><i class="fas fa-shield-haltered"></i> Confidentialite</a>
-    <a href="cgu.html" class="sb-btn"><i class="fas fa-scale-balanced"></i> Conditions</a>
+    <button class="sb-btn" id="btnLogout">
+      <i class="fas fa-sign-out-alt"></i> Se deconnecter
+    </button>
+
+    <div class="sb-section">iOS</div>
+    <div class="sb-row">
+      <div class="sb-row-label">
+        <i class="fas fa-bell"></i> Notifications natives
+      </div>
+      <span style="font-size: 11px; color: #f59e0b;">Bientôt disponible</span>
+    </div>
+    <div class="sb-row">
+      <div class="sb-row-label">
+        <i class="fas fa-mobile-alt"></i> App native
+      </div>
+      <span style="font-size: 11px; color: #f59e0b;">Bientôt disponible</span>
+    </div>
+
+    <div class="sb-section">Légal</div>
+    <a href="mentions-legales.html" class="sb-btn">
+      <i class="fas fa-file-lines"></i> Mentions legales
+    </a>
+    <a href="confidentialite.html" class="sb-btn">
+      <i class="fas fa-shield-haltered"></i> Confidentialite
+    </a>
+    <a href="cgu.html" class="sb-btn">
+      <i class="fas fa-scale-balanced"></i> Conditions
+    </a>
+    
     <div class="sb-section">Application</div>
-    <button class="sb-btn btn-install-pwa" id="btnInstallPWA" style="display: none;"><i class="fas fa-download"></i> Installer</button>
+    <button class="sb-btn btn-install-pwa" id="btnInstallPWA" style="display: none;">
+      <i class="fas fa-download"></i> Installer
+    </button>
   </div>
-  <div class="sb-footer"><button class="btn-install" id="btnInstall"><i class="fas fa-download"></i> Installer</button></div>
+
+  <div class="sb-footer">
+    <button class="btn-install" id="btnInstall" style="display: none;">
+      <i class="fas fa-download"></i> Installer l'application
+    </button>
+    <button class="btn-test-notif" id="btnTestNotif">
+      <i class="fas fa-bell"></i> Tester la notification
+    </button>
+  </div>
 </div>
 
-<!-- OVERLAY COULEUR (structure fixe) -->
+<!-- ========== OVERLAY COULEUR ========== -->
 <div class="overlay-color" id="overlayColorFixed">
   <div class="color-sheet">
     <div class="color-header">
@@ -252,7 +303,7 @@
   </div>
 </div>
 
-<!-- OVERLAY LECTURE -->
+<!-- ========== OVERLAY LECTURE (petit) ========== -->
 <div class="overlay-small" id="overlaySmall">
   <div class="sheet-small">
     <div class="sheet-handle"></div>
@@ -267,13 +318,15 @@
     <div class="msg-content">
       <div class="msg-bubble" id="smallText">…</div>
       <div class="msg-actions-row">
-        <button class="btn-reply-small" id="btnReplySmall"><i class="fas fa-reply"></i> Repondre</button>
+        <button class="btn-reply-small" id="btnReplySmall">
+          <i class="fas fa-reply"></i> Repondre
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- OVERLAY REPONSE -->
+<!-- ========== OVERLAY REPONSE ========== -->
 <div class="overlay-large" id="overlayLarge">
   <div class="capture-area" id="captureArea">
     <div class="capture-content">
@@ -295,36 +348,28 @@
       <div class="color-picker-wrap"><i class="fas fa-palette"></i><input type="color" id="colorA" class="color-picker" value="#0ea5e9"/></div>
       <div class="color-picker-wrap"><i class="fas fa-palette"></i><input type="color" id="colorB" class="color-picker" value="#0284c7"/></div>
       <button class="toolbar-btn download" id="downloadBtn" disabled><i class="fas fa-camera"></i> Telecharger</button>
-      <button class="toolbar-btn send-reply" id="sendReplyBtn" disabled>
-  <i class="fas fa-paper-plane"></i> Envoyer la reponse
-</button>
+      <button class="toolbar-btn send-reply" id="sendReplyBtn" disabled><i class="fas fa-paper-plane"></i> Envoyer</button>
       <button class="toolbar-btn close" id="closeLargeBtn"><i class="fas fa-times"></i> Fermer</button>
-      
     </div>
   </div>
 </div>
-<!-- MODALE DE CONFIRMATION POUR ENVOI -->
+
+<!-- ========== MODALE DE CONFIRMATION ========== -->
 <div class="modal-confirm" id="modalConfirm">
   <div class="modal-confirm-content">
     <div class="modal-confirm-header">
-      <h3><i class="fas fa-paper-plane"></i> Envoyer la reponse ?</h3>
+      <h3><i class="fas fa-paper-plane"></i> Envoye ?</h3>
     </div>
     <div class="modal-confirm-body">
-      <p>Voulez-vous envoyer cette reponse ?</p>
+      <p>Voulez-vous conserver cette reponse ?</p>
     </div>
     <div class="modal-confirm-actions">
-      <button class="modal-confirm-ok" id="modalConfirmOk">
-        <i class="fas fa-check"></i> OK
-      </button>
-      <button class="modal-confirm-cancel" id="modalConfirmCancel">
-        <i class="fas fa-times"></i> Annuler
-      </button>
+      <button class="modal-confirm-ok" id="modalConfirmOk">OK</button>
+      <button class="modal-confirm-cancel" id="modalConfirmCancel">Annuler</button>
     </div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="js/app.js"></script>
 
+<script src="js/app.js"></script>
 </body>
 </html>
