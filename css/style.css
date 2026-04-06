@@ -97,6 +97,12 @@ body {
   justify-content: center;
   overflow: hidden;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.logo-img:active {
+  transform: scale(0.95);
 }
 
 .logo-img img {
@@ -171,6 +177,32 @@ body {
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
+}
+
+.btn-refresh {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(14px);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--text);
+  transition: all 0.2s;
+}
+
+.btn-refresh:active {
+  transform: scale(0.95);
+}
+
+[data-theme="dark"] .btn-refresh {
+  background: rgba(22, 40, 64, 0.55);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text2);
 }
 
 .menu-btn {
@@ -273,7 +305,7 @@ body {
 }
 
 /* ============================================================
-   CARTES LINK (style avec images)
+   CARTES LINK (style avec images floutées)
 ============================================================ */
 .share-card {
   border-radius: 28px;
@@ -290,32 +322,6 @@ body {
   transform: scale(0.98);
 }
 
-#shareCardMessage {
-  background-image: url('images/image.png');
-  background-color: #0369a1;
-}
-
-#shareCardQuestion {
-  background-image: url('images/image4.png');
-  background-color: #4c1d95;
-}
-
-#shareCardDiscussion {
-  background-image: url('images/image5.png');
-  background-color: #831843;
-}
-
-.share-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: inherit;
-  background-size: cover;
-  background-position: center;
-  filter: blur(10px);
-  z-index: 0;
-}
-
 .share-card-content {
   position: relative;
   z-index: 1;
@@ -323,9 +329,10 @@ body {
   flex-direction: column;
   padding: 20px;
   min-height: 380px;
+  background: rgba(0, 0, 0, 0.3);
 }
 
-/* Point de selection */
+/* Point de sélection */
 .selection-dot {
   position: absolute;
   top: 16px;
@@ -345,13 +352,13 @@ body {
 }
 
 .share-card[data-selected="true"] .selection-dot::after {
-  content: '';
+  content: '✓';
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 800;
   color: white;
 }
@@ -403,7 +410,7 @@ body {
   color: rgba(255, 255, 255, 0.7);
 }
 
-/* Cadre du message */
+/* Cadre du message - mêmes caractéristiques pour toutes les cartes */
 .share-message-preview {
   height: 200px;
   display: flex;
@@ -421,23 +428,55 @@ body {
 .share-message-preview p {
   margin: 0;
   padding: 0;
-  font-family: 'Playfair Display', serif;
   font-size: 18px;
   font-weight: 700;
   color: white;
   line-height: 1.4;
 }
 
+/* Polices différentes pour chaque carte */
+#shareCardMessage .share-message-preview p {
+  font-family: 'Playfair Display', serif;
+}
+
+#shareCardQuestion .share-message-preview p {
+  font-family: 'DM Sans', sans-serif;
+}
+
+#shareCardDiscussion .share-message-preview p {
+  font-family: 'DM Mono', monospace;
+}
+
 /* ============================================================
    CADRE 2 : ACTIONS
 ============================================================ */
 .actions-card {
-  background: var(--surface);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
   border-radius: 28px;
   padding: 20px;
   margin-top: 16px;
-  box-shadow: 0 4px 12px var(--shadow);
-  border: 1px solid var(--border);
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.actions-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--bg-image, url('images/logo.png'));
+  background-size: cover;
+  background-position: center;
+  filter: blur(20px);
+  z-index: 0;
+  opacity: 0.3;
+}
+
+.actions-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .actions-buttons {
@@ -460,25 +499,16 @@ body {
   justify-content: center;
   gap: 8px;
   transition: transform 0.15s;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
 }
 
 .action-btn:active {
   transform: scale(0.97);
 }
 
-.action-btn.copy {
-  background: #0ea5e9;
-  color: white;
-}
-
-.action-btn.color {
-  background: #8b5cf6;
-  color: white;
-}
-
-.action-btn.download {
-  background: #f59e0b;
-  color: white;
+.action-btn i {
+  font-size: 14px;
 }
 
 .share-whatsapp {
@@ -486,9 +516,9 @@ body {
 }
 
 .action-btn.share-wa {
-  background: #25D366;
-  color: white;
   width: 100%;
+  background: rgba(37, 211, 102, 0.8);
+  color: white;
 }
 
 /* ============================================================
@@ -499,7 +529,7 @@ body {
   inset: 0;
   background: rgba(15, 23, 42, 0.88);
   backdrop-filter: blur(14px);
-  z-index: 200;
+  z-index: 210;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -537,9 +567,6 @@ body {
   font-size: 18px;
   font-weight: 800;
   color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .color-header-actions {
@@ -551,7 +578,6 @@ body {
   padding: 6px 16px;
   border: none;
   border-radius: 40px;
-  font-family: 'Playfair Display', serif;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
@@ -576,8 +602,6 @@ body {
   font-weight: 700;
   color: var(--text2);
   margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
 .color-grid {
@@ -587,10 +611,11 @@ body {
 }
 
 .color-item {
+  width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 16px;
   cursor: pointer;
-  transition: transform 0.15s, border 0.15s;
+  transition: transform 0.15s;
   border: 2px solid transparent;
 }
 
@@ -601,10 +626,6 @@ body {
 .color-item.selected {
   border-color: white;
   box-shadow: 0 0 0 2px #22c55e;
-}
-
-.color-item.pure {
-  border: 2px solid var(--border);
 }
 
 /* ============================================================
@@ -731,7 +752,7 @@ body {
 }
 
 .msg-check.on::after {
-  content: '';
+  content: '✓';
   color: white;
   font-size: 12px;
   font-weight: 800;
@@ -767,8 +788,14 @@ body {
 }
 
 .msg-time {
+  display: inline-block;
+  background: #1e293b;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
   font-size: 11px;
-  color: var(--text3);
+  font-weight: 600;
+  font-family: 'DM Mono', monospace;
 }
 
 /* ============================================================
@@ -796,14 +823,16 @@ body {
   right: 0;
   bottom: 0;
   width: min(300px, 85vw);
-  background: var(--surface);
-  border-left: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(20px);
+  border-left: none;
+  border-radius: 28px 0 0 28px;
   display: flex;
   flex-direction: column;
   z-index: 50;
   transform: translateX(100%);
   transition: transform .38s cubic-bezier(.22, 1, .36, 1);
-  box-shadow: -8px 0 32px rgba(14, 165, 233, 0.1);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
 
@@ -811,10 +840,27 @@ body {
   transform: translateX(0);
 }
 
+.sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--bg-image, url('images/logo.png'));
+  background-size: cover;
+  background-position: center;
+  filter: blur(25px);
+  z-index: 0;
+  opacity: 0.3;
+}
+
+.sidebar > * {
+  position: relative;
+  z-index: 1;
+}
+
 .sb-header {
   flex-shrink: 0;
   padding: 24px 16px 16px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -891,14 +937,14 @@ body {
 .sb-stats {
   flex-shrink: 0;
   display: flex;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sb-stat {
   flex: 1;
   padding: 12px 8px;
   text-align: center;
-  border-right: 1px solid var(--border);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sb-stat:last-child {
@@ -913,7 +959,7 @@ body {
 
 .sb-stat-l {
   font-size: 10px;
-  color: var(--text3);
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 600;
   margin-top: 1px;
 }
@@ -931,7 +977,7 @@ body {
 .sb-section {
   font-size: 10px;
   font-weight: 700;
-  color: var(--text3);
+  color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
   letter-spacing: .08em;
   padding: 6px 4px 2px;
@@ -942,8 +988,8 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 10px 12px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
 }
 
@@ -953,7 +999,7 @@ body {
   gap: 7px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--text);
+  color: white;
 }
 
 .sb-row-label i {
@@ -976,7 +1022,7 @@ body {
 .toggle-track {
   position: absolute;
   inset: 0;
-  background: var(--border);
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 99px;
   cursor: pointer;
   transition: background .25s;
@@ -1009,12 +1055,12 @@ body {
   gap: 8px;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   font-family: 'Playfair Display', serif;
   font-size: 13px;
   font-weight: 600;
-  color: var(--text);
+  color: white;
   cursor: pointer;
   text-align: left;
   text-decoration: none;
@@ -1023,9 +1069,7 @@ body {
 }
 
 .sb-btn:hover {
-  background: #e0f2fe;
-  border-color: #0ea5e9;
-  color: #0284c7;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .sb-btn i {
@@ -1037,28 +1081,32 @@ body {
 .sb-footer {
   flex-shrink: 0;
   padding: 12px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.btn-install {
+.btn-install, .btn-test-notif {
   width: 100%;
   padding: 11px;
-  background: var(--surface2);
-  border: 1.5px dashed #0ea5e9;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   font-family: 'Playfair Display', serif;
   font-size: 13px;
   font-weight: 700;
-  color: #0284c7;
+  color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
+  transition: background 0.2s;
 }
 
-.btn-install:hover {
-  background: #e0f2fe;
+.btn-install:hover, .btn-test-notif:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* ============================================================
@@ -1396,8 +1444,8 @@ body {
   color: white;
 }
 
-.toolbar-btn.share {
-  background: rgba(37, 211, 102, 0.8);
+.toolbar-btn.send-reply {
+  background: rgba(34, 197, 94, 0.8);
   color: white;
 }
 
@@ -1412,467 +1460,8 @@ body {
 }
 
 /* ============================================================
-   TOAST
+   MODALE DE CONFIRMATION
 ============================================================ */
-.ano23-toast {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #22c55e;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 40px;
-  font-weight: 700;
-  font-size: 13px;
-  z-index: 200;
-  white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  font-family: 'Playfair Display', serif;
-  transition: opacity .3s;
-}
-
-/* ============================================================
-   RESPONSIVE
-============================================================ */
-@media (max-width: 480px) {
-  .card-selector {
-    flex: 0 0 92%;
-  }
-  
-  .share-card-content {
-    min-height: 340px;
-    padding: 16px;
-  }
-  
-  .profile-preview-avatar {
-    width: 40px;
-    height: 40px;
-    font-size: 22px;
-  }
-  
-  .profile-preview-name {
-    font-size: 12px;
-  }
-  
-  .profile-preview-action {
-    font-size: 10px;
-  }
-  
-  .share-message-preview {
-    height: 160px;
-  }
-  
-  .share-message-preview p {
-    font-size: 14px;
-  }
-  
-  .actions-buttons {
-    flex-wrap: wrap;
-  }
-  
-  .color-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-/* ============================================================
-   TEXTES AUGMENTÉS DE 60%
-============================================================ */
-
-/* Texte dans les cartes (message principal) */
-.share-message-preview p {
-  font-size: 29px;  /* était 18px */
-  font-weight: 800;
-  line-height: 1.3;
-}
-
-/* Texte du message reçu dans l'overlay réponse */
-.received-message p {
-  font-size: 29px;  /* était 18px */
-  padding: 20px 28px;
-}
-
-/* Textarea de réponse */
-.reply-textarea {
-  font-size: 27px;  /* était 17px */
-  min-height: 140px;
-  font-weight: 700;
-}
-
-/* Placeholder textarea */
-.reply-textarea::placeholder {
-  font-size: 27px;
-}
-
-/* ============================================================
-   CADRE 2 (ACTIONS) - HAUTEUR LIMITÉE À L'ÉCRAN
-============================================================ */
-.actions-card {
-  background: var(--surface);
-  border-radius: 28px;
-  padding: 20px;
-  margin-top: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px var(--shadow);
-  border: 1px solid var(--border);
-  /* Hauteur flexible selon contenu */
-  width: 100%;
-}
-
-.actions-buttons {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.action-btn {
-  flex: 1;
-  min-width: 0;
-  padding: 14px 12px;
-  border: none;
-  border-radius: 40px;
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: transform 0.15s;
-  white-space: nowrap;
-}
-
-/* Sur mobile, les boutons peuvent passer en colonne si besoin */
-@media (max-width: 480px) {
-  .actions-buttons {
-    flex-direction: column;
-  }
-  
-  .action-btn {
-    width: 100%;
-  }
-}
-
-/* Bouton WhatsApp prend toute la largeur */
-.share-whatsapp {
-  margin-top: 12px;
-}
-
-.action-btn.share-wa {
-  background: #25D366;
-  color: white;
-  width: 100%;
-  padding: 14px;
-}
-/* ============================================================
-   CADRE 2 : ACTIONS (boutons uniformes blancs)
-============================================================ */
-.actions-card {
-  background: var(--surface);
-  border-radius: 28px;
-  padding: 20px;
-  margin-top: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px var(--shadow);
-  border: 1px solid var(--border);
-  width: 100%;
-}
-
-.actions-buttons {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.action-btn {
-  flex: 1;
-  min-width: 0;
-  padding: 14px 12px;
-  border: none;
-  border-radius: 40px;
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: transform 0.15s, background 0.2s;
-  white-space: nowrap;
-  /* Uniforme : blanc */
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-
-.action-btn:active {
-  transform: scale(0.97);
-}
-
-/* Icônes des boutons */
-.action-btn i {
-  font-size: 16px;
-  color: var(--text);
-}
-
-/* Bouton WhatsApp */
-.share-whatsapp {
-  margin-top: 12px;
-}
-
-.action-btn.share-wa {
-  width: 100%;
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-
-.action-btn.share-wa i {
-  color: #25D366;
-}
-
-/* Sur mobile, les boutons peuvent passer en colonne */
-@media (max-width: 480px) {
-  .actions-buttons {
-    flex-direction: column;
-  }
-  
-  .action-btn {
-    width: 100%;
-  }
-}
-/* ============================================================
-   CADRE 2 : ACTIONS (tous les boutons uniformes)
-============================================================ */
-.actions-card {
-  background: var(--surface);
-  border-radius: 28px;
-  padding: 20px;
-  margin-top: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px var(--shadow);
-  border: 1px solid var(--border);
-  width: 100%;
-}
-
-.actions-buttons {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.action-btn {
-  flex: 1;
-  min-width: 0;
-  padding: 14px 12px;
-  border: none;
-  border-radius: 40px;
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: transform 0.15s, background 0.2s;
-  white-space: nowrap;
-  /* Uniforme : fond gris clair, texte foncé */
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-
-.action-btn:active {
-  transform: scale(0.97);
-}
-
-/* Toutes les icônes en noir/gris */
-.action-btn i {
-  font-size: 16px;
-  color: var(--text);
-}
-
-/* Suppression des couleurs spécifiques pour tous les boutons */
-.action-btn.copy,
-.action-btn.color,
-.action-btn.download {
-  background: var(--surface2);
-  color: var(--text);
-}
-
-/* Bouton WhatsApp (même style que les autres) */
-.share-whatsapp {
-  margin-top: 12px;
-}
-
-.action-btn.share-wa {
-  width: 100%;
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-
-/* Seule l'icône WhatsApp garde sa couleur verte */
-.action-btn.share-wa i {
-  color: #25D366;
-}
-
-/* Sur mobile */
-@media (max-width: 480px) {
-  .actions-buttons {
-    flex-direction: column;
-  }
-  
-  .action-btn {
-    width: 100%;
-  }
-}
-.overlay-color {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.88);
-  backdrop-filter: blur(14px);
-  z-index: 210;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .3s;
-}
-
-.overlay-color.open {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.color-sheet {
-  background: var(--surface);
-  border-radius: 28px;
-  width: 100%;
-  max-width: 480px;
-  max-height: 85vh;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-.color-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
-}
-
-.color-header h3 {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--text);
-}
-
-.color-header-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.color-reset, .color-ok {
-  padding: 6px 16px;
-  border: none;
-  border-radius: 40px;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.color-reset {
-  background: var(--surface2);
-  color: var(--text2);
-}
-
-.color-ok {
-  background: #22c55e;
-  color: white;
-}
-
-.color-section {
-  margin-bottom: 24px;
-}
-
-.color-section-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text2);
-  margin-bottom: 12px;
-}
-
-.color-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-}
-
-.color-item {
-  aspect-ratio: 1 / 1;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: transform 0.15s;
-  border: 2px solid transparent;
-}
-
-.color-item:hover {
-  transform: scale(0.95);
-}
-
-.color-item.selected {
-  border-color: white;
-  box-shadow: 0 0 0 2px #22c55e;
-}
-.color-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-.color-item {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: transform 0.15s;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.color-item.pure {
-  border: 2px solid var(--border);
-}
-
-.color-item:hover {
-  transform: scale(0.95);
-}
-
-.color-item.selected {
-  border-color: #22c55e;
-  box-shadow: 0 0 0 2px #22c55e;
-}
-.msg-reply-indicator {
-  margin-left: 8px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-}
-
-.msg-reply-indicator i {
-  font-size: 16px;
-}
-/* MODALE DE CONFIRMATION */
 .modal-confirm {
   position: fixed;
   inset: 0;
@@ -1917,10 +1506,6 @@ body {
   font-size: 18px;
   font-weight: 800;
   color: var(--text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
 }
 
 .modal-confirm-body {
@@ -1944,14 +1529,10 @@ body {
   padding: 12px;
   border: none;
   border-radius: 40px;
-  font-family: inherit;
+  font-family: 'Playfair Display', serif;
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
   transition: transform 0.15s;
 }
 
@@ -1968,4 +1549,173 @@ body {
   background: var(--surface2);
   color: var(--text2);
   border: 1px solid var(--border);
+}
+
+/* ============================================================
+   BADGE SUCCÈS
+============================================================ */
+#successBadge {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #22c55e;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 700;
+  z-index: 200;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width: 480px) {
+  .card-selector {
+    flex: 0 0 92%;
+  }
+  
+  .share-card-content {
+    min-height: 340px;
+    padding: 16px;
+  }
+  
+  .profile-preview-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+  }
+  
+  .profile-preview-name {
+    font-size: 12px;
+  }
+  
+  .profile-preview-action {
+    font-size: 10px;
+  }
+  
+  .share-message-preview {
+    height: 160px;
+  }
+  
+  .share-message-preview p {
+    font-size: 14px;
+  }
+  
+  .actions-buttons {
+    flex-direction: column;
+  }
+  
+  .color-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.share-message-preview p {
+  margin: 0;
+  padding: 0;
+  font-size: 25px;
+  font-weight: 800;
+  color: white;
+  line-height: 1.3;
+}
+.profile-preview-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+.profile-preview-action {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+}
+/* ============================================================
+   OVERLAY LECTURE - STYLE DES RÉPONSES
+============================================================ */
+
+.replies-section {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.replies-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text2);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.replies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.reply-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface2);
+  border-radius: 16px;
+  padding: 10px 14px;
+  border-left: 3px solid #0ea5e9;
+}
+
+.reply-content {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-word;
+  flex: 1;
+}
+
+.reply-time {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  background: #1e293b;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  margin-left: 10px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* Style pour "reply:" au début */
+.reply-content::before {
+  content: "reply: ";
+  font-weight: 800;
+  color: #0ea5e9;
+}
+.reply-textarea {
+  width: 100%;
+  padding: 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 27px;
+  font-weight: 800;
+  border: none;
+  resize: none;
+  min-height: 120px;
+  text-align: center;
+  background: transparent;
+  color: white;
+  outline: none;
+  line-height: 1.3;
+}
+
+.reply-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'DM Mono', monospace;
+  font-size: 27px;
+  font-weight: 800;
 }
