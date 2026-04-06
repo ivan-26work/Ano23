@@ -359,56 +359,5 @@
 </div>
 
 <script src="js/app.js"></script>
-<!-- Firebase SDK pour les notifications push -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-  import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-messaging.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDYERQj-l0iPs2hq5irQ1HVnmJdSoQxehk",
-    authDomain: "whois-d77c0.firebaseapp.com",
-    projectId: "whois-d77c0",
-    storageBucket: "whois-d77c0.firebasestorage.app",
-    messagingSenderId: "460182233733",
-    appId: "1:460182233733:web:4f9b147c545bfabeea3fec",
-    measurementId: "G-C0BMSTL224"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const messaging = getMessaging(app);
-
-  // Demander permission et récupérer le token FCM
-  async function initFirebaseNotifications(userId) {
-    try {
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') {
-        console.log('Permission refusée');
-        return;
-      }
-
-      const token = await getToken(messaging, {
-        vapidKey: 'BNGqMpPvaRWxK0iHzYTe9zb5ZjHXuFmBNW2y9pUYmTjvWSXgX-ptRs2mAjfObeTk-iRYZSJ626M0KGrUxedXT9Q'
-      });
-
-      console.log('FCM Token:', token);
-
-      // Stocker le token dans Supabase
-      const { data: { session } } = await sb.auth.getSession();
-      if (session) {
-        const userId = session.user.email.split('@')[0];
-        await sb.from('profiles').upsert({
-          user_id: userId,
-          fcm_token: token
-        }, { onConflict: 'user_id' });
-        console.log('Token FCM enregistré');
-      }
-    } catch (err) {
-      console.error('Erreur FCM:', err);
-    }
-  }
-
-  // Exposer la fonction globalement
-  window.initFirebaseNotifications = initFirebaseNotifications;
-</script>
 </body>
 </html>
