@@ -117,6 +117,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     currentUser = session.user;
     currentUserId = currentUser.email.split('@')[0];
+    
+    // Après avoir récupéré currentUserId
+if (window.initFirebaseNotifications) {
+  window.initFirebaseNotifications(currentUserId);
+}
 
     document.getElementById('sbUserName').textContent = currentUser.email;
     document.getElementById('sbUserUid').textContent = `@${currentUserId}`;
